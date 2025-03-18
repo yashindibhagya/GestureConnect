@@ -8,15 +8,21 @@ import {
   SafeAreaView,
   Dimensions,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { Camera } from 'expo-camera';
 import { StatusBar } from 'expo-status-bar';
+import { useRouter } from 'expo-router';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { setDoc, doc } from 'firebase/firestore';
+import Common from '../../Components/Container/Common';
+import { auth, db } from '../../config/firebaseConfig';
 
 export default function GestureSignIn({ navigation }) {
+  const router = useRouter();
   const [hasPermission, setHasPermission] = useState(null);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [cameraType, setCameraType] = useState(null);
@@ -24,17 +30,14 @@ export default function GestureSignIn({ navigation }) {
 
   useEffect(() => {
     (async () => {
-      // Request camera permissions
       const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
 
-      // Safely set camera type after import is complete
-      if (Camera.Constants && Camera.Constants.Type) {
+      if (Camera.Constants?.Type) {
         setCameraType(Camera.Constants.Type.front);
       } else {
-        // Fallback approach if constants are not available immediately
         setTimeout(() => {
-          if (Camera.Constants && Camera.Constants.Type) {
+          if (Camera.Constants?.Type) {
             setCameraType(Camera.Constants.Type.front);
           }
         }, 500);
@@ -42,47 +45,70 @@ export default function GestureSignIn({ navigation }) {
     })();
   }, []);
 
-  const handleSignUp = () => {
-    // Add your sign up logic here
-    console.log('Sign up attempted with:', { fullName, email, username, password });
-    // Validation would go here
-  };
-
-  const navigateToLogin = () => {
-    // Navigate back to login screen
-    console.log('Navigate to login');
-    // If using React Navigation:
-    // navigation.navigate('Login');
-  };
-
-  if (hasPermission === null) {
-    return <View style={styles.container} />;
-  }
-
-  if (hasPermission === false) {
+  if (hasPermission === null) return <View style={styles.container} />;
+  if (hasPermission === false)
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>No access to camera</Text>
         <Text style={styles.errorSubtext}>Camera access is required for gesture authentication</Text>
       </View>
     );
-  }
+
+  const CreateNewAccount = async () => {
+    if (!fullName.trim() || !email.trim() || !password || !confirmPassword) {
+      Alert.alert('Error', 'All fields are required.');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match.');
+      return;
+    }
+
+    try {
+      const resp = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      const user = resp.user;
+      console.log('User Created:', user);
+      await SaveUser(user);
+    } catch (error) {
+      console.log('Error:', error.message);
+      Alert.alert('Sign Up Failed', error.message);
+    }
+  };
+
+  const SaveUser = async (user) => {
+    const data = {
+      name: fullName.trim(),
+      email: email.trim(),
+      member: false,
+      uid: user.uid,
+    };
+
+    try {
+      await setDoc(doc(db, 'users', user.uid), data);
+      console.log('User saved to Firestore');
+      Alert.alert('Success', 'Account created successfully!');
+      router.push('/auth/signIn');
+    } catch (error) {
+      console.log('Error saving user:', error.message);
+      Alert.alert('Error', 'Failed to save user data.');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>GestureConnect</Text>
-        </View>
+        <Common />
 
         <View style={styles.cameraContainer}>
           {cameraType ? (
-            <Camera
-              ref={cameraRef}
-              style={styles.camera}
-              type={cameraType}
-            />
+            <Camera ref={cameraRef} style={styles.camera} type={cameraType} />
           ) : (
             <View style={[styles.camera, styles.cameraPlaceholder]}>
               <Text style={styles.cameraPlaceholderText}>Initializing camera...</Text>
@@ -90,7 +116,6 @@ export default function GestureSignIn({ navigation }) {
           )}
         </View>
 
-        <Text style={styles.appTitle}>GestureConnect</Text>
         <Text style={styles.subtitle}>Create Your Account</Text>
 
         <View style={styles.inputsContainer}>
@@ -110,13 +135,6 @@ export default function GestureSignIn({ navigation }) {
           />
           <TextInput
             style={styles.input}
-            placeholder="Username"
-            autoCapitalize="none"
-            value={username}
-            onChangeText={setUsername}
-          />
-          <TextInput
-            style={styles.input}
             placeholder="Password"
             secureTextEntry
             value={password}
@@ -130,13 +148,13 @@ export default function GestureSignIn({ navigation }) {
             onChangeText={setConfirmPassword}
           />
 
-          <TouchableOpacity style={styles.signupButton} onPress={handleSignUp}>
-            <Text style={styles.signupButtonText}>Create Account</Text>
+          <TouchableOpacity onPress={CreateNewAccount} style={styles.button}>
+            <Text style={styles.buttonText}>Create Account</Text>
           </TouchableOpacity>
 
           <View style={styles.loginContainer}>
             <Text style={styles.haveAccountText}>Already have an account? </Text>
-            <TouchableOpacity onPress={navigateToLogin}>
+            <TouchableOpacity onPress={() => router.push('/auth/gestureSignIn')}>
               <Text style={styles.loginText}>Log In</Text>
             </TouchableOpacity>
           </View>
@@ -148,7 +166,7 @@ export default function GestureSignIn({ navigation }) {
       </ScrollView>
     </SafeAreaView>
   );
-};
+}
 
 const { width } = Dimensions.get('window');
 const cameraSize = Math.min(width - 40, 300);
@@ -156,104 +174,92 @@ const cameraSize = Math.min(width - 40, 300);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e0f2e9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#D0F3DA',
+    padding: 25
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 30,
-  },
-  headerContainer: {
-    padding: 10,
-  },
-  headerText: {
-    fontSize: 16,
-    color: '#2c3e50',
+    paddingBottom: 30
   },
   cameraContainer: {
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 10
   },
   camera: {
     width: cameraSize,
     height: cameraSize,
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
   cameraPlaceholder: {
     backgroundColor: '#95a5a6',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   cameraPlaceholderText: {
     color: 'white',
-    fontSize: 16,
-  },
-  appTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginTop: 15,
-    color: '#2c3e50',
+    fontSize: 16
   },
   subtitle: {
     fontSize: 16,
     textAlign: 'center',
     marginTop: 5,
-    color: '#2c3e50',
+    color: '#2c3e50'
   },
   inputsContainer: {
     marginHorizontal: 20,
-    marginTop: 15,
+    marginTop: 15
   },
   input: {
-    backgroundColor: 'white',
-    borderRadius: 25,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    marginBottom: 12,
-    fontSize: 16,
-  },
-  signupButton: {
-    backgroundColor: '#ffb74d',
-    borderRadius: 25,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 5,
-    marginBottom: 12,
-  },
-  signupButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+    width: '90%',
+    padding: 15,
+    fontSize: 14,
+    marginTop: 10,
+    borderBottomWidth: 1,
+    textAlign: 'center'
   },
   loginContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 15,
+    marginBottom: 15
   },
   haveAccountText: {
-    color: '#2c3e50',
+    color: '#2c3e50'
   },
   loginText: {
-    color: '#ffb74d',
-    fontWeight: 'bold',
+    color: '#f5a623',
+    fontWeight: 'bold'
   },
   termsText: {
     textAlign: 'center',
     fontSize: 12,
     color: '#7f8c8d',
-    marginHorizontal: 20,
+    marginHorizontal: 20
+  },
+  button: {
+    padding: 15,
+    backgroundColor: '#f5a623',
+    width: '90%',
+    marginTop: 20,
+    borderRadius: 30
+  },
+  buttonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 16
   },
   errorText: {
     textAlign: 'center',
     marginTop: 20,
     fontSize: 18,
-    color: 'red',
+    color: 'red'
   },
   errorSubtext: {
     textAlign: 'center',
     marginTop: 10,
     fontSize: 14,
-    color: '#2c3e50',
+    color: '#2c3e50'
   },
 });

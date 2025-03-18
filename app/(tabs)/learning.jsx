@@ -14,7 +14,7 @@ import { useRouter } from "expo-router";
 
 export default function Learning() {
   const router = useRouter();
-  const handleFileUpload = (event) => {};
+  const handleFileUpload = (event) => { };
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView
