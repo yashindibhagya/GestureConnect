@@ -32,7 +32,7 @@ export default function Home() {
           {/* Sign Language to Text */}
           <TouchableOpacity
             style={[styles.card, styles.signTextCard]}
-            onPress={() => router.push("/auth/signIn")}
+            onPress={() => router.push("/(tabs)/signToText")}
           >
             <View style={styles.greenBox}>
               <Image
@@ -46,7 +46,7 @@ export default function Home() {
           {/* Text to Sign Language */}
           <TouchableOpacity
             style={[styles.card, styles.textSignCard]}
-            onPress={() => router.push("/auth/signIn")}
+            onPress={() => router.push("/(tabs)/textToSign")}
           >
             <View style={styles.greenBox}>
               <Image
@@ -79,7 +79,7 @@ export default function Home() {
           {/* Settings Section */}
           <TouchableOpacity
             style={[styles.card, styles.settingsCard]}
-            onPress={() => router.push("/auth/signIn")}
+            onPress={() => router.push("/(tabs)/profile")}
           >
             <View style={styles.greenBox}>
               <Image
