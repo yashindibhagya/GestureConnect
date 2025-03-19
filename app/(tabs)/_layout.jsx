@@ -5,89 +5,93 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { VideoProvider } from '../../context/VideoContext';
 
 export default function _layout() {
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: false, // Hide text labels
-        tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: "#074D4E", // Active icon color
-        tabBarInactiveTintColor: "#074D4E", // Inactive icon color
-        tabBarHideOnKeyboard: true,
-      }}
-    >
-      <Tabs.Screen
-        name="home"
-        options={{
-          tabBarIcon: ({ color, size, focused }) => (
-            <View style={[styles.iconContainer, focused && styles.activeTab]}>
-              {focused && <View style={styles.activeLine} />}
-              <FontAwesome name="home" size={size} color={color} />
-            </View>
-          ),
+    <VideoProvider>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarShowLabel: false, // Hide text labels
+          tabBarStyle: styles.tabBar,
+          tabBarActiveTintColor: "#074D4E", // Active icon color
+          tabBarInactiveTintColor: "#074D4E", // Inactive icon color
+          tabBarHideOnKeyboard: true,
         }}
-      />
+      >
+        <Tabs.Screen
+          name="home"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <View style={[styles.iconContainer, focused && styles.activeTab]}>
+                {focused && <View style={styles.activeLine} />}
+                <FontAwesome name="home" size={size} color={color} />
+              </View>
+            ),
+          }}
+        />
 
-      <Tabs.Screen
-        name="textToSign"
-        options={{
-          tabBarIcon: ({ color, size, focused }) => (
-            <View style={[styles.iconContainer, focused && styles.activeTab]}>
-              {focused && <View style={styles.activeLine} />}
-              <Feather name="type" size={size} color={color} />
-            </View>
-          ),
-        }}
-      />
+        <Tabs.Screen
+          name="textToSign"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <View style={[styles.iconContainer, focused && styles.activeTab]}>
+                {focused && <View style={styles.activeLine} />}
+                <Feather name="type" size={size} color={color} />
+              </View>
+            ),
+          }}
+        />
 
-      {/* Custom Floating Button in the Middle */}
-      <Tabs.Screen
-        name="signToText"
-        options={{
-          tabBarButton: (props) => (
-            <TouchableOpacity
-              style={[
-                styles.middleButton,
-                props.accessibilityState?.selected && styles.middleButtonActive,
-              ]}
-              onPress={props.onPress}
-            >
-              <MaterialCommunityIcons
-                name="hand-heart"
-                size={30}
-                color="#fff"
-              />
-            </TouchableOpacity>
-          ),
-        }}
-      />
+        {/* Custom Floating Button in the Middle */}
+        <Tabs.Screen
+          name="signToText"
+          options={{
+            tabBarButton: (props) => (
+              <TouchableOpacity
+                style={[
+                  styles.middleButton,
+                  props.accessibilityState?.selected && styles.middleButtonActive,
+                ]}
+                onPress={props.onPress}
+              >
+                <MaterialCommunityIcons
+                  name="hand-heart"
+                  size={30}
+                  color="#fff"
+                />
+              </TouchableOpacity>
+            ),
+          }}
+        />
 
-      <Tabs.Screen
-        name="learning"
-        options={{
-          tabBarIcon: ({ color, size, focused }) => (
-            <View style={[styles.iconContainer, focused && styles.activeTab]}>
-              {focused && <View style={styles.activeLine} />}
-              <Ionicons name="globe-outline" size={size} color={color} />
-            </View>
-          ),
-        }}
-      />
+        <Tabs.Screen
+          name="learning"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <View style={[styles.iconContainer, focused && styles.activeTab]}>
+                {focused && <View style={styles.activeLine} />}
+                <FontAwesome6 name="book-atlas" size={size} color={color} />
+              </View>
+            ),
+          }}
+        />
 
-      <Tabs.Screen
-        name="profile"
-        options={{
-          tabBarIcon: ({ color, size, focused }) => (
-            <View style={[styles.iconContainer, focused && styles.activeTab]}>
-              {focused && <View style={styles.activeLine} />}
-              <FontAwesome name="user-circle-o" size={size} color={color} />
-            </View>
-          ),
-        }}
-      />
-    </Tabs>
+        <Tabs.Screen
+          name="profile"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <View style={[styles.iconContainer, focused && styles.activeTab]}>
+                {focused && <View style={styles.activeLine} />}
+                <FontAwesome name="user-circle-o" size={size} color={color} />
+              </View>
+            ),
+          }}
+        />
+      </Tabs>
+    </VideoProvider>
   );
 }
 

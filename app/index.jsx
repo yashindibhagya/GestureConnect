@@ -39,14 +39,13 @@ export default function WelcomeScreen() {
         </TouchableOpacity>
 
         {/* Already have an account? (Link to Sign In Page) */}
-        <Text style={styles.linkText}>
-          Already have an account?{" "}
-          <TouchableOpacity
-            onPress={() => router.push("selectOption/optionSignIn")}
-          >
-            <Text style={styles.signInText}>Sign In</Text>
-          </TouchableOpacity>
-        </Text>
+
+        <TouchableOpacity
+          onPress={() => router.push("selectOption/optionSignIn")}
+        >
+          <Text style={styles.linkText}>Already have an account?</Text>
+        </TouchableOpacity>
+
       </View>
     </View>
   );
@@ -80,10 +79,10 @@ const styles = StyleSheet.create({
     top: -40,
   },
   brand: {
-    fontSize: 30,
+    fontSize: 32,
     fontWeight: "900",
     color: "#fff",
-    top: -40,
+    top: -45,
   },
   button: {
     backgroundColor: "#F5A623", // Yellow button color
@@ -93,7 +92,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: "80%",
     alignItems: "center",
-    top: -50,
+    top: -60,
   },
   buttonText: {
     fontSize: 18,
@@ -105,7 +104,7 @@ const styles = StyleSheet.create({
     color: "#C0C0C0",
     marginTop: 10,
     textAlign: "center",
-    top: -55,
+    top: -60,
   },
   signInText: {
     fontSize: 14,
