@@ -1,6 +1,20 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Import JSON data files
+import englishAlphabet from '../assets/Data/englishAlphabet.json';
+import sinhalaAlphabet from '../assets/Data/sinhalaAlphabet.json';
+import conversationSigns from '../assets/Data/conversationSigns.json';
+import whQuestions from '../assets/Data/whQuestions.json';
+import categories from '../assets/Data/categories.json';
+import actions from '../assets/Data/actions.json';
+import numbers from '../assets/Data/numbers.json';
+import people from '../assets/Data/people.json';
+import colours from '../assets/Data/colours.json';
+
+// Import CloudinaryUtils
+import CloudinaryUtils from '../app/utils/CloudinaryUtils';
+
 export const VideoContext = createContext();
 
 export const VideoProvider = ({ children }) => {
@@ -9,245 +23,67 @@ export const VideoProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [userProgress, setUserProgress] = useState({});
+    // Cache of attempted but failed video URLs
+    const [failedVideoUrls, setFailedVideoUrls] = useState({});
 
     useEffect(() => {
         const fetchSignsData = async () => {
             try {
                 setIsLoading(true);
 
-                // Check if we have cached data
-                const cachedData = await AsyncStorage.getItem('signsData');
+                // Load user progress from AsyncStorage
                 const cachedProgress = await AsyncStorage.getItem('userProgress');
-
                 if (cachedProgress) {
                     setUserProgress(JSON.parse(cachedProgress));
                 }
 
-                if (cachedData) {
-                    const parsedData = JSON.parse(cachedData);
-                    setSignsData(parsedData);
-
-                    // Group data into courses
-                    organizeCoursesData(parsedData);
-
-                    setIsLoading(false);
-                    return;
+                // Load failed URL cache
+                const cachedFailedUrls = await AsyncStorage.getItem('failedVideoUrls');
+                if (cachedFailedUrls) {
+                    setFailedVideoUrls(JSON.parse(cachedFailedUrls));
                 }
 
-                // In a real app, this would be an API call
-                // For demo purposes, we're returning mock data
-                const mockData = [
-                    // Alphabet signs
-                    {
-                        signId: "a-001",
-                        word: "A",
-                        category: "alphabet",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/a.jpg",
-                    },
-                    {
-                        signId: "b-002",
-                        word: "B",
-                        category: "alphabet",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/b.jpg",
-                    },
-                    {
-                        signId: "c-003",
-                        word: "C",
-                        category: "alphabet",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/c.jpg",
-                    },
-                    {
-                        signId: "d-004",
-                        word: "D",
-                        category: "alphabet",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/d.jpg",
-                    },
-                    {
-                        signId: "e-005",
-                        word: "E",
-                        category: "alphabet",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/e.jpg",
-                    },
-                    {
-                        signId: "f-006",
-                        word: "F",
-                        category: "alphabet",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/f.jpg",
-                    },
-                    {
-                        signId: "g-007",
-                        word: "G",
-                        category: "alphabet",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/g.jpg",
-                    },
-                    {
-                        signId: "h-008",
-                        word: "H",
-                        category: "alphabet",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/h.jpg",
-                    },
-                    {
-                        signId: "i-009",
-                        word: "I",
-                        category: "alphabet",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/i.jpg",
-                    },
-                    {
-                        signId: "j-010",
-                        word: "J",
-                        category: "alphabet",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/j.jpg",
-                    },
-
-                    // Conversation signs
-                    {
-                        signId: "hello-001",
-                        word: "Hello",
-                        category: "conversation",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/hello.jpg",
-                        relatedSigns: ["Hi", "Greeting", "Welcome"],
-                    },
-                    {
-                        signId: "thank-you-001",
-                        word: "Thank you",
-                        category: "conversation",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/thankyou.jpg",
-                        relatedSigns: ["Thanks", "Appreciation"],
-                    },
-                    {
-                        signId: "you-001",
-                        word: "You",
-                        category: "conversation",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742377081/you_t1accf.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/you.jpg",
-                        relatedSigns: ["Your"],
-                    },
-
-                    // WH Questions
-                    {
-                        signId: "what-001",
-                        word: "What",
-                        category: "wh-questions",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/what.jpg",
-                    },
-                    {
-                        signId: "where-002",
-                        word: "Where",
-                        category: "wh-questions",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/where.jpg",
-                    },
-                    {
-                        signId: "who-003",
-                        word: "Who",
-                        category: "wh-questions",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/who.jpg",
-                    },
-
-                    // Family signs
-                    {
-                        signId: "mother-001",
-                        word: "Mother",
-                        category: "family",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/mother.jpg",
-                    },
-                    {
-                        signId: "father-002",
-                        word: "Father",
-                        category: "family",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/father.jpg",
-                    },
-
-                    // Action signs
-                    {
-                        signId: "eat-001",
-                        word: "Eat",
-                        category: "actions",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/eat.jpg",
-                    },
-                    {
-                        signId: "drink-002",
-                        word: "Drink",
-                        category: "actions",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/drink.jpg",
-                    },
-
-                    // Number signs
-                    {
-                        signId: "one-001",
-                        word: "One",
-                        category: "numbers",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/one.jpg",
-                    },
-                    {
-                        signId: "two-002",
-                        word: "Two",
-                        category: "numbers",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/two.jpg",
-                    },
-
-                    // Color signs
-                    {
-                        signId: "red-001",
-                        word: "Red",
-                        category: "colors",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/red.jpg",
-                    },
-                    {
-                        signId: "blue-002",
-                        word: "Blue",
-                        category: "colors",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/blue.jpg",
-                    },
-
-                    // Deaf culture signs
-                    {
-                        signId: "deaf-001",
-                        word: "Deaf",
-                        category: "deaf",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/deaf.jpg",
-                    },
-                    {
-                        signId: "hearing-002",
-                        word: "Hearing",
-                        category: "deaf",
-                        videoUrl: "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742374651/hello_g34znt.mp4",
-                        thumbnailUrl: "https://example.com/thumbnails/hearing.jpg",
-                    },
+                // Combine all the sign data from imported JSON files
+                const allSigns = [
+                    ...englishAlphabet,
+                    ...sinhalaAlphabet,
+                    ...conversationSigns,
+                    ...whQuestions,
+                    ...actions,
+                    ...numbers,
+                    ...people,
+                    ...colours
+                    // Add additional sign data as they become available
                 ];
 
-                // Cache the data
-                await AsyncStorage.setItem('signsData', JSON.stringify(mockData));
+                // Make sure all signs have the required properties and update URLs
+                const processedSigns = allSigns.map(sign => {
+                    // Generate a signId if missing
+                    if (!sign.signId) {
+                        sign.signId = `${sign.word ? sign.word.toLowerCase().replace(/\s+/g, '-') : 'unknown'}-001`;
+                    }
 
-                setSignsData(mockData);
+                    // Update or generate videoUrl if missing or invalid
+                    if (!sign.videoUrl || typeof sign.videoUrl !== 'string' || !sign.videoUrl.startsWith('http')) {
+                        // Try to generate a URL using CloudinaryUtils
+                        sign.videoUrl = CloudinaryUtils.getSignVideoUrl(sign.word);
+                    }
 
-                // Group data into courses
-                organizeCoursesData(mockData);
+                    // Update or generate thumbnailUrl if missing
+                    if (!sign.thumbnailUrl || typeof sign.thumbnailUrl !== 'string' || !sign.thumbnailUrl.startsWith('http')) {
+                        sign.thumbnailUrl = CloudinaryUtils.getSignThumbnailUrl(sign.word);
+                    }
+
+                    return sign;
+                });
+
+                setSignsData(processedSigns);
+
+                // Organize courses data
+                organizeCoursesData(processedSigns);
 
             } catch (err) {
+                console.error("Error loading sign data:", err);
                 setError(err.message);
             } finally {
                 setIsLoading(false);
@@ -257,7 +93,26 @@ export const VideoProvider = ({ children }) => {
         fetchSignsData();
     }, []);
 
-    // Organize course data from signs data
+    // Record a failed video URL attempt
+    const recordFailedVideoUrl = async (url) => {
+        if (!url) return;
+
+        const newFailedUrls = {
+            ...failedVideoUrls,
+            [url]: new Date().toISOString()
+        };
+
+        setFailedVideoUrls(newFailedUrls);
+
+        // Save to AsyncStorage
+        try {
+            await AsyncStorage.setItem('failedVideoUrls', JSON.stringify(newFailedUrls));
+        } catch (err) {
+            console.error('Error saving failed URL:', err);
+        }
+    };
+
+    // Organize course data using sign data and categories
     const organizeCoursesData = (data) => {
         // Group signs by category
         const categoriesMap = {};
@@ -269,85 +124,13 @@ export const VideoProvider = ({ children }) => {
             categoriesMap[sign.category].push(sign);
         });
 
-        console.log("Categories found:", Object.keys(categoriesMap));
+        // Create course data by combining categories metadata with signs
+        const courses = categories.map(category => ({
+            ...category,
+            totalChapters: categoriesMap[category.id]?.length || 0,
+            signs: categoriesMap[category.id] || []
+        }));
 
-        // Create course data structure
-        const courses = [
-            {
-                id: 'alphabet',
-                title: 'Alphabet',
-                description: 'Learn to sign the alphabet from A to Z',
-                totalChapters: categoriesMap['alphabet']?.length || 0,
-                backgroundColor: '#FFD8B9',
-                icon: '📚',
-                signs: categoriesMap['alphabet'] || []
-            },
-            {
-                id: 'wh-questions',
-                title: 'WH Questions',
-                description: 'Learn question words like What, Where, Who, When, Why',
-                totalChapters: categoriesMap['wh-questions']?.length || 0,
-                backgroundColor: '#D7F5D3',
-                icon: '🦄',
-                signs: categoriesMap['wh-questions'] || []
-            },
-            {
-                id: 'conversation',
-                title: 'Starting a conversation',
-                description: 'Learn basic phrases to start a conversation',
-                totalChapters: categoriesMap['conversation']?.length || 0,
-                backgroundColor: '#FFE4B9',
-                icon: '💬',
-                signs: categoriesMap['conversation'] || []
-            },
-            {
-                id: 'actions',
-                title: 'Actions',
-                description: 'Learn signs for common actions and verbs',
-                totalChapters: categoriesMap['actions']?.length || 0,
-                backgroundColor: '#D7F5D3',
-                icon: '👋',
-                signs: categoriesMap['actions'] || []
-            },
-            {
-                id: 'family',
-                title: 'Family',
-                description: 'Learn signs for family members',
-                totalChapters: categoriesMap['family']?.length || 0,
-                backgroundColor: '#FFCDD2',
-                icon: '👨‍👩‍👧‍👦',
-                signs: categoriesMap['family'] || []
-            },
-            {
-                id: 'deaf',
-                title: 'Deaf',
-                description: 'Learn about deaf culture and community',
-                totalChapters: categoriesMap['deaf']?.length || 0,
-                backgroundColor: '#FFE4B9',
-                icon: '👋',
-                signs: categoriesMap['deaf'] || []
-            },
-            {
-                id: 'numbers',
-                title: 'Numbers',
-                description: 'Learn to sign numbers',
-                totalChapters: categoriesMap['numbers']?.length || 0,
-                backgroundColor: '#B2EBF2',
-                icon: '🧮',
-                signs: categoriesMap['numbers'] || []
-            },
-            {
-                id: 'colors',
-                title: 'Colours',
-                description: 'Learn to sign colors',
-                totalChapters: categoriesMap['colors']?.length || 0,
-                backgroundColor: '#FFECB3',
-                icon: '🎨',
-                signs: categoriesMap['colors'] || []
-            }
-        ];
-
-        console.log("Organized courses:", courses.map(c => ({ id: c.id, title: c.title, signsCount: c.signs.length })));
         setCoursesData(courses);
     };
 
@@ -386,9 +169,115 @@ export const VideoProvider = ({ children }) => {
         };
     };
 
-    // Helper functions to access the video dataset
+    // Improved findSignForPhrase function with CloudinaryUtils and multi-language support
+    const findSignForPhrase = (phrase) => {
+        if (!phrase || phrase.trim() === '') return null;
+
+        const searchPhrase = phrase.toLowerCase().trim();
+
+        // Try to find an exact match first
+        let sign = signsData.find(sign => {
+            const signWord = sign.word ? sign.word.toLowerCase() : '';
+            return signWord === searchPhrase ||
+                (sign.sinhalaTranslit && sign.sinhalaTranslit.toLowerCase() === searchPhrase) ||
+                (sign.tamilTranslit && sign.tamilTranslit.toLowerCase() === searchPhrase);
+        });
+
+        // Validate the sign has a valid videoUrl before returning
+        if (sign && sign.videoUrl && typeof sign.videoUrl === 'string') {
+            return sign;
+        } else if (sign) {
+            // Try to update the URL using CloudinaryUtils
+            sign.videoUrl = CloudinaryUtils.getSignVideoUrl(phrase);
+            if (sign.videoUrl) return sign;
+            return null;
+        }
+
+        // If no exact match, try partial match
+        sign = signsData.find(sign => {
+            if (!sign.word) return false;  // Skip if the sign doesn't have a word property
+
+            const signWord = sign.word.toLowerCase();
+            // Check if the search phrase contains the sign word or vice versa
+            return (signWord.includes(searchPhrase) || searchPhrase.includes(signWord)) &&
+                sign.videoUrl && typeof sign.videoUrl === 'string';
+        });
+
+        if (sign) {
+            return sign;
+        }
+
+        // If no match found in the database, try to dynamically generate a sign with URL
+        const videoUrl = CloudinaryUtils.getSignVideoUrl(phrase);
+        if (videoUrl) {
+            // Create a temporary sign object
+            return {
+                word: phrase,
+                videoUrl: videoUrl,
+                thumbnailUrl: CloudinaryUtils.getSignThumbnailUrl(phrase),
+                category: 'generated',
+                signId: `${searchPhrase.replace(/\s+/g, '-')}-gen`
+            };
+        }
+
+        return null;
+    };
+
+    // Improved getSignVideoByWord function with CloudinaryUtils and multi-language support
     const getSignVideoByWord = (word) => {
-        return signsData.find(sign => sign.word.toLowerCase() === word.toLowerCase());
+        if (!word || word.trim() === '') return null;
+
+        const searchWord = word.toLowerCase().trim();
+
+        // Try to find an exact match first (case insensitive)
+        let sign = signsData.find(sign => {
+            if (!sign.word) return false;
+
+            return sign.word.toLowerCase() === searchWord ||
+                (sign.sinhalaTranslit && sign.sinhalaTranslit.toLowerCase() === searchWord) ||
+                (sign.tamilTranslit && sign.tamilTranslit.toLowerCase() === searchWord);
+        });
+
+        // Verify the sign has a valid videoUrl
+        if (sign && sign.videoUrl && typeof sign.videoUrl === 'string') {
+            return sign;
+        } else if (sign) {
+            // Try to update the URL using CloudinaryUtils
+            sign.videoUrl = CloudinaryUtils.getSignVideoUrl(word);
+            if (sign.videoUrl) return sign;
+        }
+
+        // If exact match failed or had no videoUrl, try a more flexible match
+        sign = signsData.find(sign => {
+            if (!sign.word) return false;
+
+            const signWord = sign.word.toLowerCase();
+            return (
+                // Word is contained in the sign (like "you" in "thank you")
+                (signWord.includes(searchWord) || searchWord.includes(signWord)) &&
+                // Must have a valid videoUrl
+                sign.videoUrl && typeof sign.videoUrl === 'string'
+            );
+        });
+
+        if (sign) {
+            return sign;
+        }
+
+        // If still no match found, dynamically generate a sign with URL
+        const videoUrl = CloudinaryUtils.getSignVideoUrl(word);
+        if (videoUrl) {
+            // Create a temporary sign object
+            return {
+                word: word,
+                videoUrl: videoUrl,
+                thumbnailUrl: CloudinaryUtils.getSignThumbnailUrl(word),
+                category: 'generated',
+                signId: `${searchWord.replace(/\s+/g, '-')}-gen`
+            };
+        }
+
+        return null;
     };
 
     const getSignsByCategory = (category) => {
@@ -401,6 +290,12 @@ export const VideoProvider = ({ children }) => {
         await AsyncStorage.removeItem('userProgress');
     };
 
+    // Clear the failed URL cache (for testing or when videos are updated)
+    const clearFailedUrlCache = async () => {
+        setFailedVideoUrls({});
+        await AsyncStorage.removeItem('failedVideoUrls');
+    };
+
     return (
         <VideoContext.Provider
             value={{
@@ -409,11 +304,15 @@ export const VideoProvider = ({ children }) => {
                 isLoading,
                 error,
                 userProgress,
+                failedVideoUrls,
                 getSignVideoByWord,
                 getSignsByCategory,
                 markSignAsCompleted,
                 getCourseProgress,
-                resetAllProgress
+                resetAllProgress,
+                recordFailedVideoUrl,
+                clearFailedUrlCache,
+                findSignForPhrase
             }}
         >
             {children}
