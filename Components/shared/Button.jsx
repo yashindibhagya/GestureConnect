@@ -7,15 +7,16 @@ export default function Button({ text, type = 'fill', onPress, loading }) {
   return (
     <TouchableOpacity
       onPress={onPress}
-      disabled={loading} 
+      disabled={loading}
       style={{
-        padding: 15,
-        width: '80%',
+        padding: 6,
+        width: '70%',
+        height: 35,
         borderRadius: 30,
         backgroundColor: type === 'fill' ? '#F7B316' : '#fff',
         borderWidth: type === 'outline' ? 2 : 0,
         borderColor: '#F7B316',
-        alignItems: 'center',
+        alignSelf: 'center',
         justifyContent: 'center',
         opacity: loading ? 0.7 : 1,
       }}
@@ -25,10 +26,10 @@ export default function Button({ text, type = 'fill', onPress, loading }) {
       ) : (
         <Text
           style={{
-            color: type === 'fill' ? '#fff' : '#000000',
-            fontWeight: '600',
+            color: type === 'fill' ? '#fff' : '#F7B316',
+            fontWeight: '400',
             textAlign: 'center',
-            fontSize: 18,
+            fontSize: 14,
           }}
         >
           {typeof text === 'string' ? text : JSON.stringify(text)}

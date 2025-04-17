@@ -1,0 +1,208 @@
+[
+    {
+        "signId": "walk-001",
+        "word": "walk",
+        "sinhalaWord": [
+            "ඇවිදින්න",
+            "ඇවිදිනවා",
+            "ඇවිද ගියා"
+        ],
+        "sinhalaTranslit": [
+            "awidinna",
+            "awidinawa",
+            "awida giya"
+        ],
+        "category": "actions",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742842177/walk_bcq5mo.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/what.jpg",
+        "relatedSigns": [
+            "Walking",
+            "walked"
+        ]
+    },
+    {
+        "signId": "drink-001",
+        "word": "drink",
+        "sinhalaWord": [
+            "බොන්න",
+            "බොනවා ",
+            "බිව්වා "
+        ],
+        "sinhalaTranslit": [
+            "bonna",
+            "bonawa",
+            "biwwa"
+        ],
+        "category": "actions",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742842177/drink_vwdbfb.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/what.jpg",
+        "relatedSigns": [
+            "Drinking",
+            "Drank"
+        ]
+    },
+    {
+        "signId": "help-001",
+        "word": "help",
+        "sinhalaWord": [
+            "උදව්",
+            "ප්‍රයෝජනවත්",
+            "උදව්ව",
+            "උදව් කරන්න"
+        ],
+        "sinhalaTranslit": [
+            "udaw",
+            "prayojanawath",
+            "udawwa",
+            "udaw karanna"
+        ],
+        "category": "actions",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742842176/help_l1w8wz.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/what.jpg",
+        "relatedSigns": [
+            "helpful"
+        ]
+    },
+    {
+        "signId": "sleep-001",
+        "word": "sleep",
+        "sinhalaWord": [
+            "නින්ද",
+            "නිදාගැනීම",
+            "නිදිමත"
+        ],
+        "sinhalaTranslit": [
+            "ninda",
+            "nidaganeema",
+            "nidimatha"
+        ],
+        "category": "actions",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742842175/sleep_i9jivc.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/what.jpg",
+        "relatedSigns": [
+            "sleepy",
+            "sleeping"
+        ]
+    },
+    {
+        "signId": "run-001",
+        "word": "run",
+        "sinhalaWord": [
+            "දුවන්න",
+            "දුවනවා",
+            "දිව්වා"
+        ],
+        "sinhalaTranslit": [
+            "duwanna",
+            "duwanawa",
+            "diwwa"
+        ],
+        "category": "actions",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742842175/run_gtfylx.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/what.jpg",
+        "relatedSigns": [
+            "running",
+            "ran"
+        ]
+    },
+    {
+        "signId": "work-001",
+        "word": "work",
+        "sinhalaWord": [
+            "කාර්යය",
+            "වැඩකරනවා",
+            "වැඩකළා"
+        ],
+        "sinhalaTranslit": [
+            "karyaya",
+            "wadakaranawa",
+            "wadakala"
+        ],
+        "category": "actions",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742842175/work_juzfjh.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/what.jpg",
+        "relatedSigns": [
+            "working",
+            "worked"
+        ]
+    },
+    {
+        "signId": "eat-001",
+        "word": "eat",
+        "sinhalaWord": [
+            "කන්න",
+            "කනවා",
+            "කෑවද "
+        ],
+        "sinhalaTranslit": [
+            "kanna",
+            "kanawa",
+            "kaawada"
+        ],
+        "category": "actions",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742842175/eat_y1snzo.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/what.jpg",
+        "relatedSigns": [
+            "Eating",
+            "Ate",
+            "Did you eat?"
+        ]
+    },
+    {
+        "signId": "ask-001",
+        "word": "ask",
+        "sinhalaWord": [
+            "අහන්න",
+            "ඇහුවා",
+            "අසමින්"
+        ],
+        "sinhalaTranslit": [
+            "ahanna",
+            "ahuwa",
+            "asamin"
+        ],
+        "category": "actions",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742842176/ask_dbffaf.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/what.jpg",
+        "relatedSigns": [
+            "Asked",
+            "Asking"
+        ]
+    },
+    {
+        "signId": "play-001",
+        "word": "play",
+        "sinhalaWord": "සෙල්ලම් කරන්න",
+        "sinhalaTranslit": [
+            "sellam karanna",
+            "sellam karanawa"
+        ],
+        "category": "actions",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742842175/play_kcj18t.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/what.jpg",
+        "relatedSigns": [
+            "Playing",
+            "Played"
+        ]
+    },
+    {
+        "signId": "read-001",
+        "word": "read",
+        "sinhalaWord": [
+            "කියවන්න",
+            "කියවීම",
+            "කියවමින්"
+        ],
+        "sinhalaTranslit": [
+            "kiyawanna",
+            "kiyaweema",
+            "kiyawamin"
+        ],
+        "category": "actions",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1742842174/read_qyv1la.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/what.jpg",
+        "relatedSigns": [
+            "Reading"
+        ]
+    }
+]
