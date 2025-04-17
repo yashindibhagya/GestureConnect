@@ -22,11 +22,11 @@ export default function Learning() {
   // Debug logging to see available courses when component mounts
   useEffect(() => {
     if (coursesData && coursesData.length > 0) {
-      console.log("Learning: Available courses:", coursesData.map(c => ({
+      coursesData.map(c => ({
         id: c.id,
         title: c.title,
         signsCount: c.signs?.length || 0
-      })));
+      }));
     }
   }, [coursesData]);
 
@@ -60,8 +60,8 @@ export default function Learning() {
   // Handle course card press - Navigate to course detail page with the course data
   const handleCoursePress = (course) => {
     // Log what we're doing
-    console.log(`Learning: Navigating to ${course.title} course with ID: ${course.id}`);
-    console.log(`Learning: This course has ${course.signs?.length || 0} signs`);
+    //console.log(`Learning: Navigating to ${course.title} course with ID: ${course.id}`);
+    //console.log(`Learning: This course has ${course.signs?.length || 0} signs`);
 
     // Make sure the course has signs
     if (!course.signs || course.signs.length === 0) {
@@ -72,7 +72,7 @@ export default function Learning() {
       // Navigate to the course detail page
       router.push(`/learning/${course.id}`);
     } catch (error) {
-      console.error("Learning: Navigation error:", error);
+      //console.error("Learning: Navigation error:", error);
       // Fallback navigation if the above fails
       router.push({
         pathname: '/learning/[id]',
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    padding: 16,
+    padding: 25,
   },
   loadingContainer: {
     flex: 1,

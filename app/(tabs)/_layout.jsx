@@ -19,6 +19,9 @@ export default function _layout() {
           tabBarActiveTintColor: "#074D4E", // Active icon color
           tabBarInactiveTintColor: "#074D4E", // Inactive icon color
           tabBarHideOnKeyboard: true,
+          //animation: 'default',
+          detachPreviousScreen: true,
+          presentation: 'transparentModal'
         }}
       >
         <Tabs.Screen
@@ -135,13 +138,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#074D4E", // Dark green
     justifyContent: "center",
     alignItems: "center",
-    top: -20, // Floating effect
+    top: -10, // Floating effect
     shadowColor: "#000",
     //shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
+    //shadowOpacity: 0.3,
+    //shadowRadius: 5,
     alignSelf: "center",
   },
+
   middleButtonActive: {
     backgroundColor: "#056363", // Slightly different shade when active
   },

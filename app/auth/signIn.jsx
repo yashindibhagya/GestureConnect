@@ -68,16 +68,18 @@ export default function SignIn() {
       const user = userCredential.user;
 
       console.log("User signed in:", user);
-      router.replace("/(tabs)/home"); // Navigate immediately after sign-in
 
-      // Fetch user details in the background
-      getUserDetail(user.uid);
+      // Fetch user details BEFORE navigation
+      await getUserDetail(user.uid);
+
+      // Navigate after user details are loaded
+      router.replace("/(tabs)/home");
     } catch (e) {
       console.log("Sign-in error:", e.message);
       setLoading(false);
       ToastAndroid.show("Incorrect email or password", ToastAndroid.SHORT);
     }
-  };
+  }
 
   // Fetch user details
   const getUserDetail = async (uid) => {
