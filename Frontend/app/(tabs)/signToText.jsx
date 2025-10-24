@@ -16,7 +16,7 @@ import { StatusBar } from "expo-status-bar";
 import { AntDesign, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import Common from "../../Components/Container/Common";
 import Button from "../../Components/Shared/Button";
-import SignLanguageCameraWrapper from "../../Components/SignLanguageCameraWrapper";
+//import SignLanguageCameraWrapper from "../../Components/SignLanguageCameraWrapper";
 import * as FileSystem from 'expo-file-system';
 import { useRouter } from 'expo-router';
 
@@ -424,7 +424,7 @@ export default function SignToText() {
           </TouchableOpacity>
         </View>
 
-        {/* Camera always visible at the top  */}
+        {/* Camera always visible at the top 
         <View style={styles.cameraContainer}>
           <SignLanguageCameraWrapper
             onTranslationUpdate={handleTranslationUpdate}
@@ -434,13 +434,13 @@ export default function SignToText() {
             onStopRecording={handleStopRecording}
           />
 
-          {/* Recording timer overlay  */}
+          {/* Recording timer overlay
           {recordingInProgress && (
             <View style={styles.timerOverlay}>
               <Text style={styles.timerText}>Recording: {timeRemaining}s</Text>
             </View>
           )}
-        </View>
+        </View> */}
 
         {/* Translation textbox below camera */}
         <View style={styles.translationBoxContainer}>
