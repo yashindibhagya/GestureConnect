@@ -206,6 +206,10 @@ export default function TextToSign() {
 
     const [refreshing, setRefreshing] = useState(false);
 
+    // Continuous recording states
+    const [continuousRecording, setContinuousRecording] = useState(false);
+    const [isRecordingActive, setIsRecordingActive] = useState(false);
+
     const router = useRouter();
     const { getSignVideoByWord, isLoading, signsData, recordFailedVideoUrl, findSignForPhrase } = useContext(VideoContext);
     const videoRef = useRef(null);
@@ -564,7 +568,6 @@ export default function TextToSign() {
             // Remove common words
             translatedText = removeCommonWords(translatedText);
 
-            //console.log(`Translated: "${text}" → "${translatedText}"`);
             setTranslatedText(translatedText);
             setIsTransliterating(false);
             return translatedText;

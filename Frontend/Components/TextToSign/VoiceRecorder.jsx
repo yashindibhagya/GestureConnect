@@ -5,7 +5,7 @@ import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 
 // Custom hook for voice recording functionality
-const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
+const useVoiceRecorder = (onTranscriptionReceived, languageMode, continuousMode, onRecordingStateChange) => {
     const [recording, setRecording] = useState(null);
     const [isRecording, setIsRecording] = useState(false);
     const [recordingStatus, setRecordingStatus] = useState('idle');
@@ -16,8 +16,11 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
     const audioMonitorRef = useRef(null);
     const silenceTimerRef = useRef(null);
     const pulseAnim = useRef(new Animated.Value(1)).current;
+    const continuousRecordingRef = useRef(false);
 
-    // Base URL for your API (replace with your actual computer's IP address)
+    // IMPORTANT: Update this with your actual backend URL
+    // For local development, use your computer's local IP address
+    // Find it by running 'ipconfig' (Windows) or 'ifconfig' (Mac/Linux)
     const API_URL = 'http://192.168.1.100:5000/api/transcribe';
 
     // Get appropriate language code based on current language mode
@@ -29,6 +32,26 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
             default: return 'en-US';
         }
     };
+
+    // Update recording state to parent component
+    useEffect(() => {
+        if (onRecordingStateChange) {
+            onRecordingStateChange(isRecording);
+        }
+    }, [isRecording]);
+
+    // Handle continuous recording mode
+    useEffect(() => {
+        continuousRecordingRef.current = continuousMode;
+
+        if (continuousMode && hasPermission && !isRecording) {
+            // Start recording when continuous mode is enabled
+            startRecording();
+        } else if (!continuousMode && isRecording && continuousRecordingRef.current) {
+            // Stop recording when continuous mode is disabled
+            stopRecording();
+        }
+    }, [continuousMode, hasPermission]);
 
     // Initialize voice recording
     useEffect(() => {
@@ -42,9 +65,15 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
                         allowsRecordingIOS: true,
                         playsInSilentModeIOS: true,
                         staysActiveInBackground: false,
-                        interruptionModeIOS: 1, // DO_NOT_MIX
-                        interruptionModeAndroid: 1, // DO_NOT_MIX
+                        interruptionModeIOS: 1,
+                        interruptionModeAndroid: 1,
                     });
+                } else {
+                    Alert.alert(
+                        'Microphone Permission Required',
+                        'Please enable microphone access in your device settings to use voice recording.',
+                        [{ text: 'OK' }]
+                    );
                 }
             } catch (err) {
                 console.error('Failed to get recording permissions', err);
@@ -57,7 +86,7 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
         // Cleanup function
         return () => {
             if (recording) {
-                stopRecording();
+                recording.stopAndUnloadAsync().catch(console.error);
             }
             if (durationTimerRef.current) {
                 clearInterval(durationTimerRef.current);
@@ -69,7 +98,6 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
                 clearInterval(audioMonitorRef.current);
             }
         };
-        // eslint-disable-next-line
     }, []);
 
     // Animate the recording indicator
@@ -110,7 +138,10 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
     // Start recording
     const startRecording = async () => {
         if (!hasPermission) {
-            console.log('No recording permission');
+            Alert.alert(
+                'Permission Required',
+                'Please enable microphone access to use voice recording.'
+            );
             return;
         }
 
@@ -122,7 +153,7 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
                     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 }
             } catch (err) {
-                console.log('Haptics not available');
+                // Haptics not available, continue anyway
             }
 
             setRecordingStatus('preparing');
@@ -170,7 +201,13 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
 
             durationTimerRef.current = setInterval(() => {
                 setRecordingDuration(prev => {
-                    if (prev >= 30) {
+                    // In continuous mode, auto-stop and restart after segments
+                    if (continuousRecordingRef.current && prev >= 25) {
+                        // Stop current recording and process it
+                        stopRecording(true); // Pass true to indicate auto-restart
+                        return 0;
+                    } else if (!continuousRecordingRef.current && prev >= 30) {
+                        // In manual mode, stop at 30 seconds
                         stopRecording();
                         return 30;
                     }
@@ -178,12 +215,15 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
                 });
             }, 1000);
 
-            // Setup auto-stop after 2 seconds of silence
-            startSilenceDetection();
+            // Setup auto-stop after 3 seconds of silence (only in manual mode)
+            if (!continuousRecordingRef.current) {
+                startSilenceDetection();
+            }
 
         } catch (err) {
             console.error('Failed to start recording', err);
             setRecordingStatus('idle');
+            setIsRecording(false);
             Alert.alert('Recording Error', `Couldn't start recording: ${err.message}`);
         }
     };
@@ -201,12 +241,11 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
                     if (status && status.metering !== undefined) {
                         const level = Math.max(0, (status.metering + 100) / 100);
                         setAudioLevel(level);
-                        if (level > 0.1) {
+
+                        // Reset silence timer if there's audio activity (only in manual mode)
+                        if (level > 0.15 && !continuousRecordingRef.current) {
                             resetSilenceDetection();
                         }
-                    } else {
-                        const simulatedLevel = Math.random() * 0.7 + 0.1;
-                        setAudioLevel(simulatedLevel);
                     }
                 } catch (err) {
                     console.log('Error monitoring audio levels:', err);
@@ -215,7 +254,7 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
         }, 200);
     };
 
-    // Start silence detection
+    // Start silence detection (only for manual mode)
     const startSilenceDetection = () => {
         resetSilenceDetection();
     };
@@ -225,30 +264,37 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
         if (silenceTimerRef.current) {
             clearTimeout(silenceTimerRef.current);
         }
-        silenceTimerRef.current = setTimeout(() => {
-            if (isRecording && recordingDuration >= 2) {
-                stopRecording();
-            }
-        }, 2000);
+
+        // Only auto-stop on silence in manual mode
+        if (!continuousRecordingRef.current) {
+            silenceTimerRef.current = setTimeout(() => {
+                if (isRecording && recordingDuration >= 2) {
+                    stopRecording();
+                }
+            }, 3000); // 3 seconds of silence
+        }
     };
 
     // Stop recording
-    const stopRecording = async () => {
+    const stopRecording = async (autoRestart = false) => {
         if (!recording) return;
 
         try {
+            // Haptic feedback
             try {
                 if (Platform.OS === 'ios') {
                     const Haptics = require('expo-haptics');
                     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 }
             } catch (err) {
-                console.log('Haptics not available');
+                // Haptics not available
             }
 
+            const wasRecording = isRecording;
             setIsRecording(false);
             setRecordingStatus('processing');
 
+            // Clear all timers
             if (durationTimerRef.current) {
                 clearInterval(durationTimerRef.current);
                 durationTimerRef.current = null;
@@ -262,27 +308,51 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
                 audioMonitorRef.current = null;
             }
 
+            // Stop and get the recording URI
             await recording.stopAndUnloadAsync();
             const uri = recording.getURI();
+            setRecording(null);
 
-            processRecording(uri);
+            // Process the recording
+            if (uri && wasRecording) {
+                await processRecording(uri);
+            }
+
+            // Auto-restart if in continuous mode
+            if (autoRestart && continuousRecordingRef.current) {
+                // Small delay before restarting
+                setTimeout(() => {
+                    if (continuousRecordingRef.current) {
+                        startRecording();
+                    }
+                }, 500);
+            }
 
         } catch (err) {
             console.error('Error stopping recording', err);
             setRecordingStatus('idle');
-        } finally {
             setRecording(null);
+            setIsRecording(false);
         }
     };
 
-    // Process the recording with the backend API and AssemblyAI
+    // Process the recording with the backend API
     const processRecording = async (uri) => {
         setRecordingStatus('processing');
 
         try {
             // Check if the recording exists
             const fileInfo = await FileSystem.getInfoAsync(uri);
-            if (!fileInfo.exists) throw new Error('Recording file not found');
+            if (!fileInfo.exists) {
+                throw new Error('Recording file not found');
+            }
+
+            // Check file size (minimum 1KB to ensure we have audio)
+            if (fileInfo.size < 1000) {
+                console.log('Recording too short, skipping transcription');
+                setRecordingStatus('idle');
+                return;
+            }
 
             // Prepare form data
             const formData = new FormData();
@@ -293,9 +363,9 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
             });
             formData.append('language', getLanguageCode());
 
-            console.log(`Attempting to send audio to ${API_URL}...`);
+            console.log(`Sending audio to ${API_URL}...`);
 
-            // Use a longer timeout (AssemblyAI can be slow)
+            // Use a timeout for the request
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 seconds
 
@@ -304,34 +374,52 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
                 response = await fetch(API_URL, {
                     method: 'POST',
                     body: formData,
-                    signal: controller.signal
+                    signal: controller.signal,
+                    headers: {
+                        'Accept': 'application/json',
+                    }
                 });
             } finally {
                 clearTimeout(timeoutId);
             }
 
             if (!response.ok) {
-                throw new Error(`Server responded with ${response.status}`);
+                const errorText = await response.text().catch(() => 'Unknown error');
+                throw new Error(`Server error (${response.status}): ${errorText}`);
             }
 
             const data = await response.json();
 
-            if (data && data.text) {
+            if (data && data.text && data.text.trim()) {
                 console.log('Transcription received:', data.text);
-                if (onTranscriptionReceived) onTranscriptionReceived(data.text);
+                if (onTranscriptionReceived) {
+                    onTranscriptionReceived(data.text);
+                }
             } else {
-                throw new Error('No transcription text received from server');
+                console.log('No speech detected in recording');
             }
+
         } catch (err) {
             console.error('Error processing recording:', err);
 
-            let message = 'Unable to reach transcription service. Please check:';
-            message += '\n- Is your backend running?';
-            message += '\n- Is your phone and computer on the same WiFi?';
-            message += '\n- Can you access /health from your phone browser?';
-            message += `\n\nError: ${err.message}`;
+            // Only show error alert if not in continuous mode
+            if (!continuousRecordingRef.current) {
+                let message = 'Unable to transcribe audio. ';
 
-            Alert.alert('Transcription Error', message, [{ text: 'OK' }]);
+                if (err.name === 'AbortError') {
+                    message += 'Request timed out. Please try again.';
+                } else if (err.message.includes('Network request failed')) {
+                    message = 'Cannot reach transcription service.\n\n';
+                    message += 'Please check:\n';
+                    message += '• Your backend server is running\n';
+                    message += '• Your phone and computer are on the same WiFi\n';
+                    message += `• The API URL is correct: ${API_URL}`;
+                } else {
+                    message += err.message;
+                }
+
+                Alert.alert('Transcription Error', message, [{ text: 'OK' }]);
+            }
         } finally {
             setRecordingStatus('idle');
         }
@@ -350,7 +438,12 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode) => {
 };
 
 // Voice Recorder Component
-const VoiceRecorder = ({ onTranscriptionReceived, languageMode }) => {
+const VoiceRecorder = ({
+    onTranscriptionReceived,
+    languageMode,
+    continuousMode = false,
+    onRecordingStateChange
+}) => {
     const {
         isRecording,
         recordingStatus,
@@ -360,11 +453,18 @@ const VoiceRecorder = ({ onTranscriptionReceived, languageMode }) => {
         pulseAnim,
         startRecording,
         stopRecording,
-    } = useVoiceRecorder(onTranscriptionReceived, languageMode);
+    } = useVoiceRecorder(onTranscriptionReceived, languageMode, continuousMode, onRecordingStateChange);
 
     // Request permission if not granted
     const requestPermission = async () => {
         const { status } = await Audio.requestPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert(
+                'Permission Denied',
+                'Microphone access is required for voice recording. Please enable it in your device settings.',
+                [{ text: 'OK' }]
+            );
+        }
         return status === 'granted';
     };
 
@@ -387,6 +487,39 @@ const VoiceRecorder = ({ onTranscriptionReceived, languageMode }) => {
         return 10 + (audioLevel * 15);
     };
 
+    // In continuous mode, don't show the button - recording indicator is always visible
+    if (continuousMode) {
+        if (recordingStatus === 'processing') {
+            return (
+                <View style={styles.recordingStatusContainer}>
+                    <ActivityIndicator size="small" color="#4C9EFF" />
+                    <Text style={styles.recordingStatusText}>Processing...</Text>
+                </View>
+            );
+        }
+
+        if (isRecording) {
+            return (
+                <View style={styles.continuousRecordingContainer}>
+                    <Animated.View
+                        style={[
+                            styles.recordingDot,
+                            {
+                                transform: [{ scale: pulseAnim }],
+                                width: getDotSize(),
+                                height: getDotSize(),
+                            }
+                        ]}
+                    />
+                    <Text style={styles.continuousRecordingText}>Listening...</Text>
+                </View>
+            );
+        }
+
+        return null;
+    }
+
+    // Manual mode UI
     if (!hasPermission && recordingStatus === 'idle') {
         return (
             <TouchableOpacity
@@ -394,7 +527,6 @@ const VoiceRecorder = ({ onTranscriptionReceived, languageMode }) => {
                 onPress={requestPermission}
             >
                 <MaterialIcons name="mic-off" size={24} color="#D32F2F" />
-                <Text style={styles.micPermissionText}>Enable Microphone</Text>
             </TouchableOpacity>
         );
     }
@@ -412,7 +544,7 @@ const VoiceRecorder = ({ onTranscriptionReceived, languageMode }) => {
         return (
             <View style={styles.recordingStatusContainer}>
                 <ActivityIndicator size="small" color="#4C9EFF" />
-                <Text style={styles.recordingStatusText}>Transcribing speech...</Text>
+                <Text style={styles.recordingStatusText}>Processing...</Text>
             </View>
         );
     }
@@ -441,52 +573,45 @@ const VoiceRecorder = ({ onTranscriptionReceived, languageMode }) => {
                     ]}>
                         {Math.floor(recordingDuration / 60).toString().padStart(2, '0')}:
                         {(recordingDuration % 60).toString().padStart(2, '0')}
-                        {isTimeRunningOut && ` (${remainingTime}s left)`}
                     </Text>
                 </View>
                 <TouchableOpacity
                     style={styles.stopRecordingButton}
-                    onPress={stopRecording}
+                    onPress={() => stopRecording(false)}
                 >
-                    <FontAwesome name="stop" size={20} color="white" />
+                    <FontAwesome name="stop" size={16} color="white" />
                 </TouchableOpacity>
             </View>
         );
     }
 
     return (
-        <View style={styles.micButtonContainer}>
-            <TouchableOpacity
-                style={[
-                    styles.micButton,
-                    {
-                        borderColor:
-                            languageMode === 'english' ? '#FF9800' :
-                                languageMode === 'sinhala' ? '#4C9EFF' :
-                                    '#9C27B0'
-                    }
-                ]}
-                onPress={startRecording}
-            >
-                <MaterialIcons
-                    name="mic"
-                    size={24}
-                    color={
+        <TouchableOpacity
+            style={[
+                styles.micButton,
+                {
+                    borderColor:
                         languageMode === 'english' ? '#FF9800' :
                             languageMode === 'sinhala' ? '#4C9EFF' :
                                 '#9C27B0'
-                    }
-                />
-            </TouchableOpacity>
-            <Text style={styles.micButtonTooltip}>{getLanguageTooltip()}</Text>
-        </View>
+                }
+            ]}
+            onPress={startRecording}
+        >
+            <MaterialIcons
+                name="mic"
+                size={24}
+                color={
+                    languageMode === 'english' ? '#FF9800' :
+                        languageMode === 'sinhala' ? '#4C9EFF' :
+                            '#9C27B0'
+                }
+            />
+        </TouchableOpacity>
     );
 };
 
 const styles = StyleSheet.create({
-    micButtonContainer: {
-        alignItems: 'center',
-    },
     micButton: {
         width: 50,
         height: 50,
@@ -495,13 +620,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#155658',
         alignSelf: 'flex-start',
-    },
-    micButtonTooltip: {
-        fontSize: 12,
-        color: '#666',
-        marginTop: 4,
     },
     micPermissionButton: {
         width: 50,
@@ -514,12 +633,6 @@ const styles = StyleSheet.create({
         borderColor: '#D32F2F',
         alignSelf: 'flex-start',
     },
-    micPermissionText: {
-        fontSize: 10,
-        color: '#D32F2F',
-        textAlign: 'center',
-        marginTop: 4,
-    },
     recordingContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -528,7 +641,21 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         paddingHorizontal: 12,
         paddingVertical: 6,
-        width: 130,
+        minWidth: 130,
+    },
+    continuousRecordingContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#E8F5E9',
+        borderRadius: 20,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+    },
+    continuousRecordingText: {
+        color: '#2E7D32',
+        marginLeft: 8,
+        fontSize: 14,
+        fontWeight: '500',
     },
     recordingIndicator: {
         flexDirection: 'row',
