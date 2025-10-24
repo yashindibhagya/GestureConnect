@@ -1316,10 +1316,10 @@ export default function TextToSign() {
                         >
                             <Text style={styles.languageToggleText}>
                                 {languageMode === 'sinhala'
-                                    ? 'Sinhala → English'
+                                    ? 'සිං → ENG'
                                     : languageMode === 'tamil'
-                                        ? 'Tamil → English'
-                                        : 'English'}
+                                        ? 'தமிழ் → ENG'
+                                        : 'ENG'}
                             </Text>
                         </TouchableOpacity>
                     </View>
