@@ -284,6 +284,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderBottomWidth: 1,
         borderBottomColor: '#EEEEEE',
+        marginTop: 50
     },
     backButton: {
         padding: 4,

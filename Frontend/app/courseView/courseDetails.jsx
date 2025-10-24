@@ -170,7 +170,23 @@ export default function CourseDetailsView() {
                     styles.courseBanner,
                     { backgroundColor: '#155658' }
                 ]}>
-                    <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+                    <TouchableOpacity 
+                        style={styles.backButton} 
+                        onPress={() => {
+                            try {
+                                if (router.canGoBack()) {
+                                    router.back();
+                                } else {
+                                    // Fallback to home if there's no previous route
+                                    router.replace('/(tabs)/home');
+                                }
+                            } catch (error) {
+                                console.error('Navigation error:', error);
+                                router.replace('/(tabs)/home');
+                            }
+                        }}
+                        activeOpacity={0.7}
+                    >
                         <MaterialIcons name="arrow-back" size={24} color="#fff" />
                     </TouchableOpacity>
 
