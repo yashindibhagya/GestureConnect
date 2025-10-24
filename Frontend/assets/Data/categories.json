@@ -1,0 +1,62 @@
+[
+    {
+        "id": "alphabet",
+        "title": "Alphabet",
+        "description": "Learn to sign the alphabet from A to Z",
+        "icon": "📚"
+    },
+    {
+        "id": "sinhala-alphabet",
+        "title": "Sinhala Alphabet",
+        "description": "Learn to sign the Sinhala alphabet vowels",
+        "icon": "🇱🇰"
+    },
+    {
+        "id": "wh-questions",
+        "title": "WH Questions",
+        "description": "Learn question words like What, Where, Who, When, Why",
+        "icon": "🦄"
+    },
+    {
+        "id": "conversation",
+        "title": "Starting a conversation",
+        "description": "Learn basic phrases to start a conversation",
+        "icon": "💬"
+    },
+    {
+        "id": "actions",
+        "title": "Actions",
+        "description": "Learn signs for common actions and verbs",
+        "icon": "👋"
+    },
+    {
+        "id": "people",
+        "title": "Family",
+        "description": "Learn signs for family members",
+        "icon": "👨‍👩‍👧‍👦"
+    },
+    {
+        "id": "deaf",
+        "title": "Deaf",
+        "description": "Learn about deaf culture and community",
+        "icon": "👋"
+    },
+    {
+        "id": "numbers",
+        "title": "Numbers",
+        "description": "Learn to sign numbers",
+        "icon": "🧮"
+    },
+    {
+        "id": "colors",
+        "title": "Colours",
+        "description": "Learn to sign colors",
+        "icon": "🎨"
+    },
+    {
+        "id": "animal",
+        "title": "Animals",
+        "description": "Learn to sign colors",
+        "icon": "🐴"
+    }
+]

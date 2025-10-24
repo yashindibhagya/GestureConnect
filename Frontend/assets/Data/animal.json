@@ -1,0 +1,74 @@
+[
+    {
+        "signId": "bird-001",
+        "word": "Bird",
+        "category": "animal",
+        "sinhalaWord": "කුරුල්ලා",
+        "sinhalaTranslit": "kurulla",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1745421604/bird_k1fpqe.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/a.jpg"
+    },
+    {
+        "signId": "cat-001",
+        "word": "Cat",
+        "category": "animal",
+        "sinhalaWord": "පූසා",
+        "sinhalaTranslit": "poosa",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1745421604/cat_nntzse.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/a.jpg"
+    },
+    {
+        "signId": "dog-001",
+        "word": "Dog",
+        "category": "animal",
+        "sinhalaWord": "බල්ලා",
+        "sinhalaTranslit": "balla",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1745421603/dog_rzqnsl.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/a.jpg"
+    },
+    {
+        "signId": "fish-001",
+        "word": "Fish",
+        "category": "animal",
+        "sinhalaWord": "මාළුවා",
+        "sinhalaTranslit": "maaluwa",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1745421604/fish_ybffjy.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/a.jpg"
+    },
+    {
+        "signId": "mouse-001",
+        "word": "Mouse",
+        "category": "animal",
+        "sinhalaWord": "මීයා",
+        "sinhalaTranslit": "meeyaa",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1745421604/mouse_so1snz.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/a.jpg"
+    },
+    {
+        "signId": "toad-001",
+        "word": "Toad",
+        "category": "animal",
+        "sinhalaWord": "මැඩියා",
+        "sinhalaTranslit": "madiya",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1745421603/frog_toad_skfmss.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/a.jpg"
+    },
+    {
+        "signId": "rabbit-001",
+        "word": "Rabbit",
+        "category": "animal",
+        "sinhalaWord": "හාවා",
+        "sinhalaTranslit": "haawa",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1745421603/rabbit_ixwk4b.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/a.jpg"
+    },
+    {
+        "signId": "snake-001",
+        "word": "Snake",
+        "category": "animal",
+        "sinhalaWord": "නයා",
+        "sinhalaTranslit": "nayaa",
+        "videoUrl": "https://res.cloudinary.com/dxjb5lepy/video/upload/v1745421603/snake_ejya5s.mp4",
+        "thumbnailUrl": "https://res.cloudinary.com/dxjb5lepy/image/upload/v1742374651/thumbnails/a.jpg"
+    }
+]
