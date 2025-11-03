@@ -1,0 +1,14 @@
+tensorflow
+numpy
+opencv-python
+mediapipe
+scikit-learn
+matplotlib
+seaborn
+fastapi
+uvicorn
+python-multipart
+pydantic
+tensorflowjs
+pillow
+requests
