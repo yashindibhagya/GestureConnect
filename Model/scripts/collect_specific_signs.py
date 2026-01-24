@@ -1,0 +1,233 @@
+import os
+import cv2
+import numpy as np
+import mediapipe as mp
+import sys
+import time
+from datetime import datetime
+
+# Add the parent directory to the path so we can import from utils
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils.mediapipe_utils import mediapipe_detection, draw_styled_landmarks, extract_keypoints
+from utils.config import (
+    DATA_PATH, NUM_SEQUENCES, SEQUENCE_LENGTH,
+    MP_DETECTION_CONFIDENCE, MP_TRACKING_CONFIDENCE
+)
+
+# Define missing constants locally
+DYNAMIC_SIGNS = ["how", "what", "thankyou"]  # These signs involve movement
+VIDEO_FPS = 30
+VIDEO_EXTENSION = ".mp4"
+
+# Specific actions to collect data for
+SPECIFIC_ACTIONS = ["how", "what", "thankyou"]
+
+def setup_directories():
+    """Create directories for data collection"""
+    for action in SPECIFIC_ACTIONS:
+        action_dir = os.path.join(DATA_PATH, action)
+        if not os.path.exists(action_dir):
+            os.makedirs(action_dir)
+            print(f"Created directory: {action_dir}")
+            
+        for sequence in range(NUM_SEQUENCES):
+            sequence_dir = os.path.join(action_dir, str(sequence))
+            if not os.path.exists(sequence_dir):
+                os.makedirs(sequence_dir)
+
+def save_video(frames, action, sequence):
+    """Save a sequence of frames as a video file"""
+    if not frames:
+        return
+    
+    # Create video writer
+    video_path = os.path.join(DATA_PATH, action, str(sequence), f"video{VIDEO_EXTENSION}")
+    height, width = frames[0].shape[:2]
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(video_path, fourcc, VIDEO_FPS, (width, height))
+    
+    # Write frames to video
+    for frame in frames:
+        out.write(frame)
+    
+    out.release()
+    print(f"Saved video to {video_path}")
+
+def collect_data_for_specific_signs():
+    """Collect sign language data for specific signs using webcam"""
+    print("=== Sign Language Data Collection ===")
+    print(f"Collecting data for: {', '.join(SPECIFIC_ACTIONS)}")
+    print(f"Number of sequences per sign: {NUM_SEQUENCES}")
+    print(f"Frames per sequence: {SEQUENCE_LENGTH}")
+    print("Press 'q' during countdown to skip a sign")
+    print("Press 'ESC' to quit completely")
+    print("=" * 50)
+    
+    setup_directories()
+    
+    # Set up webcam
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    cap.set(cv2.CAP_PROP_FPS, VIDEO_FPS)
+    
+    # Initialize MediaPipe holistic model
+    with mp.solutions.holistic.Holistic(
+        min_detection_confidence=MP_DETECTION_CONFIDENCE,
+        min_tracking_confidence=MP_TRACKING_CONFIDENCE) as holistic:
+        
+        # Loop through each specific action
+        for action_idx, action in enumerate(SPECIFIC_ACTIONS):
+            is_dynamic = action in DYNAMIC_SIGNS
+            print(f"\n[{action_idx + 1}/{len(SPECIFIC_ACTIONS)}] Collecting data for '{action}' ({'dynamic' if is_dynamic else 'static'})")
+            
+            # Ask user if they want to collect this sign
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                
+                # Draw instructions
+                cv2.putText(frame, f"Ready to collect: '{action}'", (50, 100), 
+                          cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+                cv2.putText(frame, "Press SPACE to start, 'q' to skip, ESC to quit", (50, 150), 
+                          cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2, cv2.LINE_AA)
+                cv2.putText(frame, f"Type: {'Dynamic' if is_dynamic else 'Static'}", (50, 200),
+                          cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2, cv2.LINE_AA)
+                
+                cv2.imshow('Sign Language Data Collection', frame)
+                key = cv2.waitKey(1) & 0xFF
+                
+                if key == ord(' '):  # Space to start
+                    break
+                elif key == ord('q'):  # Skip this sign
+                    print(f"Skipped '{action}'")
+                    break
+                elif key == 27:  # ESC to quit
+                    print("Data collection cancelled by user")
+                    cap.release()
+                    cv2.destroyAllWindows()
+                    return
+            
+            if key == ord('q'):  # Skip this sign
+                continue
+            
+            # Loop through each video sequence
+            for sequence in range(NUM_SEQUENCES):
+                print(f"  Sequence {sequence+1}/{NUM_SEQUENCES}")
+                
+                # Countdown before starting
+                skip_sequence = False
+                for countdown in range(5, 0, -1):
+                    ret, frame = cap.read()
+                    if not ret:
+                        break
+                        
+                    # Draw countdown and instructions
+                    cv2.putText(frame, f"Starting in {countdown}...", (120, 200), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3, cv2.LINE_AA)
+                    cv2.putText(frame, f"Prepare to sign '{action}'", (15, 50), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2, cv2.LINE_AA)
+                    cv2.putText(frame, f"Sequence {sequence+1}/{NUM_SEQUENCES}", (15, 80),
+                              cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2, cv2.LINE_AA)
+                    cv2.putText(frame, f"Type: {'Dynamic' if is_dynamic else 'Static'}", (15, 110),
+                              cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2, cv2.LINE_AA)
+                    cv2.putText(frame, "Press 'q' to skip sequence", (15, 400), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                    
+                    # Show frame
+                    cv2.imshow('Sign Language Data Collection', frame)
+                    key = cv2.waitKey(1000) & 0xFF  # Wait 1 second
+                    
+                    if key == ord('q'):
+                        skip_sequence = True
+                        break
+                    elif key == 27:  # ESC
+                        print("Data collection cancelled by user")
+                        cap.release()
+                        cv2.destroyAllWindows()
+                        return
+                
+                if skip_sequence:
+                    print(f"    Skipped sequence {sequence+1}")
+                    continue
+                
+                # Collect sequence of frames
+                frames = []  # Store frames for video if dynamic
+                keypoints_sequence = []  # Store keypoints for both types
+                
+                print(f"    Recording {SEQUENCE_LENGTH} frames...")
+                for frame_num in range(SEQUENCE_LENGTH):
+                    ret, frame = cap.read()
+                    if not ret:
+                        break
+                    
+                    # Make detection
+                    image, results = mediapipe_detection(frame, holistic)
+                    
+                    # Draw landmarks
+                    image = draw_styled_landmarks(image, results)
+                    
+                    # Display info
+                    cv2.putText(image, f"RECORDING '{action}' ({frame_num+1}/{SEQUENCE_LENGTH})", (15, 30), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2, cv2.LINE_AA)
+                    cv2.putText(image, f"Sequence {sequence+1}/{NUM_SEQUENCES}", (15, 60),
+                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
+                    
+                    # Progress bar
+                    progress = int((frame_num + 1) / SEQUENCE_LENGTH * 400)
+                    cv2.rectangle(image, (15, 400), (415, 420), (100, 100, 100), -1)
+                    cv2.rectangle(image, (15, 400), (15 + progress, 420), (0, 255, 0), -1)
+                    
+                    # Show frame
+                    cv2.imshow('Sign Language Data Collection', image)
+                    
+                    # Extract and store keypoints
+                    keypoints = extract_keypoints(results)
+                    keypoints_sequence.append(keypoints)
+                    
+                    # Store frame if dynamic
+                    if is_dynamic:
+                        frames.append(frame)
+                    
+                    # Save keypoints
+                    npy_path = os.path.join(DATA_PATH, action, str(sequence), f"{frame_num}.npy")
+                    np.save(npy_path, keypoints)
+                    
+                    # Short delay to match reasonable FPS
+                    cv2.waitKey(33)  # ~30 FPS
+                
+                # Save video if dynamic
+                if is_dynamic and frames:
+                    save_video(frames, action, sequence)
+                
+                # Save sequence metadata
+                metadata = {
+                    'action': action,
+                    'sequence': sequence,
+                    'is_dynamic': is_dynamic,
+                    'timestamp': datetime.now().isoformat(),
+                    'fps': VIDEO_FPS,
+                    'frame_count': len(keypoints_sequence)
+                }
+                metadata_path = os.path.join(DATA_PATH, action, str(sequence), 'metadata.npy')
+                np.save(metadata_path, metadata)
+                
+                print(f"    Sequence {sequence+1} saved ({len(keypoints_sequence)} frames)")
+                
+                # Short break between sequences
+                time.sleep(1)
+    
+    # Release webcam
+    cap.release()
+    cv2.destroyAllWindows()
+    
+    print("\n" + "=" * 50)
+    print("Data collection complete!")
+    print(f"Collected data for: {', '.join(SPECIFIC_ACTIONS)}")
+    print("Next steps:")
+    print("1. Run 'python scripts/prepare_data.py' to process the data")
+    print("2. Run 'python scripts/train_model.py' to retrain the model")
+
+if __name__ == "__main__":
+    collect_data_for_specific_signs()

@@ -5,16 +5,115 @@ import mediapipe as mp
 from tensorflow.keras.models import load_model
 import sys
 import time
+from datetime import datetime
 
 # Add the parent directory to the path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.mediapipe_utils import mediapipe_detection, draw_styled_landmarks, extract_keypoints
-from utils.config import ACTIONS, SEQUENCE_LENGTH
+from utils.config import ACTIONS, SEQUENCE_LENGTH, PREDICTION_THRESHOLD
 
 # Define paths and constants
 MODELS_PATH = os.path.join('models')  # Path to saved models
 THRESHOLD = 0.7  # Confidence threshold for predictions
 MAX_DISPLAY_ACTIONS = 5  # Maximum number of actions to display
+
+def predict_from_sequence(sequence_buffer, model=None, min_frames_for_prediction=5, prediction_threshold=PREDICTION_THRESHOLD):
+    """
+    Predict the current action from a sequence buffer.
+
+    Args:
+        sequence_buffer: List of keypoint arrays.
+        model: Optional preloaded model instance.
+        min_frames_for_prediction: Minimum frames required to start predicting.
+        prediction_threshold: Confidence threshold for meets_threshold flag.
+
+    Returns:
+        dict: Prediction result compatible with API responses.
+    """
+    try:
+        if model is None:
+            model = load_sign_model()
+
+        if len(sequence_buffer) == 0:
+            return {
+                "action": "no_data",
+                "confidence": 0.0,
+                "all_probabilities": {},
+                "word_complete": False,
+                "buffer_length": 0,
+                "message": "No frames in buffer"
+            }
+
+        if len(sequence_buffer) < min_frames_for_prediction:
+            return {
+                "action": "initializing",
+                "confidence": 0.0,
+                "all_probabilities": {},
+                "buffer_length": len(sequence_buffer),
+                "required_length": min_frames_for_prediction,
+                "is_continuous": True
+            }
+
+        # Pad sequence if not enough frames for full model length
+        if len(sequence_buffer) < SEQUENCE_LENGTH:
+            last_frame = sequence_buffer[-1]
+            padding_needed = SEQUENCE_LENGTH - len(sequence_buffer)
+            sequence = sequence_buffer + [last_frame] * padding_needed
+        else:
+            sequence = sequence_buffer[-SEQUENCE_LENGTH:]
+
+        res = model.predict(np.expand_dims(sequence, axis=0), verbose=0)[0]
+
+        # Apply softmax for normalized probabilities
+        exp_res = np.exp(res - np.max(res))
+        softmax_res = exp_res / np.sum(exp_res)
+
+        # Top 3 predictions
+        top_indices = np.argsort(softmax_res)[-3:][::-1]
+        predicted_idx = top_indices[0]
+        confidence = float(softmax_res[predicted_idx])
+        predicted_action = ACTIONS[predicted_idx]
+
+        second_confidence = float(softmax_res[top_indices[1]]) if len(top_indices) > 1 else 0.0
+        confidence_gap = confidence - second_confidence
+
+        is_confident = confidence_gap > 0.10
+        is_very_confident = confidence_gap > 0.20
+
+        word_complete = False
+        if confidence >= 0.4 and is_confident:
+            word_complete = True
+        elif confidence >= 0.6:
+            word_complete = True
+
+        all_probs = {action: float(prob) for action, prob in zip(ACTIONS, softmax_res)}
+
+        return {
+            "action": predicted_action,
+            "confidence": confidence,
+            "all_probabilities": all_probs,
+            "meets_threshold": confidence >= prediction_threshold,
+            "is_confident": is_confident,
+            "is_very_confident": is_very_confident,
+            "confidence_gap": confidence_gap,
+            "word_complete": word_complete,
+            "frames_sufficient": len(sequence_buffer) >= min_frames_for_prediction,
+            "is_continuous": True,
+            "top_predictions": [
+                {"action": ACTIONS[idx], "confidence": float(softmax_res[idx])}
+                for idx in top_indices
+            ],
+            "timestamp": datetime.now().isoformat(),
+            "buffer_length": len(sequence_buffer)
+        }
+
+    except Exception as e:
+        return {
+            "action": "error",
+            "confidence": 0.0,
+            "all_probabilities": {},
+            "error": str(e)
+        }
 
 def load_sign_model(model_path=None):
     """
