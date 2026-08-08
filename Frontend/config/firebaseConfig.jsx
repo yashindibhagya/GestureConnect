@@ -1,6 +1,5 @@
 // Import the functions you need from the SDKs
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -29,14 +28,9 @@ export const auth = initializeAuth(app, {
 // Initialize Firestore
 export const db = getFirestore(app);
 
-// Initialize Analytics
-let analytics = null;
-try {
-    analytics = getAnalytics(app);
-} catch (_error) {
-    // Analytics might not be available in certain environments
-    console.log("Analytics initialization skipped");
-}
-export { analytics };
+// Analytics is intentionally not initialised here. getAnalytics() comes from the
+// Firebase *web* SDK and reaches for document.getElementsByTagName, which does not
+// exist in React Native — it rejects asynchronously, so a try/catch around it does
+// not help. Use @react-native-firebase/analytics (already a dependency) instead.
 
-export default { auth, db, storage, analytics };
+export default { auth, db, storage };
