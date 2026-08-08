@@ -6,7 +6,6 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
-    Image,
     SafeAreaView,
     StatusBar,
     RefreshControl,
@@ -14,8 +13,8 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { UserDetailContext } from "../../context/UserDetailContext";
-import { useVideo } from "../../context/VideoContext";
-import { doc, collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { VideoContext } from "../../context/VideoContext";
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { auth, db } from "../../config/firebaseConfig";
 import Common from "../../Components/Container/Common";
 import InProgressCourses from "../../Components/Home/InProgressCourses";
@@ -31,17 +30,12 @@ export default function Home() {
     const userDetailContext = useContext(UserDetailContext);
     const userDetail = userDetailContext?.userDetail || { name: "Friend" };
 
-    // Check if video context exists and provide fallbacks
-    let videoContext;
-    try {
-        videoContext = useVideo();
-    } catch (error) {
-        console.warn("Video context not available:", error.message);
-        videoContext = {
-            coursesData: [],
-            getCoursesWithProgress: () => []
-        };
-    }
+    // Read the context directly rather than via useVideo(), which throws outside a
+    // VideoProvider — a hook call in a try/catch breaks React's hook ordering.
+    const videoContext = useContext(VideoContext) ?? {
+        coursesData: [],
+        getCoursesWithProgress: () => []
+    };
 
     const { coursesData, getCoursesWithProgress } = videoContext;
 

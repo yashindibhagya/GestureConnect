@@ -13,13 +13,11 @@ import {
     StatusBar,
     Keyboard,
     Alert,
-    Animated
+    RefreshControl,
 } from 'react-native';
 import { Video } from 'expo-av';
 import { VideoContext } from '../../context/VideoContext';
-import * as FileSystem from 'expo-file-system';
-import { useRouter } from 'expo-router';
-import * as Speech from 'expo-speech';
+import * as FileSystem from 'expo-file-system/legacy';
 
 // Import our new VoiceRecorder component
 import VoiceRecorder from '../../Components/TextToSign/VoiceRecorder';
@@ -28,8 +26,6 @@ import VoiceRecorder from '../../Components/TextToSign/VoiceRecorder';
 import {
     translateSinhalaToEnglish,
     translateTamilToEnglish,
-    translateText,
-    LANGUAGES
 } from '../utils/translationApi';
 
 // Import the transliteration services
@@ -37,14 +33,12 @@ import { transliterateToSinhalaScript } from '../utils/sinhalaTransliteration';
 import { transliterateToTamilScript } from '../utils/TamilTransliteration';
 import Common from '../../Components/Container/Common';
 import Button from '../../Components/Shared/Button';
-import { MaterialIcons, Ionicons, FontAwesome } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 // Firebase imports
-import { doc, setDoc, collection, getDocs, deleteDoc, query, where, orderBy, limit, writeBatch } from 'firebase/firestore';
+import { doc, setDoc, collection, getDocs, deleteDoc, query, orderBy, limit, writeBatch } from 'firebase/firestore';
 import { auth, db } from '../../config/firebaseConfig';
 
-//refresh function
-import { RefreshControl } from 'react-native';
 
 // Define common words that typically don't have sign language videos
 const commonWordsWithoutSigns = [
@@ -210,7 +204,6 @@ export default function TextToSign() {
     const [continuousRecording, setContinuousRecording] = useState(false);
     const [isRecordingActive, setIsRecordingActive] = useState(false);
 
-    const router = useRouter();
     const { getSignVideoByWord, isLoading, signsData, recordFailedVideoUrl, findSignForPhrase } = useContext(VideoContext);
     const videoRef = useRef(null);
 
@@ -1610,7 +1603,7 @@ export default function TextToSign() {
                                                         Finger spelling: <Text style={{ fontWeight: '900' }}>{sign.word}</Text>
                                                     </Text>
                                                     <Text style={styles.letterCountText}>
-                                                        Letter {sign.letterPosition + 1} of {sign.nameLength} in "{fullName}"
+                                                        Letter {sign.letterPosition + 1} of {sign.nameLength} in &quot;{fullName}&quot;
                                                     </Text>
                                                 </View>
                                             );
@@ -1885,7 +1878,6 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 22,
         fontWeight: '900',
-        marginTop: Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0,
         color: '#333',
         marginTop: -20
     },

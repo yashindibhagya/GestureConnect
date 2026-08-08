@@ -6,7 +6,13 @@
  */
 
 // Import Gemini translation service
-import GeminiTranslationService from './GeminiTranslationService';
+import {
+    translateSinhalaToEnglish as geminiSinhalaToEnglish,
+    translateEnglishToSinhala as geminiEnglishToSinhala,
+    translateTamilToEnglish as geminiTamilToEnglish,
+    translateEnglishToTamil as geminiEnglishToTamil,
+    translateText as geminiTranslateText,
+} from './GeminiTranslationService';
 
 // Export the language constants
 export const LANGUAGES = {
@@ -21,7 +27,7 @@ export const LANGUAGES = {
  * @returns {Promise<string>} - The translated English text
  */
 export const translateSinhalaToEnglish = async (text) => {
-    return GeminiTranslationService.translateSinhalaToEnglish(text);
+    return geminiSinhalaToEnglish(text);
 };
 
 /**
@@ -30,7 +36,7 @@ export const translateSinhalaToEnglish = async (text) => {
  * @returns {Promise<string>} - The translated Sinhala text
  */
 export const translateEnglishToSinhala = async (text) => {
-    return GeminiTranslationService.translateEnglishToSinhala(text);
+    return geminiEnglishToSinhala(text);
 };
 
 /**
@@ -39,7 +45,7 @@ export const translateEnglishToSinhala = async (text) => {
  * @returns {Promise<string>} - The translated English text
  */
 export const translateTamilToEnglish = async (text) => {
-    return GeminiTranslationService.translateTamilToEnglish(text);
+    return geminiTamilToEnglish(text);
 };
 
 /**
@@ -48,7 +54,7 @@ export const translateTamilToEnglish = async (text) => {
  * @returns {Promise<string>} - The translated Tamil text
  */
 export const translateEnglishToTamil = async (text) => {
-    return GeminiTranslationService.translateEnglishToTamil(text);
+    return geminiEnglishToTamil(text);
 };
 
 /**
@@ -59,7 +65,7 @@ export const translateEnglishToTamil = async (text) => {
  * @returns {Promise<string>} - The translated text
  */
 export const translateText = async (text, sourceLanguage, targetLanguage) => {
-    return GeminiTranslationService.translateText(text, sourceLanguage, targetLanguage);
+    return geminiTranslateText(text, sourceLanguage, targetLanguage);
 };
 
 /**
@@ -121,8 +127,8 @@ export const offlineSinhalaToEnglishTranslation = (text) => {
         "mokakda": "what",
         "kawda": "who",
         "koheda": "where",
-        "aei": "why",
-        "kohomada": "how"
+        "aei": "why"
+        // "kohomada" is defined above as "how are you" — the greeting sense.
     };
 
     // Simple word-by-word translation

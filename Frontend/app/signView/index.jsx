@@ -6,17 +6,14 @@ import {
     TouchableOpacity,
     SafeAreaView,
     StatusBar,
-    useWindowDimensions,
     ActivityIndicator,
-    Platform
 } from 'react-native';
 import { Video } from 'expo-av';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function SignView() {
     const router = useRouter();
-    const { width, height } = useWindowDimensions();
     const { sign, category, index } = useLocalSearchParams();
 
     const videoRef = useRef(null);

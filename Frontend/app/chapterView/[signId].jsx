@@ -12,8 +12,8 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { arrayUnion, doc, updateDoc, getDoc } from 'firebase/firestore';
-import { db, auth } from '../../config/firebaseConfig';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../config/firebaseConfig';
 import SignVideoPlayer from '../../Components/Shared/SignVideoPlayer';
 import { useVideo } from '../../context/VideoContext';
 

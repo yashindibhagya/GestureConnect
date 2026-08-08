@@ -437,7 +437,7 @@ export default function Profile() {
                         {expanded.sendFeedback && (
                             <View style={styles.expandedContent}>
                                 <Text style={styles.feedbackLabel}>
-                                    We'd love to hear your thoughts on how we can improve the app!
+                                    We&apos;d love to hear your thoughts on how we can improve the app!
                                 </Text>
                                 <TextInput
                                     style={styles.feedbackInput}

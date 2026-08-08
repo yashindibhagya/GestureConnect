@@ -71,7 +71,7 @@ export default function OnboardingScreen3() {
 
                 <Text style={styles.description}>
                     Explore a variety of courses designed to help you learn sign language at your own pace.
-                    From alphabets to common phrases, we've got everything you need to get started.
+                    From alphabets to common phrases, we&apos;ve got everything you need to get started.
                 </Text>
 
                 <View style={styles.categoriesContainer}>

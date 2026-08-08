@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useRouter, Redirect } from "expo-router";
+import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, ActivityIndicator } from "react-native";
 

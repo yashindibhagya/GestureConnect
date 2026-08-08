@@ -8,7 +8,6 @@ import {
     ScrollView,
     ActivityIndicator,
     StatusBar,
-    Image,
     FlatList
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -25,7 +24,6 @@ export default function CourseDetailsView() {
 
     const [courseDetails, setCourseDetails] = useState(null);
     const [isLocalLoading, setIsLocalLoading] = useState(true);
-    const [selectedTab, setSelectedTab] = useState('courses');
     const [progress, setProgress] = useState({ completed: 0, total: 0, percentage: 0 });
 
     // Load course details

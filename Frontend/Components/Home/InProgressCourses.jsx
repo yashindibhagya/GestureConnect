@@ -57,7 +57,7 @@ const InProgressCourses = ({ courses }) => {
     if (courses.length === 0) {
         return (
             <Text style={styles.noProgressText}>
-                You haven't started any courses yet. Try one below!
+                You haven&apos;t started any courses yet. Try one below!
             </Text>
         );
     }

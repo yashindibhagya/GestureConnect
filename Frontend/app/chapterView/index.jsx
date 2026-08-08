@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Dimensions, useWindowDimensions, SafeAreaView, StatusBar, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions, SafeAreaView, StatusBar, ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Progress from 'react-native-progress';
@@ -13,7 +13,7 @@ export default function ChapterView() {
     const [currentPage, setCurrentPage] = useState(0); // Start from the first page
     const [loader, setLoader] = useState(false);
     const router = useRouter();
-    const { width, height } = useWindowDimensions();
+    const { width } = useWindowDimensions();
 
     // Convert content from object to array (if necessary)
     const contentArray = chapters?.content ? Object.values(chapters.content) : [];

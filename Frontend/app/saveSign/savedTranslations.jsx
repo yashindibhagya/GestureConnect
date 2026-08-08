@@ -11,12 +11,12 @@ import {
     TextInput
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { AntDesign, MaterialIcons, Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import Common from "../../Components/Container/Common";
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 // Firebase imports
-import { doc, setDoc, collection, getDocs, deleteDoc, query, where, orderBy, limit, writeBatch } from 'firebase/firestore';
+import { doc, setDoc, collection, getDocs, deleteDoc, writeBatch } from 'firebase/firestore';
 import { auth, db } from '../../config/firebaseConfig';
 
 export default function SavedTranslations() {

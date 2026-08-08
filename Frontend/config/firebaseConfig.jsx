@@ -33,7 +33,7 @@ export const db = getFirestore(app);
 let analytics = null;
 try {
     analytics = getAnalytics(app);
-} catch (error) {
+} catch (_error) {
     // Analytics might not be available in certain environments
     console.log("Analytics initialization skipped");
 }

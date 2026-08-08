@@ -6,7 +6,6 @@ import {
     Image,
     TextInput,
     TouchableOpacity,
-    ActivityIndicator,
     Alert,
     SafeAreaView,
     ScrollView,
@@ -158,7 +157,7 @@ export default function SignIn() {
 
                     {/* Create Account Link */}
                     <View style={styles.buttonContainer}>
-                        <Text>Don't have an account?</Text>
+                        <Text>Don&apos;t have an account?</Text>
                         <TouchableOpacity onPress={() => router.push("/auth/signUp")}>
                             <Text style={styles.signUpLink}>Create New Account</Text>
                         </TouchableOpacity>

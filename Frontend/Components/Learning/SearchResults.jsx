@@ -5,7 +5,6 @@ import {
     TouchableOpacity,
     StyleSheet,
     FlatList,
-    ScrollView
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from "@expo/vector-icons";
@@ -37,7 +36,7 @@ const SearchResults = ({ courses, searchQuery, onResultPress }) => {
             <View style={styles.emptyContainer}>
                 <MaterialIcons name="search-off" size={48} color="#666" />
                 <Text style={styles.emptyText}>
-                    No results found for "{searchQuery}"
+                    No results found for &quot;{searchQuery}&quot;
                 </Text>
                 <Text style={styles.emptySubtext}>
                     Try using different keywords or check your spelling

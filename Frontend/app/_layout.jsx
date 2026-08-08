@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Stack, useRouter, useSegments } from "expo-router";
+import { Stack, useSegments } from "expo-router";
 import { UserDetailProvider, useUserDetail } from "../context/UserDetailContext";
 import { VideoProvider } from "../context/VideoContext";
 import { StatusBar } from "expo-status-bar";
 // import { auth } from "../config/firebaseConfig";
 // import { onAuthStateChanged } from "firebase/auth";
-import { ActivityIndicator, View, Text } from "react-native";
 
 /**
  * AuthProvider component that handles authentication state and redirects
  */
 function AuthProvider({ children }) {
     const { userDetail, isLoading } = useUserDetail();
-    const router = useRouter();
     const segments = useSegments();
     const [initialized, setInitialized] = useState(false);
 

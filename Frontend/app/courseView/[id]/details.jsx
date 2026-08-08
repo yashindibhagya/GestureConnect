@@ -8,7 +8,6 @@ import {
     ScrollView,
     ActivityIndicator,
     StatusBar,
-    Image,
     FlatList
 } from 'react-native';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
@@ -41,7 +40,7 @@ export default function CourseDetailsView() {
                 if (!foundCourse && db) {
                     const courseDoc = await getDoc(doc(db, 'Courses', id));
                     if (courseDoc.exists()) {
-                        foundCourse = { ...courseDoc.data(), id: courseId };
+                        foundCourse = { ...courseDoc.data(), id };
                     }
                 }
 
@@ -275,7 +274,7 @@ export default function CourseDetailsView() {
                             {courseDetails.description || 'No description available.'}
                         </Text>
 
-                        <Text style={styles.infoTitle}>What You'll Learn</Text>
+                        <Text style={styles.infoTitle}>What You&apos;ll Learn</Text>
                         <View style={styles.learningPoints}>
                             <View style={styles.learningPoint}>
                                 <MaterialIcons name="check-circle" size={16} color="#4CAF50" />

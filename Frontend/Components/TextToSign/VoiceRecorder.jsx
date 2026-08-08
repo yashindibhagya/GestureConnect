@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Animated, Platform, Alert } from 'react-native';
 import { Audio } from 'expo-av';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 // Custom hook for voice recording functionality
 const useVoiceRecorder = (onTranscriptionReceived, languageMode, continuousMode, onRecordingStateChange) => {
@@ -152,7 +152,7 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode, continuousMode,
                     const Haptics = require('expo-haptics');
                     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 }
-            } catch (err) {
+            } catch (_err) {
                 // Haptics not available, continue anyway
             }
 
@@ -162,15 +162,15 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode, continuousMode,
             const recordingOptions = {
                 android: {
                     extension: '.m4a',
-                    outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
-                    audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
+                    outputFormat: Audio.AndroidOutputFormat.MPEG_4,
+                    audioEncoder: Audio.AndroidAudioEncoder.AAC,
                     sampleRate: 44100,
                     numberOfChannels: 1,
                     bitRate: 128000,
                 },
                 ios: {
                     extension: '.m4a',
-                    audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
+                    audioQuality: Audio.IOSAudioQuality.HIGH,
                     sampleRate: 44100,
                     numberOfChannels: 1,
                     bitRate: 128000,
@@ -286,7 +286,7 @@ const useVoiceRecorder = (onTranscriptionReceived, languageMode, continuousMode,
                     const Haptics = require('expo-haptics');
                     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 }
-            } catch (err) {
+            } catch (_err) {
                 // Haptics not available
             }
 

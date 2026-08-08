@@ -1,7 +1,11 @@
-tensorflow
-numpy
-opencv-python
-mediapipe
+# Pinned for Python 3.9 / macOS arm64. The three constraints that drive everything:
+#   - mediapipe >= 0.10.30 drops the legacy `mp.solutions` API that utils/mediapipe_utils.py uses
+#   - mediapipe 0.10.21 requires numpy < 2
+#   - opencv-python >= 4.12 requires numpy >= 2 on Python 3.9
+tensorflow==2.19.0
+numpy==1.26.4
+opencv-python==4.11.0.86
+mediapipe==0.10.21
 scikit-learn
 matplotlib
 seaborn
@@ -9,6 +13,12 @@ fastapi
 uvicorn
 python-multipart
 pydantic
-tensorflowjs
 pillow
 requests
+
+# tensorflowjs is not imported anywhere in this project. It pulls in
+# tensorflow-decision-forests/ydf, which demands protobuf >= 5.29.1 while
+# mediapipe 0.10.21 requires protobuf < 5 — an unresolvable conflict.
+# Re-enable only if you actually need to convert the Keras model to TF.js,
+# and do it in a separate throwaway venv.
+# tensorflowjs

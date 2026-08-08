@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const multer = require('multer');
 const axios = require('axios');
@@ -29,10 +31,16 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // AssemblyAI API configuration
+const ASSEMBLY_AI_API_KEY = process.env.ASSEMBLY_AI_API_KEY;
+
+if (!ASSEMBLY_AI_API_KEY) {
+    console.warn('ASSEMBLY_AI_API_KEY is not set — POST /api/transcribe will fail. See .env.example.');
+}
+
 const assemblyAI = {
     baseUrl: "https://api.assemblyai.com/v2",
     headers: {
-        authorization: "REDACTED_ASSEMBLYAI_KEY", // Your API key
+        authorization: ASSEMBLY_AI_API_KEY,
         "Content-Type": "application/json"
     }
 };
