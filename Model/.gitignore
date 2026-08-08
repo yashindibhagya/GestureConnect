@@ -1,0 +1,10 @@
+# Python virtual environment
+.venv/
+venv/
+
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+
+# Collected/processed training data (not tracked)
+data/

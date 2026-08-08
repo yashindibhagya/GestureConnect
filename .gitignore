@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Secrets — commit .env.example instead
+.env
+.env.local
+.env.*.local
+serviceAccountKey.json
+*-firebase-adminsdk-*.json
+
+# Expo / Metro
+.expo/
+dist/
+web-build/
+.metro-health-check*
+
+# Build & runtime output
+Backend/uploads/
+*.log
+
+# Editor / tooling
+.serena/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+
+# macOS
+.DS_Store
