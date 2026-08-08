@@ -20,8 +20,9 @@ import Common from "../../Components/Container/Common";
 import { useUserDetail } from "../../context/UserDetailContext";
 import {
     updateUserProfile,
-    changePassword,
-    logoutUser
+    // FIREBASE_AUTH_DISABLED — restore alongside sign in/sign up:
+    // changePassword,
+    // logoutUser
 } from "../../services/authService";
 import { auth } from "../../config/firebaseConfig";
 
@@ -121,58 +122,65 @@ export default function Profile() {
             return;
         }
 
-        setLoading(true);
-        try {
-            const user = auth.currentUser;
-            if (!user) {
-                throw new Error("Not logged in");
-            }
+        // FIREBASE_AUTH_DISABLED — changing a password needs a signed-in Firebase user.
+        Alert.alert("Unavailable", "Password change is disabled while sign in is turned off.");
 
-            await changePassword(user, formData.newPassword);
-
-            Alert.alert("Success", "Password changed successfully!");
-
-            // Clear password fields
-            setFormData({
-                ...formData,
-                newPassword: "",
-                confirmPassword: ""
-            });
-        } catch (error) {
-            console.error("Password change error:", error);
-
-            // Handle specific Firebase auth errors
-            if (error.code === 'auth/requires-recent-login') {
-                Alert.alert(
-                    "Authentication Required",
-                    "Please sign out and sign in again to change your password.",
-                    [
-                        { text: "OK" },
-                        {
-                            text: "Sign Out Now",
-                            onPress: handleLogout,
-                            style: "destructive"
-                        }
-                    ]
-                );
-            } else {
-                Alert.alert("Error", "Failed to change password.");
-            }
-        } finally {
-            setLoading(false);
-        }
+        // setLoading(true);
+        // try {
+        //     const user = auth.currentUser;
+        //     if (!user) {
+        //         throw new Error("Not logged in");
+        //     }
+        //
+        //     await changePassword(user, formData.newPassword);
+        //
+        //     Alert.alert("Success", "Password changed successfully!");
+        //
+        //     // Clear password fields
+        //     setFormData({
+        //         ...formData,
+        //         newPassword: "",
+        //         confirmPassword: ""
+        //     });
+        // } catch (error) {
+        //     console.error("Password change error:", error);
+        //
+        //     // Handle specific Firebase auth errors
+        //     if (error.code === 'auth/requires-recent-login') {
+        //         Alert.alert(
+        //             "Authentication Required",
+        //             "Please sign out and sign in again to change your password.",
+        //             [
+        //                 { text: "OK" },
+        //                 {
+        //                     text: "Sign Out Now",
+        //                     onPress: handleLogout,
+        //                     style: "destructive"
+        //                 }
+        //             ]
+        //         );
+        //     } else {
+        //         Alert.alert("Error", "Failed to change password.");
+        //     }
+        // } finally {
+        //     setLoading(false);
+        // }
     };
 
     // Logout and Redirect to Sign In
     const handleLogout = async () => {
-        try {
-            await logoutUser();
-            // Explicitly navigate to the welcome screen after logout
-            router.replace("/"); // Redirect to welcome screen
-        } catch (error) {
-            console.error("Logout error:", error);
-            Alert.alert("Error", "Failed to log out.");
-        }
+        // FIREBASE_AUTH_DISABLED — there is no session to end, so just go back to
+        // the welcome screen. Restore the block below with sign in/sign up.
+        router.replace("/");
+
+        // try {
+        //     await logoutUser();
+        //     // Explicitly navigate to the welcome screen after logout
+        //     router.replace("/"); // Redirect to welcome screen
+        // } catch (error) {
+        //     console.error("Logout error:", error);
+        //     Alert.alert("Error", "Failed to log out.");
+        // }
     };
 
     // Send Feedback

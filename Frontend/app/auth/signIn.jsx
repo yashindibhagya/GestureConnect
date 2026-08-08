@@ -14,7 +14,8 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
-import { loginUser, resetPassword } from "../../services/authService";
+// FIREBASE_AUTH_DISABLED — restore when re-enabling sign in:
+// import { loginUser, resetPassword } from "../../services/authService";
 import Button from "../../Components/Shared/Button";
 
 /**
@@ -41,29 +42,34 @@ export default function SignIn() {
 
         setLoading(true);
 
-        try {
-            // Attempt to sign in
-            await loginUser(email, password);
+        // FIREBASE_AUTH_DISABLED — go straight to the app without authenticating.
+        // Delete these two lines when restoring the block below.
+        setLoading(false);
+        router.replace("/(tabs)/home");
 
-            // On success, navigate to home (no need to manually navigate as the auth listener in index.jsx will handle it)
-        } catch (error) {
-            console.error("Login error:", error);
-
-            // Handle specific error codes
-            let errorMessage = "Failed to sign in. Please check your credentials and try again.";
-
-            if (error.code === 'auth/invalid-email') {
-                errorMessage = "Invalid email address.";
-            } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                errorMessage = "Incorrect email or password.";
-            } else if (error.code === 'auth/too-many-requests') {
-                errorMessage = "Too many failed sign in attempts. Please try again later.";
-            }
-
-            Alert.alert("Sign In Failed", errorMessage);
-        } finally {
-            setLoading(false);
-        }
+        // try {
+        //     // Attempt to sign in
+        //     await loginUser(email, password);
+        //
+        //     // On success, navigate to home (no need to manually navigate as the auth listener in index.jsx will handle it)
+        // } catch (error) {
+        //     console.error("Login error:", error);
+        //
+        //     // Handle specific error codes
+        //     let errorMessage = "Failed to sign in. Please check your credentials and try again.";
+        //
+        //     if (error.code === 'auth/invalid-email') {
+        //         errorMessage = "Invalid email address.";
+        //     } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        //         errorMessage = "Incorrect email or password.";
+        //     } else if (error.code === 'auth/too-many-requests') {
+        //         errorMessage = "Too many failed sign in attempts. Please try again later.";
+        //     }
+        //
+        //     Alert.alert("Sign In Failed", errorMessage);
+        // } finally {
+        //     setLoading(false);
+        // }
     };
 
     // Handle forgot password
@@ -73,24 +79,27 @@ export default function SignIn() {
             return;
         }
 
-        try {
-            await resetPassword(email.trim());
-            Alert.alert(
-                "Password Reset Email Sent",
-                "Check your email for instructions to reset your password"
-            );
-        } catch (error) {
-            console.error("Password reset error:", error);
+        // FIREBASE_AUTH_DISABLED — password reset needs Firebase Auth.
+        Alert.alert("Unavailable", "Password reset is disabled while sign in is turned off.");
 
-            let errorMessage = "Failed to send password reset email.";
-            if (error.code === 'auth/invalid-email') {
-                errorMessage = "Invalid email address.";
-            } else if (error.code === 'auth/user-not-found') {
-                errorMessage = "No account found with this email.";
-            }
-
-            Alert.alert("Error", errorMessage);
-        }
+        // try {
+        //     await resetPassword(email.trim());
+        //     Alert.alert(
+        //         "Password Reset Email Sent",
+        //         "Check your email for instructions to reset your password"
+        //     );
+        // } catch (error) {
+        //     console.error("Password reset error:", error);
+        //
+        //     let errorMessage = "Failed to send password reset email.";
+        //     if (error.code === 'auth/invalid-email') {
+        //         errorMessage = "Invalid email address.";
+        //     } else if (error.code === 'auth/user-not-found') {
+        //         errorMessage = "No account found with this email.";
+        //     }
+        //
+        //     Alert.alert("Error", errorMessage);
+        // }
     };
 
     return (

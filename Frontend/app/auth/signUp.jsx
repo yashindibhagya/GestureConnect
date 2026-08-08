@@ -14,7 +14,8 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
-import { registerUser } from "../../services/authService";
+// FIREBASE_AUTH_DISABLED — restore when re-enabling sign up:
+// import { registerUser } from "../../services/authService";
 import Button from "../../Components/Shared/Button";
 
 /**
@@ -52,39 +53,44 @@ export default function SignUp() {
 
         setLoading(true);
 
-        try {
-            // Register the user
-            await registerUser(email, password, name);
+        // FIREBASE_AUTH_DISABLED — no account is created; go straight to the app.
+        // Delete these two lines when restoring the block below.
+        setLoading(false);
+        router.replace("/(tabs)/home");
 
-            // Show success message and navigate to sign in
-            Alert.alert(
-                "Account Created",
-                "Your account has been successfully created!",
-                [
-                    {
-                        text: "Sign In Now",
-                        onPress: () => router.push("/auth/signIn")
-                    }
-                ]
-            );
-        } catch (error) {
-            console.error("Registration error:", error);
-
-            // Handle specific error codes
-            let errorMessage = "Failed to create account.";
-
-            if (error.code === 'auth/email-already-in-use') {
-                errorMessage = "This email is already in use. Please use a different email or sign in.";
-            } else if (error.code === 'auth/invalid-email') {
-                errorMessage = "Invalid email address.";
-            } else if (error.code === 'auth/weak-password') {
-                errorMessage = "Password is too weak. Please choose a stronger password.";
-            }
-
-            Alert.alert("Sign Up Failed", errorMessage);
-        } finally {
-            setLoading(false);
-        }
+        // try {
+        //     // Register the user
+        //     await registerUser(email, password, name);
+        //
+        //     // Show success message and navigate to sign in
+        //     Alert.alert(
+        //         "Account Created",
+        //         "Your account has been successfully created!",
+        //         [
+        //             {
+        //                 text: "Sign In Now",
+        //                 onPress: () => router.push("/auth/signIn")
+        //             }
+        //         ]
+        //     );
+        // } catch (error) {
+        //     console.error("Registration error:", error);
+        //
+        //     // Handle specific error codes
+        //     let errorMessage = "Failed to create account.";
+        //
+        //     if (error.code === 'auth/email-already-in-use') {
+        //         errorMessage = "This email is already in use. Please use a different email or sign in.";
+        //     } else if (error.code === 'auth/invalid-email') {
+        //         errorMessage = "Invalid email address.";
+        //     } else if (error.code === 'auth/weak-password') {
+        //         errorMessage = "Password is too weak. Please choose a stronger password.";
+        //     }
+        //
+        //     Alert.alert("Sign Up Failed", errorMessage);
+        // } finally {
+        //     setLoading(false);
+        // }
     };
 
     return (
