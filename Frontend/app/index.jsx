@@ -7,7 +7,15 @@ import {
     TouchableOpacity,
     StatusBar,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import {
+    scale,
+    verticalScale,
+    moderateScale,
+    fontSize,
+    contentContainer,
+} from "../utils/responsive";
 
 // Import the background illustration
 import frontImage from "../assets/images/Untitled.png";
@@ -17,36 +25,38 @@ export default function WelcomeScreen() {
 
     return (
         <View style={styles.container}>
-            <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-            {/* Background Image */}
+            <StatusBar backgroundColor="#155658" barStyle="light-content" />
+
+            {/* Background illustration, filling the screen behind the content */}
             <ImageBackground
                 source={frontImage}
                 style={styles.imageBackground}
                 resizeMode="contain"
             />
 
-            {/* Overlay Content */}
-            <View style={styles.content}>
-                <Text style={styles.title}>Welcome to</Text>
-                <Text style={styles.brand}>GestureConnect</Text>
+            {/* Overlay content, anchored to the bottom of the safe area so it
+                sits above the home indicator on every device height. */}
+            <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+                <View style={styles.content}>
+                    <Text style={styles.title}>Welcome to</Text>
+                    <Text style={styles.brand}>GestureConnect</Text>
 
-                {/* Get Started Button */}
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => router.push("/selectOption/optionSignUp")}
-                >
-                    <Text style={styles.buttonText}>Get Started</Text>
-                </TouchableOpacity>
+                    {/* Get Started Button */}
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => router.push("/selectOption/optionSignUp")}
+                    >
+                        <Text style={styles.buttonText}>Get Started</Text>
+                    </TouchableOpacity>
 
-                {/* Already have an account? (Link to Sign In Page) */}
-
-                <TouchableOpacity
-                    onPress={() => router.push("/selectOption/optionSignIn")}
-                >
-                    <Text style={styles.linkText}>Already have an account?</Text>
-                </TouchableOpacity>
-
-            </View>
+                    {/* Already have an account? (Link to Sign In Page) */}
+                    <TouchableOpacity
+                        onPress={() => router.push("/selectOption/optionSignIn")}
+                    >
+                        <Text style={styles.linkText}>Already have an account?</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
         </View>
     );
 }
@@ -56,59 +66,56 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#155658", // Dark green background
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 40
     },
     imageBackground: {
-        width: 600,
-        height: 900, // Reduce height so text is visible
-        position: "absolute", // Position image behind content
-        top: -70, // Stick it to the top
+        ...StyleSheet.absoluteFillObject,
+        // The illustration is top-weighted; bias it upward so the lower third
+        // stays clear for the text block.
+        bottom: "25%",
+    },
+    safeArea: {
+        flex: 1,
+        justifyContent: "flex-end",
     },
     content: {
-        position: "absolute", // Place content over the image
-        bottom: 100, // Move content up
-        width: "100%",
+        ...contentContainer,
         alignItems: "center",
-        top: 650,
+        paddingHorizontal: scale(20),
+        paddingBottom: verticalScale(60),
     },
     title: {
-        fontSize: 22,
+        fontSize: fontSize(22),
         color: "#fff",
         fontWeight: "400",
-        top: -40,
     },
     brand: {
-        fontSize: 32,
+        fontSize: fontSize(32),
         fontWeight: "900",
         color: "#fff",
-        top: -45,
+        textAlign: "center",
     },
     button: {
         backgroundColor: "#F5A623", // Yellow button color
-        paddingVertical: 14,
-        paddingHorizontal: 40,
-        borderRadius: 30,
-        marginTop: 20,
+        paddingVertical: verticalScale(14),
+        paddingHorizontal: scale(40),
+        borderRadius: moderateScale(30),
+        marginTop: verticalScale(24),
         width: "80%",
         alignItems: "center",
-        top: -60,
     },
     buttonText: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: "600",
         color: "#fff",
     },
     linkText: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: "#C0C0C0",
-        marginTop: 10,
+        marginTop: verticalScale(14),
         textAlign: "center",
-        top: -60,
     },
     signInText: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: "#C0C0C0",
         textDecorationLine: "underline", // Underline only "Sign In"
         fontWeight: "bold", // Make it stand out

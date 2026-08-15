@@ -17,6 +17,15 @@ import { MaterialIcons } from "@expo/vector-icons";
 // FIREBASE_AUTH_DISABLED — restore when re-enabling sign up:
 // import { registerUser } from "../../services/authService";
 import Button from "../../Components/Shared/Button";
+import {
+    SCREEN_WIDTH,
+    contentContainer,
+    fontSize,
+    hp,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
 
 /**
  * Sign Up screen for creating a new account
@@ -106,7 +115,7 @@ export default function SignUp() {
                 >
                     {/* Back Button */}
                     <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-                        <MaterialIcons name="arrow-back" size={20} color="black" />
+                        <MaterialIcons name="arrow-back" size={moderateScale(20)} color="black" />
                     </TouchableOpacity>
 
                     {/* Logo */}
@@ -177,7 +186,6 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: "#D0F3DA",
-        marginTop: 25
     },
     keyboardAvoidingView: {
         flex: 1,
@@ -186,64 +194,66 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     contentContainer: {
+        ...contentContainer,
         flexGrow: 1,
         alignItems: "center",
-        padding: 25,
+        padding: moderateScale(25),
     },
     logo: {
-        width: 100,
-        height: 100,
-        marginTop: 80,
-        marginBottom: 20,
+        width: moderateScale(100),
+        height: moderateScale(100),
+        marginTop: verticalScale(80),
+        marginBottom: verticalScale(20),
     },
     heading: {
         textAlign: "center",
-        fontSize: 30,
+        fontSize: fontSize(30),
         fontWeight: "bold",
-        marginBottom: 10,
+        marginBottom: verticalScale(10),
         color: "#155658",
     },
     subHeading: {
         textAlign: "center",
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: "#555",
-        marginBottom: 20,
+        marginBottom: verticalScale(20),
     },
     textInput: {
         width: "90%",
-        padding: 15,
-        fontSize: 16,
-        marginTop: 10,
+        padding: moderateScale(15),
+        fontSize: fontSize(16),
+        marginTop: verticalScale(10),
         borderBottomWidth: 1,
         borderBottomColor: "#555",
         backgroundColor: "rgba(255,255,255,0.4)",
-        borderRadius: 5,
+        borderRadius: moderateScale(5),
     },
     button: {
-        marginTop: 20,
-        marginBottom: 20,
+        marginTop: verticalScale(20),
+        marginBottom: verticalScale(20),
     },
     buttonContainer: {
         flexDirection: "row",
-        marginTop: 10,
+        marginTop: verticalScale(10),
     },
     signInLink: {
         color: "#155658",
         fontWeight: "bold",
-        marginLeft: 5,
+        marginLeft: scale(5),
     },
     lowerLeaves: {
-        //top: 10,
-        height: 300,
+        width: SCREEN_WIDTH,
+        height: hp(30),
+        resizeMode: "cover",
         opacity: 0.4,
     },
     backButton: {
         position: "absolute",
-        top: 20,
-        left: 10,
-        padding: 10,
+        top: verticalScale(20),
+        left: scale(10),
+        padding: moderateScale(10),
         backgroundColor: "#fff",
-        borderRadius: 30,
+        borderRadius: moderateScale(30),
         zIndex: 1,
     },
 });

@@ -5,14 +5,21 @@ import {
     StyleSheet,
     Image,
     TouchableOpacity,
-    Dimensions,
+    ScrollView,
     Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const { width } = Dimensions.get("window");
+import {
+    SCREEN_WIDTH,
+    scale,
+    verticalScale,
+    moderateScale,
+    fontSize,
+    hp,
+    contentContainer,
+} from "../../utils/responsive";
 
 /**
  * First onboarding screen for new users
@@ -49,8 +56,13 @@ export default function OnboardingScreen1() {
                 style={styles.upperLeaves}
             />
 
-            {/* Main content */}
-            <View style={styles.contentContainer}>
+            {/* Main content. Scrolls only when it has to — the centred layout
+                is preserved on any screen tall enough to fit it. */}
+            <ScrollView
+                style={styles.scroll}
+                contentContainerStyle={styles.contentContainer}
+                showsVerticalScrollIndicator={false}
+            >
                 <Image
                     source={require("../../assets/images/gesture.png")}
                     style={styles.logo}
@@ -74,7 +86,7 @@ export default function OnboardingScreen1() {
                         </Text>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
 
             {/* Navigation buttons */}
             <View style={styles.navigationContainer}>
@@ -117,53 +129,59 @@ const styles = StyleSheet.create({
     },
     upperLeaves: {
         position: "absolute",
-        top: -70,
-        width: width,
-        height: 300,
+        top: verticalScale(-70),
+        width: SCREEN_WIDTH,
+        height: hp(30),
         resizeMode: "cover",
         transform: [{ rotate: "180deg" }],
         opacity: 0.4,
     },
     lowerLeaves: {
         position: "absolute",
-        bottom: -70,
-        width: width,
-        height: 250,
+        bottom: verticalScale(-70),
+        width: SCREEN_WIDTH,
+        height: hp(25),
         resizeMode: "cover",
         opacity: 0.4,
     },
-    contentContainer: {
+    scroll: {
         flex: 1,
+    },
+    contentContainer: {
+        ...contentContainer,
+        flexGrow: 1,
         alignItems: "center",
         justifyContent: "center",
-        paddingHorizontal: 30,
+        paddingHorizontal: scale(30),
+        paddingVertical: verticalScale(20),
     },
     logo: {
-        width: 150,
-        height: 150,
-        marginBottom: 30,
+        width: moderateScale(150),
+        height: moderateScale(150),
+        marginBottom: verticalScale(30),
+        resizeMode: "contain",
     },
     title: {
-        fontSize: 28,
+        fontSize: fontSize(28),
         fontWeight: "bold",
         color: "#155658",
         textAlign: "center",
-        marginBottom: 20,
+        marginBottom: verticalScale(20),
     },
     description: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: "#444",
         textAlign: "center",
-        lineHeight: 24,
-        marginBottom: 40,
+        lineHeight: fontSize(24),
+        marginBottom: verticalScale(40),
     },
     featureContainer: {
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: "white",
-        borderRadius: 16,
-        padding: 20,
-        marginBottom: 20,
+        borderRadius: moderateScale(16),
+        padding: moderateScale(20),
+        marginBottom: verticalScale(20),
         width: "100%",
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
@@ -172,69 +190,70 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     featureIconContainer: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
+        width: moderateScale(60),
+        height: moderateScale(60),
+        borderRadius: moderateScale(30),
         backgroundColor: "#FFECB3",
         justifyContent: "center",
         alignItems: "center",
-        marginRight: 20,
+        marginRight: scale(20),
     },
     featureIcon: {
-        fontSize: 30,
+        fontSize: fontSize(30),
     },
     featureTextContainer: {
         flex: 1,
     },
     featureTitle: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: "bold",
         color: "#155658",
-        marginBottom: 5,
+        marginBottom: verticalScale(5),
     },
     featureText: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: "#666",
-        lineHeight: 20,
+        lineHeight: fontSize(20),
     },
     navigationContainer: {
+        ...contentContainer,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingHorizontal: 20,
-        paddingBottom: 40,
+        paddingHorizontal: scale(20),
+        paddingBottom: verticalScale(40),
     },
     skipButton: {
-        padding: 10,
+        padding: moderateScale(10),
     },
     skipButtonText: {
         color: "#155658",
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: "500",
     },
     indicatorsContainer: {
         flexDirection: "row",
     },
     indicator: {
-        width: 10,
-        height: 10,
-        borderRadius: 5,
+        width: moderateScale(10),
+        height: moderateScale(10),
+        borderRadius: moderateScale(5),
         backgroundColor: "#BBDFC8",
-        marginHorizontal: 5,
+        marginHorizontal: scale(5),
     },
     activeIndicator: {
         backgroundColor: "#155658",
-        width: 20,
+        width: moderateScale(20),
     },
     nextButton: {
         backgroundColor: "#F5A623",
-        paddingVertical: 12,
-        paddingHorizontal: 25,
-        borderRadius: 25,
+        paddingVertical: verticalScale(12),
+        paddingHorizontal: scale(25),
+        borderRadius: moderateScale(25),
     },
     nextButtonText: {
         color: "white",
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: "bold",
     },
 });

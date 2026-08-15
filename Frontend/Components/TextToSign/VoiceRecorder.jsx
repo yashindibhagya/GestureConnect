@@ -3,6 +3,12 @@ import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Animated, 
 import { Audio } from 'expo-av';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system/legacy';
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
 
 // Custom hook for voice recording functionality
 const useVoiceRecorder = (onTranscriptionReceived, languageMode, continuousMode, onRecordingStateChange) => {
@@ -526,7 +532,7 @@ const VoiceRecorder = ({
                 style={styles.micPermissionButton}
                 onPress={requestPermission}
             >
-                <MaterialIcons name="mic-off" size={24} color="#D32F2F" />
+                <MaterialIcons name="mic-off" size={moderateScale(24)} color="#D32F2F" />
             </TouchableOpacity>
         );
     }
@@ -579,7 +585,7 @@ const VoiceRecorder = ({
                     style={styles.stopRecordingButton}
                     onPress={() => stopRecording(false)}
                 >
-                    <FontAwesome name="stop" size={16} color="white" />
+                    <FontAwesome name="stop" size={moderateScale(16)} color="white" />
                 </TouchableOpacity>
             </View>
         );
@@ -600,7 +606,7 @@ const VoiceRecorder = ({
         >
             <MaterialIcons
                 name="mic"
-                size={24}
+                size={moderateScale(24)}
                 color={
                     languageMode === 'english' ? '#FF9800' :
                         languageMode === 'sinhala' ? '#4C9EFF' :
@@ -613,9 +619,9 @@ const VoiceRecorder = ({
 
 const styles = StyleSheet.create({
     micButton: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+        width: moderateScale(50),
+        height: moderateScale(50),
+        borderRadius: moderateScale(25),
         backgroundColor: '#fff',
         justifyContent: 'center',
         alignItems: 'center',
@@ -623,9 +629,9 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
     },
     micPermissionButton: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+        width: moderateScale(50),
+        height: moderateScale(50),
+        borderRadius: moderateScale(25),
         backgroundColor: '#FFEBEE',
         justifyContent: 'center',
         alignItems: 'center',
@@ -638,23 +644,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         backgroundColor: '#FFEBEE',
-        borderRadius: 25,
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        minWidth: 130,
+        borderRadius: moderateScale(25),
+        paddingHorizontal: scale(12),
+        paddingVertical: verticalScale(6),
+        minWidth: scale(130),
     },
     continuousRecordingContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#E8F5E9',
-        borderRadius: 20,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
+        borderRadius: moderateScale(20),
+        paddingHorizontal: scale(12),
+        paddingVertical: verticalScale(8),
     },
     continuousRecordingText: {
         color: '#2E7D32',
-        marginLeft: 8,
-        fontSize: 14,
+        marginLeft: scale(8),
+        fontSize: fontSize(14),
         fontWeight: '500',
     },
     recordingIndicator: {
@@ -662,17 +668,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     recordingDot: {
-        width: 10,
-        height: 10,
-        borderRadius: 5,
+        width: moderateScale(10),
+        height: moderateScale(10),
+        borderRadius: moderateScale(5),
         backgroundColor: '#FF3B30',
-        marginRight: 8,
+        marginRight: scale(8),
     },
     recordingDotWarning: {
         backgroundColor: '#FFC107',
     },
     recordingTime: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: '#333',
     },
     recordingTimeWarning: {
@@ -680,9 +686,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     stopRecordingButton: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
+        width: moderateScale(30),
+        height: moderateScale(30),
+        borderRadius: moderateScale(15),
         backgroundColor: '#FF3B30',
         justifyContent: 'center',
         alignItems: 'center',
@@ -691,15 +697,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#E3F2FD',
-        borderRadius: 20,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        maxWidth: 170,
+        borderRadius: moderateScale(20),
+        paddingHorizontal: scale(12),
+        paddingVertical: verticalScale(8),
+        maxWidth: scale(170),
     },
     recordingStatusText: {
         color: '#1976D2',
-        marginLeft: 8,
-        fontSize: 14,
+        marginLeft: scale(8),
+        fontSize: fontSize(14),
     },
 });
 

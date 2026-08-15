@@ -7,6 +7,12 @@ import Button from '../../Components/Shared/Button';
 import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../config/firebaseConfig';
 import { MaterialIcons } from '@expo/vector-icons';
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
 
 export default function ChapterView() {
     const { chapterParams, docId, chapterIndex } = useLocalSearchParams();
@@ -59,7 +65,7 @@ export default function ChapterView() {
             <View style={styles.header}>
                 <MaterialIcons
                     name="arrow-back"
-                    size={24}
+                    size={moderateScale(24)}
                     color="#333"
                     onPress={() => router.back()}
                     style={styles.backButton}
@@ -122,7 +128,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     container: {
-        padding: 15,
+        padding: moderateScale(15),
         backgroundColor: '#fff',
         flex: 1,
         alignSelf: 'center',
@@ -130,18 +136,18 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        paddingHorizontal: scale(16),
+        paddingVertical: verticalScale(12),
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
     },
     backButton: {
-        padding: 4,
+        padding: moderateScale(4),
     },
     headerTitle: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: 'bold',
-        marginLeft: 16,
+        marginLeft: scale(16),
         flex: 1,
     },
     contentScroll: {
@@ -150,34 +156,34 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         position: 'absolute',
-        bottom: 15,
+        bottom: verticalScale(15),
         width: '100%',
-        left: 15,
+        left: scale(15),
     },
     topicContainer: {
-        marginTop: 20,
+        marginTop: verticalScale(20),
     },
     topicText: {
         fontWeight: 'bold',
-        fontSize: 25,
+        fontSize: fontSize(25),
     },
     explanationText: {
-        fontSize: 18,
-        marginTop: 15,
+        fontSize: fontSize(18),
+        marginTop: verticalScale(15),
     },
     codeText: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         backgroundColor: '#3c0061',
         color: '#fff',
-        padding: 15,
-        marginTop: 15,
-        borderRadius: 5,
+        padding: moderateScale(15),
+        marginTop: verticalScale(15),
+        borderRadius: moderateScale(5),
     },
     exampleText: {
-        fontSize: 18,
-        marginTop: 15,
-        padding: 15,
+        fontSize: fontSize(18),
+        marginTop: verticalScale(15),
+        padding: moderateScale(15),
         backgroundColor: '#f0f0f0',
-        borderRadius: 5,
+        borderRadius: moderateScale(5),
     },
 });

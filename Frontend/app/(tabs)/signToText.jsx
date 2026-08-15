@@ -22,6 +22,13 @@ import signLanguageService from "../../services/signLanguageService";
 // Firebase imports
 import { doc, setDoc, collection, getDocs, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../../config/firebaseConfig";
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
+import { tabBarClearance } from "../../constants/navigation";
 
 const STORAGE_FILE = "savedSignTranslations.json";
 const MAX_RECENT = 10;
@@ -286,7 +293,7 @@ export default function SignToText() {
         contentContainerStyle={[
           styles.scrollContent,
           // Clear the floating tab bar and the home indicator.
-          { paddingBottom: 100 + insets.bottom },
+          { paddingBottom: tabBarClearance(insets.bottom) },
         ]}
         showsVerticalScrollIndicator={false}
       >
@@ -302,7 +309,7 @@ export default function SignToText() {
             style={styles.savedButton}
             onPress={() => router.push("/saveSign/savedTranslations")}
           >
-            <MaterialIcons name="history" size={20} color="#155658" />
+            <MaterialIcons name="history" size={moderateScale(20)} color="#155658" />
             <Text style={styles.savedButtonText}>View Saved Translations</Text>
           </TouchableOpacity>
         </View>
@@ -329,7 +336,7 @@ export default function SignToText() {
         >
           <MaterialIcons
             name={isSigning ? "stop" : "videocam"}
-            size={22}
+            size={moderateScale(22)}
             color="#fff"
           />
           <Text style={styles.primaryButtonText}>
@@ -343,7 +350,7 @@ export default function SignToText() {
 
         {serverError && (
           <View style={styles.errorBanner}>
-            <MaterialIcons name="error-outline" size={18} color="#8a1c1c" />
+            <MaterialIcons name="error-outline" size={moderateScale(18)} color="#8a1c1c" />
             <Text style={styles.errorBannerText}>{serverError}</Text>
           </View>
         )}
@@ -391,7 +398,7 @@ export default function SignToText() {
             >
               <MaterialIcons
                 name="backspace"
-                size={18}
+                size={moderateScale(18)}
                 color={!hasText ? "#aaa" : "#155658"}
               />
             </TouchableOpacity>
@@ -406,7 +413,7 @@ export default function SignToText() {
             >
               <MaterialIcons
                 name={isSaved ? "check" : "save"}
-                size={18}
+                size={moderateScale(18)}
                 color={!hasText || isSaved ? "#aaa" : "#155658"}
               />
               <Text
@@ -426,7 +433,7 @@ export default function SignToText() {
             >
               <MaterialIcons
                 name="share"
-                size={18}
+                size={moderateScale(18)}
                 color={!hasText ? "#aaa" : "#155658"}
               />
             </TouchableOpacity>
@@ -468,7 +475,7 @@ export default function SignToText() {
                 onPress={() => router.push("/saveSign/savedTranslations")}
               >
                 <Text style={styles.viewAllText}>View All</Text>
-                <AntDesign name="right" size={14} color="#155658" />
+                <AntDesign name="right" size={moderateScale(14)} color="#155658" />
               </TouchableOpacity>
             </View>
 
@@ -480,7 +487,7 @@ export default function SignToText() {
                     style={styles.deleteButton}
                     onPress={() => deleteTranslation(index)}
                   >
-                    <AntDesign name="close" size={16} color="#999" />
+                    <AntDesign name="close" size={moderateScale(16)} color="#999" />
                   </TouchableOpacity>
                 </View>
                 <Text style={styles.historyText}>{item.text}</Text>
@@ -491,7 +498,7 @@ export default function SignToText() {
       </ScrollView>
 
       {showUndoToast && (
-        <View style={[styles.undoToast, { bottom: 90 + insets.bottom }]}>
+        <View style={[styles.undoToast, { bottom: tabBarClearance(insets.bottom) }]}>
           <Text style={styles.undoToastText}>Translation deleted</Text>
           <TouchableOpacity onPress={undoDelete}>
             <Text style={styles.undoButton}>UNDO</Text>
@@ -509,54 +516,54 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 25,
+    paddingHorizontal: scale(25),
   },
   headerContainer: {
-    paddingTop: 10,
-    marginBottom: 16,
+    paddingTop: verticalScale(10),
+    marginBottom: verticalScale(16),
   },
   title: {
-    fontSize: 24,
+    fontSize: fontSize(24),
     fontWeight: "bold",
     color: "#155658",
-    marginBottom: 8,
+    marginBottom: verticalScale(8),
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: fontSize(15),
     color: "#666",
-    marginBottom: 10,
+    marginBottom: verticalScale(10),
   },
   savedButton: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#E0F2F1",
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 20,
+    paddingVertical: verticalScale(8),
+    paddingHorizontal: scale(15),
+    borderRadius: moderateScale(20),
     alignSelf: "flex-start",
-    marginTop: 6,
+    marginTop: verticalScale(6),
   },
   savedButtonText: {
     color: "#155658",
-    marginLeft: 5,
+    marginLeft: scale(5),
     fontWeight: "500",
   },
   cameraContainer: {
     width: "100%",
     aspectRatio: 3 / 4,
-    borderRadius: 20,
+    borderRadius: moderateScale(20),
     overflow: "hidden",
     backgroundColor: "#222",
-    marginBottom: 14,
+    marginBottom: verticalScale(14),
   },
   primaryButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#155658",
-    paddingVertical: 14,
-    borderRadius: 30,
-    marginBottom: 16,
+    paddingVertical: verticalScale(14),
+    borderRadius: moderateScale(30),
+    marginBottom: verticalScale(16),
   },
   primaryButtonActive: {
     backgroundColor: "#B3261E",
@@ -566,69 +573,69 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: fontSize(16),
     fontWeight: "700",
-    marginLeft: 8,
+    marginLeft: scale(8),
   },
   errorBanner: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FDECEA",
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 16,
+    borderRadius: moderateScale(10),
+    padding: moderateScale(12),
+    marginBottom: verticalScale(16),
   },
   errorBannerText: {
     color: "#8a1c1c",
-    fontSize: 12,
-    marginLeft: 8,
+    fontSize: fontSize(12),
+    marginLeft: scale(8),
     flex: 1,
   },
   translationBoxContainer: {
     backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
+    borderRadius: moderateScale(10),
+    padding: moderateScale(15),
+    marginBottom: verticalScale(20),
   },
   translationHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: verticalScale(10),
   },
   translationLabel: {
-    fontSize: 16,
+    fontSize: fontSize(16),
     fontWeight: "bold",
     color: "#155658",
   },
   livePill: {
     backgroundColor: "#E0F2F1",
-    borderRadius: 12,
-    paddingVertical: 3,
-    paddingHorizontal: 10,
+    borderRadius: moderateScale(12),
+    paddingVertical: verticalScale(3),
+    paddingHorizontal: scale(10),
   },
   livePillText: {
     color: "#155658",
-    fontSize: 11,
+    fontSize: fontSize(11),
     fontWeight: "700",
   },
   textBoxContainer: {
     borderWidth: 1,
     borderColor: "#ddd",
-    borderRadius: 8,
+    borderRadius: moderateScale(8),
     backgroundColor: "#f9f9f9",
-    padding: 12,
-    marginBottom: 15,
-    minHeight: 100,
+    padding: moderateScale(12),
+    marginBottom: verticalScale(15),
+    minHeight: verticalScale(100),
     justifyContent: "flex-start",
   },
   translationText: {
-    fontSize: 18,
+    fontSize: fontSize(18),
     color: "#333",
-    lineHeight: 26,
+    lineHeight: fontSize(26),
   },
   placeholderText: {
-    fontSize: 15,
+    fontSize: fontSize(15),
     color: "#999",
   },
   actionButtons: {
@@ -638,22 +645,22 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-    marginRight: 8,
+    marginRight: scale(8),
   },
   actionIconButton: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#E0F2F1",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    marginLeft: 6,
+    paddingVertical: verticalScale(8),
+    paddingHorizontal: scale(12),
+    borderRadius: moderateScale(20),
+    marginLeft: scale(6),
   },
   actionButtonText: {
     color: "#155658",
-    marginLeft: 5,
+    marginLeft: scale(5),
     fontWeight: "500",
-    fontSize: 13,
+    fontSize: fontSize(13),
   },
   disabledButton: {
     backgroundColor: "#f0f0f0",
@@ -663,15 +670,15 @@ const styles = StyleSheet.create({
   },
   recentSignsContainer: {
     backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
+    borderRadius: moderateScale(10),
+    padding: moderateScale(15),
+    marginBottom: verticalScale(20),
   },
   recentSignsLabel: {
-    fontSize: 16,
+    fontSize: fontSize(16),
     fontWeight: "bold",
     color: "#155658",
-    marginBottom: 10,
+    marginBottom: verticalScale(10),
   },
   signBadgesContainer: {
     flexDirection: "row",
@@ -679,17 +686,17 @@ const styles = StyleSheet.create({
   },
   signBadge: {
     backgroundColor: "#E0F2F1",
-    borderRadius: 15,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    margin: 3,
+    borderRadius: moderateScale(15),
+    paddingHorizontal: scale(10),
+    paddingVertical: verticalScale(5),
+    margin: moderateScale(3),
   },
   lastSignBadge: {
     backgroundColor: "#26A69A",
   },
   signBadgeText: {
     color: "#155658",
-    fontSize: 12,
+    fontSize: fontSize(12),
     fontWeight: "bold",
   },
   lastSignBadgeText: {
@@ -697,17 +704,17 @@ const styles = StyleSheet.create({
   },
   historyContainer: {
     backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 15,
+    borderRadius: moderateScale(10),
+    padding: moderateScale(15),
   },
   historyHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: verticalScale(10),
   },
   historyTitle: {
-    fontSize: 16,
+    fontSize: fontSize(16),
     fontWeight: "bold",
     color: "#155658",
   },
@@ -717,49 +724,49 @@ const styles = StyleSheet.create({
   },
   viewAllText: {
     color: "#155658",
-    fontSize: 14,
-    marginRight: 5,
+    fontSize: fontSize(14),
+    marginRight: scale(5),
   },
   historyItem: {
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
-    paddingVertical: 10,
+    paddingVertical: verticalScale(10),
   },
   historyItemHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 5,
+    marginBottom: verticalScale(5),
   },
   historyTime: {
-    fontSize: 12,
+    fontSize: fontSize(12),
     color: "#999",
   },
   deleteButton: {
-    padding: 5,
+    padding: moderateScale(5),
   },
   historyText: {
-    fontSize: 14,
+    fontSize: fontSize(14),
     color: "#333",
   },
   undoToast: {
     position: "absolute",
-    left: 25,
-    right: 25,
+    left: scale(25),
+    right: scale(25),
     backgroundColor: "rgba(0,0,0,0.85)",
-    borderRadius: 8,
-    padding: 15,
+    borderRadius: moderateScale(8),
+    padding: moderateScale(15),
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   undoToastText: {
     color: "#fff",
-    fontSize: 14,
+    fontSize: fontSize(14),
   },
   undoButton: {
     color: "#4CAF50",
     fontWeight: "bold",
-    fontSize: 14,
+    fontSize: fontSize(14),
   },
 });

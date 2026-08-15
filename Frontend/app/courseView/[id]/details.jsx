@@ -15,6 +15,12 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../config/firebaseConfig';
 import { useVideo } from '../../../context/VideoContext';
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../../utils/responsive";
 
 export default function CourseDetailsView() {
     const router = useRouter();
@@ -104,7 +110,7 @@ export default function CourseDetailsView() {
             >
                 <View style={[styles.chapterIconContainer, isCompleted && styles.completedChapterIconContainer]}>
                     {isCompleted ? (
-                        <MaterialIcons name="check" size={16} color="#fff" />
+                        <MaterialIcons name="check" size={moderateScale(16)} color="#fff" />
                     ) : (
                         <Text style={styles.chapterNumber}>{index + 1}</Text>
                     )}
@@ -127,7 +133,7 @@ export default function CourseDetailsView() {
 
                 <MaterialIcons
                     name={isCompleted ? "check-circle" : "play-circle-outline"}
-                    size={24}
+                    size={moderateScale(24)}
                     color={isCompleted ? "#4CAF50" : "#4C9EFF"}
                 />
             </TouchableOpacity>
@@ -154,12 +160,12 @@ export default function CourseDetailsView() {
                 <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
                 <View style={styles.header}>
                     <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-                        <MaterialIcons name="arrow-back" size={24} color="#333" />
+                        <MaterialIcons name="arrow-back" size={moderateScale(24)} color="#333" />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Course Details</Text>
                 </View>
                 <View style={styles.noCourseContainer}>
-                    <MaterialIcons name="error-outline" size={48} color="#999" />
+                    <MaterialIcons name="error-outline" size={moderateScale(48)} color="#999" />
                     <Text style={styles.noCourseText}>Course not found</Text>
                     <TouchableOpacity style={styles.goBackButton} onPress={() => router.back()}>
                         <Text style={styles.goBackButtonText}>Go Back</Text>
@@ -176,12 +182,12 @@ export default function CourseDetailsView() {
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-                    <MaterialIcons name="arrow-back" size={24} color="#333" />
+                    <MaterialIcons name="arrow-back" size={moderateScale(24)} color="#333" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>{courseDetails.title || 'Course Details'}</Text>
                 <View style={styles.headerIcons}>
                     <TouchableOpacity style={styles.headerIcon}>
-                        <Feather name="bookmark" size={22} color="#333" />
+                        <Feather name="bookmark" size={moderateScale(22)} color="#333" />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -246,7 +252,7 @@ export default function CourseDetailsView() {
                 {selectedTab === 'chapters' && (
                     <View style={styles.chaptersContainer}>
                         <View style={styles.chaptersHeader}>
-                            <MaterialIcons name="playlist-play" size={20} color="#4C9EFF" />
+                            <MaterialIcons name="playlist-play" size={moderateScale(20)} color="#4C9EFF" />
                             <Text style={styles.chaptersTitle}>
                                 {courseDetails.signs?.length || 0} Signs to Learn
                             </Text>
@@ -277,15 +283,15 @@ export default function CourseDetailsView() {
                         <Text style={styles.infoTitle}>What You&apos;ll Learn</Text>
                         <View style={styles.learningPoints}>
                             <View style={styles.learningPoint}>
-                                <MaterialIcons name="check-circle" size={16} color="#4CAF50" />
+                                <MaterialIcons name="check-circle" size={moderateScale(16)} color="#4CAF50" />
                                 <Text style={styles.learningPointText}>Learn sign language alphabet</Text>
                             </View>
                             <View style={styles.learningPoint}>
-                                <MaterialIcons name="check-circle" size={16} color="#4CAF50" />
+                                <MaterialIcons name="check-circle" size={moderateScale(16)} color="#4CAF50" />
                                 <Text style={styles.learningPointText}>Master common signs for everyday use</Text>
                             </View>
                             <View style={styles.learningPoint}>
-                                <MaterialIcons name="check-circle" size={16} color="#4CAF50" />
+                                <MaterialIcons name="check-circle" size={moderateScale(16)} color="#4CAF50" />
                                 <Text style={styles.learningPointText}>Practice with video demonstrations</Text>
                             </View>
                         </View>
@@ -317,27 +323,27 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     loadingText: {
-        marginTop: 10,
-        fontSize: 16,
+        marginTop: verticalScale(10),
+        fontSize: fontSize(16),
         color: '#666',
     },
     noCourseContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,
+        padding: moderateScale(20),
     },
     noCourseText: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         color: '#666',
-        marginTop: 16,
+        marginTop: verticalScale(16),
     },
     goBackButton: {
-        marginTop: 20,
+        marginTop: verticalScale(20),
         backgroundColor: '#4C9EFF',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 8,
+        paddingVertical: verticalScale(10),
+        paddingHorizontal: scale(20),
+        borderRadius: moderateScale(8),
     },
     goBackButtonText: {
         color: '#fff',
@@ -346,26 +352,26 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        paddingHorizontal: scale(16),
+        paddingVertical: verticalScale(12),
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
     },
     backButton: {
-        padding: 4,
+        padding: moderateScale(4),
     },
     headerTitle: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: 'bold',
-        marginLeft: 16,
+        marginLeft: scale(16),
         flex: 1,
     },
     headerIcons: {
         flexDirection: 'row',
     },
     headerIcon: {
-        padding: 4,
-        marginLeft: 16,
+        padding: moderateScale(4),
+        marginLeft: scale(16),
     },
     scrollView: {
         flex: 1,
@@ -376,71 +382,71 @@ const styles = StyleSheet.create({
     courseBanner: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 16,
-        margin: 16,
-        borderRadius: 12,
+        padding: moderateScale(16),
+        margin: moderateScale(16),
+        borderRadius: moderateScale(12),
     },
     courseIconContainer: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
+        width: moderateScale(60),
+        height: moderateScale(60),
+        borderRadius: moderateScale(30),
         backgroundColor: 'rgba(255, 255, 255, 0.2)',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 16,
+        marginRight: scale(16),
     },
     courseIcon: {
-        fontSize: 32,
+        fontSize: fontSize(32),
     },
     courseTitleContainer: {
         flex: 1,
     },
     courseTitle: {
-        fontSize: 20,
+        fontSize: fontSize(20),
         fontWeight: 'bold',
         color: '#fff',
-        marginBottom: 4,
+        marginBottom: verticalScale(4),
     },
     courseDescription: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: 'rgba(255, 255, 255, 0.9)',
     },
     progressContainer: {
-        margin: 16,
+        margin: moderateScale(16),
         backgroundColor: '#F5F5F5',
-        borderRadius: 12,
-        padding: 16,
+        borderRadius: moderateScale(12),
+        padding: moderateScale(16),
     },
     progressHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 8,
+        marginBottom: verticalScale(8),
     },
     progressTitle: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: 'bold',
         color: '#333',
     },
     progressPercentage: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: 'bold',
         color: '#4CAF50',
     },
     progressBarContainer: {
-        height: 8,
+        height: verticalScale(8),
         backgroundColor: '#E0E0E0',
-        borderRadius: 4,
+        borderRadius: moderateScale(4),
         overflow: 'hidden',
     },
     progressBar: {
         height: '100%',
         backgroundColor: '#4CAF50',
-        borderRadius: 4,
+        borderRadius: moderateScale(4),
     },
     progressDetails: {
-        marginTop: 8,
-        fontSize: 14,
+        marginTop: verticalScale(8),
+        fontSize: fontSize(14),
         color: '#666',
         textAlign: 'right',
     },
@@ -448,19 +454,19 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderBottomColor: '#EEEEEE',
-        marginHorizontal: 16,
+        marginHorizontal: scale(16),
     },
     tab: {
-        paddingVertical: 12,
-        paddingHorizontal: 16,
-        marginRight: 16,
+        paddingVertical: verticalScale(12),
+        paddingHorizontal: scale(16),
+        marginRight: scale(16),
     },
     activeTab: {
         borderBottomWidth: 2,
         borderBottomColor: '#4C9EFF',
     },
     tabText: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: '#666',
     },
     activeTabText: {
@@ -468,48 +474,48 @@ const styles = StyleSheet.create({
         color: '#4C9EFF',
     },
     chaptersContainer: {
-        marginHorizontal: 16,
-        marginTop: 16,
+        marginHorizontal: scale(16),
+        marginTop: verticalScale(16),
     },
     chaptersHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: verticalScale(16),
     },
     chaptersTitle: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: 'bold',
-        marginLeft: 8,
+        marginLeft: scale(8),
         color: '#333',
     },
     chaptersList: {
-        paddingBottom: 16,
+        paddingBottom: verticalScale(16),
     },
     chapterItem: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#F5F5F5',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 8,
+        borderRadius: moderateScale(12),
+        padding: moderateScale(16),
+        marginBottom: verticalScale(8),
     },
     completedChapterItem: {
         backgroundColor: '#E8F5E9',
     },
     chapterIconContainer: {
-        width: 28,
-        height: 28,
-        borderRadius: 14,
+        width: moderateScale(28),
+        height: moderateScale(28),
+        borderRadius: moderateScale(14),
         backgroundColor: '#DDD',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 12,
+        marginRight: scale(12),
     },
     completedChapterIconContainer: {
         backgroundColor: '#4CAF50',
     },
     chapterNumber: {
-        fontSize: 12,
+        fontSize: fontSize(12),
         fontWeight: 'bold',
         color: '#666',
     },
@@ -517,46 +523,46 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     chapterTitle: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: '500',
         color: '#333',
     },
     chapterSubtitle: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: '#666',
-        marginTop: 4,
+        marginTop: verticalScale(4),
     },
     noChaptersText: {
         textAlign: 'center',
         color: '#999',
-        padding: 16,
+        padding: moderateScale(16),
     },
     infoContainer: {
-        margin: 16,
+        margin: moderateScale(16),
     },
     infoTitle: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: 'bold',
         color: '#333',
-        marginTop: 16,
-        marginBottom: 8,
+        marginTop: verticalScale(16),
+        marginBottom: verticalScale(8),
     },
     infoDescription: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: '#666',
-        lineHeight: 20,
+        lineHeight: fontSize(20),
     },
     learningPoints: {
-        marginTop: 8,
+        marginTop: verticalScale(8),
     },
     learningPoint: {
         flexDirection: 'row',
         alignItems: 'flex-start',
-        marginBottom: 8,
+        marginBottom: verticalScale(8),
     },
     learningPointText: {
-        marginLeft: 8,
-        fontSize: 14,
+        marginLeft: scale(8),
+        fontSize: fontSize(14),
         color: '#333',
     },
     continueButtonContainer: {
@@ -564,20 +570,20 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        padding: 16,
+        padding: moderateScale(16),
         backgroundColor: '#fff',
         borderTopWidth: 1,
         borderTopColor: '#eee',
     },
     continueButton: {
         backgroundColor: '#4C9EFF',
-        paddingVertical: 14,
-        borderRadius: 12,
+        paddingVertical: verticalScale(14),
+        borderRadius: moderateScale(12),
         alignItems: 'center',
     },
     continueButtonText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: 'bold',
     },
 });

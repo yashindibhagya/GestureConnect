@@ -4,6 +4,11 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useVideo } from '../../context/VideoContext';
+import {
+    fontSize,
+    moderateScale,
+    verticalScale,
+} from "../../utils/responsive";
 
 export default function Chapters({ course }) {
     const router = useRouter();
@@ -58,8 +63,8 @@ export default function Chapters({ course }) {
                         </View>
 
                         {isChapterCompleted(item) ?
-                            <AntDesign name="checkcircle" size={24} color="#155658" />
-                            : <Ionicons name="play-circle" size={24} color="#155658" />
+                            <AntDesign name="checkcircle" size={moderateScale(24)} color="#155658" />
+                            : <Ionicons name="play-circle" size={moderateScale(24)} color="#155658" />
                         }
                     </TouchableOpacity>
                 )}
@@ -71,19 +76,19 @@ export default function Chapters({ course }) {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
+        padding: moderateScale(20),
         alignSelf: 'center',
     },
     chapter: {
         fontWeight: 'bold',
-        fontSize: 25
+        fontSize: fontSize(25)
     },
     chapterItem: {
-        padding: 18,
+        padding: moderateScale(18),
         borderWidth: 0.5,
         borderColor: 'rgba(0,0,0,0.1)',
-        borderRadius: 15,
-        marginTop: 10,
+        borderRadius: moderateScale(15),
+        marginTop: verticalScale(10),
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -95,12 +100,12 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     chapterText: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: '500',
     },
     chapterView: {
         display: 'flex',
         flexDirection: 'row',
-        gap: 10
+        gap: moderateScale(10)
     }
 })

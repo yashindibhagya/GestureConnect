@@ -1,6 +1,12 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
 
 /**
  * Common header component that displays the app logo and title
@@ -49,9 +55,9 @@ export default function Common({ showBackButton = false, onBack, style = {} }) {
 const styles = StyleSheet.create({
     container: {
         alignItems: "flex-start",
-        marginBottom: 5,
+        marginBottom: verticalScale(5),
         width: "100%",
-        marginTop: 10,
+        marginTop: verticalScale(10),
     },
     contentContainer: {
         flexDirection: "row",
@@ -59,32 +65,32 @@ const styles = StyleSheet.create({
         width: "100%",
     },
     title: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: "900",
         color: "#155658",
-        marginLeft: 5,
+        marginLeft: scale(5),
     },
     buttonContainer: {
         flexDirection: "row",
-        marginTop: 20,
+        marginTop: verticalScale(20),
         alignItems: "center",
     },
     logo: {
-        height: 30,
-        width: 30,
+        height: moderateScale(30),
+        width: moderateScale(30),
     },
     backButton: {
-        marginRight: 10,
-        marginTop: 20,
-        width: 30,
-        height: 30,
+        marginRight: scale(10),
+        marginTop: verticalScale(20),
+        width: moderateScale(30),
+        height: moderateScale(30),
         justifyContent: "center",
         alignItems: "center",
-        borderRadius: 15,
+        borderRadius: moderateScale(15),
         backgroundColor: "#E0F2F1",
     },
     backButtonText: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: "bold",
         color: "#155658",
     }

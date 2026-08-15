@@ -12,7 +12,7 @@ import {
     Platform,
     ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
@@ -25,11 +25,19 @@ import {
     // logoutUser
 } from "../../services/authService";
 import { auth } from "../../config/firebaseConfig";
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
+import { tabBarClearance } from "../../constants/navigation";
 
 /**
  * Profile/Settings screen that allows users to manage their account
  */
 export default function Profile() {
+    const insets = useSafeAreaInsets();
     const router = useRouter();
     const { userDetail, setUserDetail, isLoading: userLoading } = useUserDetail();
 
@@ -244,7 +252,7 @@ export default function Profile() {
             >
                 <ScrollView
                     style={styles.container}
-                    contentContainerStyle={{ paddingBottom: 100 }}
+                    contentContainerStyle={{ paddingBottom: tabBarClearance(insets.bottom) }}
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                 >
@@ -264,12 +272,12 @@ export default function Profile() {
                             onPress={() => toggleExpand("account")}
                         >
                             <View style={styles.optionRow}>
-                                <AntDesign name="user" size={20} color="#FFA726" />
+                                <AntDesign name="user" size={moderateScale(20)} color="#FFA726" />
                                 <Text style={styles.optionText}>Account</Text>
                             </View>
                             <AntDesign
                                 name={expanded.account ? "up" : "down"}
-                                size={16}
+                                size={moderateScale(16)}
                                 color="black"
                             />
                         </TouchableOpacity>
@@ -284,7 +292,7 @@ export default function Profile() {
                                     <Text style={styles.subOptionText}>Account Information</Text>
                                     <AntDesign
                                         name={expanded.accountInfo ? "up" : "down"}
-                                        size={16}
+                                        size={moderateScale(16)}
                                         color="black"
                                     />
                                 </TouchableOpacity>
@@ -327,7 +335,7 @@ export default function Profile() {
                                     <Text style={styles.subOptionText}>Password</Text>
                                     <AntDesign
                                         name={expanded.password ? "up" : "down"}
-                                        size={16}
+                                        size={moderateScale(16)}
                                         color="black"
                                     />
                                 </TouchableOpacity>
@@ -350,7 +358,7 @@ export default function Profile() {
                                             <Pressable onPress={() => setShowPassword(!showPassword)}>
                                                 <Ionicons
                                                     name={showPassword ? "eye-off" : "eye"}
-                                                    size={20}
+                                                    size={moderateScale(20)}
                                                     color="black"
                                                     style={styles.eyeIcon}
                                                 />
@@ -375,7 +383,7 @@ export default function Profile() {
                                             >
                                                 <Ionicons
                                                     name={showConfirmPassword ? "eye-off" : "eye"}
-                                                    size={20}
+                                                    size={moderateScale(20)}
                                                     color="black"
                                                     style={styles.eyeIcon}
                                                 />
@@ -404,12 +412,12 @@ export default function Profile() {
                             onPress={() => toggleExpand("logout")}
                         >
                             <View style={styles.optionRow}>
-                                <AntDesign name="logout" size={20} color="#FFA726" />
+                                <AntDesign name="logout" size={moderateScale(20)} color="#FFA726" />
                                 <Text style={styles.optionText}>Logout</Text>
                             </View>
                             <AntDesign
                                 name={expanded.logout ? "up" : "down"}
-                                size={16}
+                                size={moderateScale(16)}
                                 color="black"
                             />
                         </TouchableOpacity>
@@ -432,12 +440,12 @@ export default function Profile() {
                             onPress={() => toggleExpand("sendFeedback")}
                         >
                             <View style={styles.optionRow}>
-                                <AntDesign name="form" size={20} color="#FFA726" />
+                                <AntDesign name="form" size={moderateScale(20)} color="#FFA726" />
                                 <Text style={styles.optionText}>Send Feedback</Text>
                             </View>
                             <AntDesign
                                 name={expanded.sendFeedback ? "up" : "down"}
-                                size={16}
+                                size={moderateScale(16)}
                                 color="black"
                             />
                         </TouchableOpacity>
@@ -485,7 +493,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        padding: 25,
+        padding: moderateScale(25),
     },
     loadingContainer: {
         flex: 1,
@@ -493,21 +501,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     title: {
-        fontSize: 24,
+        fontSize: fontSize(24),
         fontWeight: "bold",
     },
     sectionHeader: {
-        fontSize: 12,
+        fontSize: fontSize(12),
         fontWeight: "bold",
         color: "#717171",
-        marginTop: 24,
-        marginBottom: 8,
+        marginTop: verticalScale(24),
+        marginBottom: verticalScale(8),
     },
     option: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingVertical: 15,
+        paddingVertical: verticalScale(15),
         borderBottomWidth: 1,
         borderBottomColor: "#8A9A95",
     },
@@ -516,47 +524,47 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     optionText: {
-        marginLeft: 8,
-        fontSize: 14,
+        marginLeft: scale(8),
+        fontSize: fontSize(14),
         fontWeight: "500",
     },
     subOption: {
-        paddingVertical: 15,
-        marginLeft: 20,
+        paddingVertical: verticalScale(15),
+        marginLeft: scale(20),
         flexDirection: "row",
         justifyContent: "space-between",
         borderBottomWidth: 1,
         borderBottomColor: "#8A9A95",
     },
     subOptionText: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         fontWeight: "500",
-        marginLeft: 10,
+        marginLeft: scale(10),
     },
     expandedContent: {
-        paddingLeft: 20,
-        paddingRight: 20,
-        paddingVertical: 10,
+        paddingLeft: scale(20),
+        paddingRight: scale(20),
+        paddingVertical: verticalScale(10),
     },
     expandedSubContent: {
-        marginTop: 10,
-        paddingLeft: 20,
+        marginTop: verticalScale(10),
+        paddingLeft: scale(20),
     },
     label: {
-        fontSize: 12,
+        fontSize: fontSize(12),
         fontWeight: "500",
-        marginBottom: 8,
-        marginLeft: 20,
+        marginBottom: verticalScale(8),
+        marginLeft: scale(20),
     },
     input: {
-        height: 40,
+        height: verticalScale(40),
         borderColor: "#ccc",
         borderWidth: 1,
-        borderRadius: 4,
-        paddingLeft: 10,
-        marginBottom: 20,
-        width: 200,
-        marginLeft: 20,
+        borderRadius: moderateScale(4),
+        paddingLeft: scale(10),
+        marginBottom: verticalScale(20),
+        width: scale(200),
+        marginLeft: scale(20),
         backgroundColor: "#fff",
     },
     passwordContainer: {
@@ -565,55 +573,55 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     eyeIcon: {
-        marginBottom: 20,
-        marginRight: 50,
+        marginBottom: verticalScale(20),
+        marginRight: scale(50),
     },
     updateButton: {
         backgroundColor: "#FFA726",
-        paddingVertical: 10,
-        borderRadius: 30,
+        paddingVertical: verticalScale(10),
+        borderRadius: moderateScale(30),
         alignItems: 'center',
         justifyContent: 'center',
-        width: 200,
-        marginLeft: 20,
+        width: scale(200),
+        marginLeft: scale(20),
     },
     buttonText: {
         color: "#fff",
-        fontSize: 16,
+        fontSize: fontSize(16),
         textAlign: "center",
     },
     logoutButton: {
         backgroundColor: "#FFA726",
-        paddingVertical: 10,
-        borderRadius: 30,
-        marginTop: 20,
+        paddingVertical: verticalScale(10),
+        borderRadius: moderateScale(30),
+        marginTop: verticalScale(20),
         alignItems: 'center',
         justifyContent: 'center',
     },
     // New styles for feedback section
     feedbackLabel: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: "#333",
-        marginBottom: 10,
-        marginLeft: 10,
+        marginBottom: verticalScale(10),
+        marginLeft: scale(10),
     },
     feedbackInput: {
         width: "100%",
-        height: 120,
+        height: verticalScale(120),
         borderColor: "#ccc",
         borderWidth: 1,
-        borderRadius: 8,
-        padding: 10,
-        marginBottom: 15,
+        borderRadius: moderateScale(8),
+        padding: moderateScale(10),
+        marginBottom: verticalScale(15),
         backgroundColor: "#fff",
         marginLeft: 0,
     },
     submitFeedbackButton: {
         backgroundColor: "#FFA726",
-        paddingVertical: 10,
-        borderRadius: 30,
+        paddingVertical: verticalScale(10),
+        borderRadius: moderateScale(30),
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 5,
+        marginTop: verticalScale(5),
     },
 });

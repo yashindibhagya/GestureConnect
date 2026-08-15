@@ -14,7 +14,7 @@ import {
     Alert,
     RefreshControl,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Video } from 'expo-av';
 import { VideoContext } from '../../context/VideoContext';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -38,6 +38,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 // Firebase imports
 import { doc, setDoc, collection, getDocs, deleteDoc, query, orderBy, limit, writeBatch } from 'firebase/firestore';
 import { auth, db } from '../../config/firebaseConfig';
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
+import { tabBarClearance } from "../../constants/navigation";
 
 
 // Define common words that typically don't have sign language videos
@@ -174,7 +181,6 @@ export default function TextToSign() {
     // State to store current conversation data
     const [currentConversation, setCurrentConversation] = useState(null);
     // State for bottom padding to handle navigation bar
-    const [bottomPadding, setBottomPadding] = useState(80);
     // States for the deleted conversation undo feature
     const [deletedConversation, setDeletedConversation] = useState(null);
     const [showUndoToast, setShowUndoToast] = useState(false);
@@ -207,15 +213,10 @@ export default function TextToSign() {
     const { getSignVideoByWord, isLoading, signsData, recordFailedVideoUrl, findSignForPhrase } = useContext(VideoContext);
     const videoRef = useRef(null);
 
-    // Set appropriate bottom padding for navigation bar
-    useEffect(() => {
-        const updateBottomPadding = () => {
-            const bottomInset = Platform.OS === 'ios' ? 34 : 16;
-            setBottomPadding(bottomInset + 50); // Add extra space for the navigation bar
-        };
-
-        updateBottomPadding();
-    }, []);
+    // Clear the floating tab bar. Derived from the real safe-area inset rather
+    // than a per-platform guess at it.
+    const insets = useSafeAreaInsets();
+    const bottomPadding = tabBarClearance(insets.bottom);
 
     // Convert input text to appropriate script as the user types
     useEffect(() => {
@@ -1450,7 +1451,7 @@ export default function TextToSign() {
                                                                     {letterSign.notFound && (
                                                                         <MaterialIcons
                                                                             name="videocam-off"
-                                                                            size={8}
+                                                                            size={moderateScale(8)}
                                                                             color="#D32F2F"
                                                                             style={styles.missingVideoIcon}
                                                                         />
@@ -1492,7 +1493,7 @@ export default function TextToSign() {
                                                     {sign.notFound && (
                                                         <MaterialIcons
                                                             name="videocam-off"
-                                                            size={8}
+                                                            size={moderateScale(8)}
                                                             color="#D32F2F"
                                                             style={styles.missingVideoIcon}
                                                         />
@@ -1553,7 +1554,7 @@ export default function TextToSign() {
                                                 {sign.notFound && !sign.isCommonWord && (
                                                     <MaterialIcons
                                                         name="videocam-off"
-                                                        size={12}
+                                                        size={moderateScale(12)}
                                                         color="#D32F2F"
                                                         style={styles.missingVideoIcon}
                                                     />
@@ -1637,7 +1638,7 @@ export default function TextToSign() {
 
                                     {videoError ? (
                                         <View style={styles.videoErrorContainer}>
-                                            <MaterialIcons name="error-outline" size={48} color="#D32F2F" />
+                                            <MaterialIcons name="error-outline" size={moderateScale(48)} color="#D32F2F" />
                                             <Text style={styles.videoErrorText}>
                                                 Unable to load video. The video file may be missing or corrupted.
                                             </Text>
@@ -1739,7 +1740,7 @@ export default function TextToSign() {
                             ) : translatedSigns.some(sign => sign.notFound && !sign.isCommonWord) &&
                                 translatedSigns.filter(sign => !sign.notFound).length === 0 ? (
                                 <View style={styles.missingVideoBanner}>
-                                    <MaterialIcons name="info-outline" size={24} color="#D32F2F" />
+                                    <MaterialIcons name="info-outline" size={moderateScale(24)} color="#D32F2F" />
                                     <Text style={styles.missingVideoText}>
                                         No sign language videos are available for the words in this translation.
                                     </Text>
@@ -1822,7 +1823,7 @@ export default function TextToSign() {
                                         style={styles.deleteButton}
                                         onPress={() => deleteConversation(index)}
                                     >
-                                        <MaterialIcons name="delete-outline" size={22} color="#FF3B30" />
+                                        <MaterialIcons name="delete-outline" size={moderateScale(22)} color="#FF3B30" />
                                     </TouchableOpacity>
                                 </View>
                             ))}
@@ -1855,13 +1856,13 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        padding: 25,
+        padding: moderateScale(25),
     },
     scrollView: {
         flex: 1,
     },
     scrollContent: {
-        paddingBottom: 20,
+        paddingBottom: verticalScale(20),
         flexGrow: 1,
     },
     loadingContainer: {
@@ -1873,27 +1874,27 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 16,
+        marginTop: verticalScale(16),
     },
     title: {
-        fontSize: 22,
+        fontSize: fontSize(22),
         fontWeight: '900',
         color: '#333',
-        marginTop: -20
+        marginTop: verticalScale(-20)
     },
     languageToggle: {
         backgroundColor: '#F7B316',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 16,
-        marginTop: -20
+        paddingHorizontal: scale(12),
+        paddingVertical: verticalScale(6),
+        borderRadius: moderateScale(16),
+        marginTop: verticalScale(-20)
     },
     languageToggleText: {
         color: '#fff',
         fontWeight: '500',
     },
     inputContainer: {
-        marginTop: 20,
+        marginTop: verticalScale(20),
     },
     inputRow: {
         flexDirection: 'row',
@@ -1901,15 +1902,15 @@ const styles = StyleSheet.create({
     },
     textInputWrap: {
         flex: 1,
-        borderRadius: 8,
-        marginRight: 10,
+        borderRadius: moderateScale(8),
+        marginRight: scale(10),
     },
     textInput: {
         backgroundColor: 'white',
-        borderRadius: 8,
-        padding: 12,
-        fontSize: 16,
-        minHeight: 100,
+        borderRadius: moderateScale(8),
+        padding: moderateScale(12),
+        fontSize: fontSize(16),
+        minHeight: verticalScale(100),
         textAlignVertical: 'top',
         borderWidth: 1,
         borderColor: '#DDD',
@@ -1920,9 +1921,9 @@ const styles = StyleSheet.create({
     },
     // Voice recording styles
     micButton: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+        width: moderateScale(50),
+        height: moderateScale(50),
+        borderRadius: moderateScale(25),
         backgroundColor: '#fff',
         justifyContent: 'center',
         alignItems: 'center',
@@ -1931,9 +1932,9 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
     },
     micPermissionButton: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+        width: moderateScale(50),
+        height: moderateScale(50),
+        borderRadius: moderateScale(25),
         backgroundColor: '#FFEBEE',
         justifyContent: 'center',
         alignItems: 'center',
@@ -1942,40 +1943,40 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
     },
     micPermissionText: {
-        fontSize: 10,
+        fontSize: fontSize(10),
         color: '#D32F2F',
         textAlign: 'center',
-        marginTop: 4,
+        marginTop: verticalScale(4),
     },
     recordingContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         backgroundColor: '#FFEBEE',
-        borderRadius: 25,
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        width: 130,
+        borderRadius: moderateScale(25),
+        paddingHorizontal: scale(12),
+        paddingVertical: verticalScale(6),
+        width: scale(130),
     },
     recordingIndicator: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     recordingDot: {
-        width: 10,
-        height: 10,
-        borderRadius: 5,
+        width: moderateScale(10),
+        height: moderateScale(10),
+        borderRadius: moderateScale(5),
         backgroundColor: '#FF3B30',
-        marginRight: 8,
+        marginRight: scale(8),
     },
     recordingTime: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: '#333',
     },
     stopRecordingButton: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
+        width: moderateScale(30),
+        height: moderateScale(30),
+        borderRadius: moderateScale(15),
         backgroundColor: '#FF3B30',
         justifyContent: 'center',
         alignItems: 'center',
@@ -1984,123 +1985,123 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#E3F2FD',
-        borderRadius: 20,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        maxWidth: 170,
+        borderRadius: moderateScale(20),
+        paddingHorizontal: scale(12),
+        paddingVertical: verticalScale(8),
+        maxWidth: scale(170),
     },
     recordingStatusText: {
         color: '#1976D2',
-        marginLeft: 8,
-        fontSize: 14,
+        marginLeft: scale(8),
+        fontSize: fontSize(14),
     },
     // Sinhala script display
     sinhalaScriptContainer: {
         backgroundColor: '#155658',
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 10,
+        borderRadius: moderateScale(8),
+        padding: moderateScale(12),
+        marginBottom: verticalScale(10),
         borderWidth: 1,
         borderColor: '#155658',
     },
     sinhalaScriptLabel: {
-        fontSize: 12,
+        fontSize: fontSize(12),
         fontWeight: '600',
         color: '#fff',
-        marginBottom: 4,
+        marginBottom: verticalScale(4),
     },
     sinhalaScriptText: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: '#fff',
         fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
     },
     // Tamil script display styles
     tamilScriptContainer: {
         backgroundColor: '#155658',
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 10,
+        borderRadius: moderateScale(8),
+        padding: moderateScale(12),
+        marginBottom: verticalScale(10),
         borderWidth: 1,
         borderColor: '#155658',
     },
     tamilScriptLabel: {
-        fontSize: 12,
+        fontSize: fontSize(12),
         fontWeight: '600',
         color: '#fff',
-        marginBottom: 4,
+        marginBottom: verticalScale(4),
     },
     tamilScriptText: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: '#fff',
         fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
     },
     translatedTextContainer: {
         backgroundColor: '#155658',
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 10,
+        borderRadius: moderateScale(8),
+        padding: moderateScale(12),
+        marginBottom: verticalScale(10),
     },
     translatedTextLabel: {
-        fontSize: 12,
+        fontSize: fontSize(12),
         fontWeight: '600',
         color: '#fff',
-        marginBottom: 4,
+        marginBottom: verticalScale(4),
     },
     translatedTextContent: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: fontSize(16),
     },
     translateButton: {
         backgroundColor: '#4C9EFF',
-        borderRadius: 8,
-        padding: 12,
+        borderRadius: moderateScale(8),
+        padding: moderateScale(12),
         alignItems: 'center',
     },
     buttonText: {
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 16,
+        fontSize: fontSize(16),
     },
     resultsContainer: {
         flex: 1,
-        marginTop: 12,
+        marginTop: verticalScale(12),
     },
     resultsTitle: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: 'bold',
-        marginBottom: 10,
+        marginBottom: verticalScale(10),
     },
     // Save conversation button
     saveButton: {
         backgroundColor: '#4CAF50',
-        borderRadius: 8,
-        padding: 12,
+        borderRadius: moderateScale(8),
+        padding: moderateScale(12),
         alignItems: 'center',
-        marginVertical: 10,
+        marginVertical: verticalScale(10),
     },
     saveButtonText: {
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 16,
+        fontSize: fontSize(16),
     },
     savedMessage: {
         color: '#155658',
         textAlign: 'center',
         fontWeight: '500',
-        marginVertical: 8,
-        marginTop: 5,
-        fontSize: 14
+        marginVertical: verticalScale(8),
+        marginTop: verticalScale(5),
+        fontSize: fontSize(14)
     },
     wordChipsContainer: {
         flexDirection: 'row',
-        marginBottom: 15,
+        marginBottom: verticalScale(15),
     },
     wordChip: {
         backgroundColor: '#155658',
-        borderRadius: 16,
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        marginRight: 8,
+        borderRadius: moderateScale(16),
+        paddingVertical: verticalScale(6),
+        paddingHorizontal: scale(12),
+        marginRight: scale(8),
         borderWidth: 1,
         borderColor: '#155658',
     },
@@ -2113,7 +2114,7 @@ const styles = StyleSheet.create({
         borderColor: '#1976D2',
     },
     wordChipText: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: '#fff',
     },
     wordChipTextNotFound: {
@@ -2127,42 +2128,42 @@ const styles = StyleSheet.create({
     // Skipped words styles (common words without sign videos)
     skippedWordChip: {
         backgroundColor: '#FFF3E0',
-        borderRadius: 16,
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        marginRight: 8,
+        borderRadius: moderateScale(16),
+        paddingVertical: verticalScale(6),
+        paddingHorizontal: scale(12),
+        marginRight: scale(8),
         borderWidth: 1,
         borderColor: '#FFE0B2',
         opacity: 0.7,
     },
     skippedWordChipText: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: '#E65100',
         fontStyle: 'italic',
     },
     skippedWordsBanner: {
         backgroundColor: '#FFF3E0',
-        borderRadius: 8,
-        padding: 10,
-        marginBottom: 10,
+        borderRadius: moderateScale(8),
+        padding: moderateScale(10),
+        marginBottom: verticalScale(10),
         flexDirection: 'row',
         alignItems: 'center',
     },
     skippedWordsText: {
         color: '#E65100',
-        marginLeft: 8,
+        marginLeft: scale(8),
         flex: 1,
-        fontSize: 14,
+        fontSize: fontSize(14),
     },
 
     // Name letters container
     nameLettersContainer: {
         flexDirection: 'row',
         backgroundColor: '#E3F2FD',
-        borderRadius: 16,
-        paddingVertical: 4,
-        paddingHorizontal: 8,
-        marginRight: 8,
+        borderRadius: moderateScale(16),
+        paddingVertical: verticalScale(4),
+        paddingHorizontal: scale(8),
+        marginRight: scale(8),
         borderWidth: 1,
         borderColor: '#90CAF9',
     },
@@ -2170,16 +2171,16 @@ const styles = StyleSheet.create({
     // Individual letter chips
     letterChip: {
         backgroundColor: '#155658',
-        borderRadius: 8,
-        paddingVertical: 4,
-        paddingHorizontal: 6,
-        margin: 2,
+        borderRadius: moderateScale(8),
+        paddingVertical: verticalScale(4),
+        paddingHorizontal: scale(6),
+        margin: moderateScale(2),
         borderWidth: 1,
         borderColor: '#155658',
     },
 
     letterChipText: {
-        fontSize: 12,
+        fontSize: fontSize(12),
         color: '#fff',
         fontWeight: 'bold',
     },
@@ -2187,47 +2188,47 @@ const styles = StyleSheet.create({
     // Name indicator styles (for start/end of finger spelling)
     nameIndicatorChip: {
         backgroundColor: '#FFD54F',
-        borderRadius: 16,
-        paddingVertical: 6,
-        paddingHorizontal: 8,
-        marginRight: 8,
+        borderRadius: moderateScale(16),
+        paddingVertical: verticalScale(6),
+        paddingHorizontal: scale(8),
+        marginRight: scale(8),
         borderWidth: 1,
         borderColor: '#FFCA28',
     },
 
     nameIndicatorText: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: '#5D4037',
         fontWeight: 'bold',
     },
 
     // Loading progress bar
     loadingProgressContainer: {
-        marginBottom: 15,
+        marginBottom: verticalScale(15),
     },
     loadingText: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: '#555',
-        marginBottom: 5,
+        marginBottom: verticalScale(5),
     },
     progressBarContainer: {
-        height: 8,
+        height: verticalScale(8),
         backgroundColor: '#E0E0E0',
-        borderRadius: 4,
+        borderRadius: moderateScale(4),
         overflow: 'hidden',
     },
     progressBarFill: {
         height: '100%',
         backgroundColor: '#4CAF50',
-        borderRadius: 4,
+        borderRadius: moderateScale(4),
     },
 
     // Current word display indicators
     currentNameContainer: {
         backgroundColor: '#E8F5E9',
-        padding: 8,
-        borderRadius: 4,
-        marginTop: 8,
+        padding: moderateScale(8),
+        borderRadius: moderateScale(4),
+        marginTop: verticalScale(8),
         borderWidth: 1,
         borderColor: '#A5D6A7',
     },
@@ -2235,167 +2236,167 @@ const styles = StyleSheet.create({
     currentNameText: {
         color: '#2E7D32',
         fontWeight: 'bold',
-        fontSize: 14,
+        fontSize: fontSize(14),
     },
 
     letterCountText: {
         color: '#2E7D32',
-        fontSize: 12,
-        marginTop: 2,
+        fontSize: fontSize(12),
+        marginTop: verticalScale(2),
     },
 
     videoPlayerContainer: {
         backgroundColor: 'white',
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 20,
+        borderRadius: moderateScale(8),
+        padding: moderateScale(12),
+        marginBottom: verticalScale(20),
         elevation: 2,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
-        marginTop: 10
+        marginTop: verticalScale(10)
     },
     nowPlayingText: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: '#666',
-        marginBottom: 8,
+        marginBottom: verticalScale(8),
     },
     currentWordText: {
         fontWeight: 'bold',
         color: '#4C9EFF',
-        fontSize: 16,
+        fontSize: fontSize(16),
     },
     videoPlayer: {
         width: '100%',
-        height: 250,
-        borderRadius: 4,
+        height: verticalScale(250),
+        borderRadius: moderateScale(4),
         backgroundColor: '#E0E0E0',
     },
     videoControls: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginTop: 12,
+        marginTop: verticalScale(12),
     },
     controlButton: {
         backgroundColor: '#4C9EFF',
-        borderRadius: 8,
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        marginHorizontal: 8,
+        borderRadius: moderateScale(8),
+        paddingVertical: verticalScale(8),
+        paddingHorizontal: scale(16),
+        marginHorizontal: scale(8),
         alignItems: 'center',
     },
     controlButtonText: {
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 14,
+        fontSize: fontSize(14),
     },
     speedIndicator: {
         backgroundColor: '#155658',
-        borderRadius: 12,
-        paddingVertical: 4,
-        paddingHorizontal: 8,
-        marginLeft: 8,
+        borderRadius: moderateScale(12),
+        paddingVertical: verticalScale(4),
+        paddingHorizontal: scale(8),
+        marginLeft: scale(8),
         alignItems: 'center',
         justifyContent: 'center',
     },
     speedIndicatorText: {
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 12,
+        fontSize: fontSize(12),
     },
     progressContainer: {
-        height: 4,
+        height: verticalScale(4),
         backgroundColor: '#E0E0E0',
-        borderRadius: 2,
-        marginTop: 12,
+        borderRadius: moderateScale(2),
+        marginTop: verticalScale(12),
         overflow: 'hidden',
     },
     progressBar: {
         height: '100%',
         backgroundColor: '#4C9EFF',
-        borderRadius: 2,
+        borderRadius: moderateScale(2),
     },
     noVideoText: {
         textAlign: 'center',
-        margin: 20,
+        margin: moderateScale(20),
         color: '#D32F2F',
-        fontSize: 16,
+        fontSize: fontSize(16),
     },
     translatedWordsTitle: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: 'bold',
-        marginTop: 10,
-        marginBottom: 8,
+        marginTop: verticalScale(10),
+        marginBottom: verticalScale(8),
     },
     signCard: {
         backgroundColor: 'white',
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 8,
+        borderRadius: moderateScale(8),
+        padding: moderateScale(12),
+        marginBottom: verticalScale(8),
         flexDirection: 'row',
         alignItems: 'center',
     },
     notFoundCard: {
         backgroundColor: '#FFEBEE',
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 8,
+        borderRadius: moderateScale(8),
+        padding: moderateScale(12),
+        marginBottom: verticalScale(8),
         flexDirection: 'row',
         alignItems: 'center',
     },
     signWord: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: '500',
     },
     notFoundText: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: '500',
         color: '#D32F2F',
     },
     notFoundSubtext: {
-        fontSize: 12,
+        fontSize: fontSize(12),
         color: '#666',
-        marginLeft: 8,
+        marginLeft: scale(8),
     },
     noResults: {
         textAlign: 'center',
-        marginTop: 20,
-        fontSize: 16,
+        marginTop: verticalScale(20),
+        fontSize: fontSize(16),
         color: '#666',
     },
     recentContainer: {
-        marginTop: 10,
+        marginTop: verticalScale(10),
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
     },
     recentTitle: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: 'bold',
     },
     clearButton: {
-        padding: 8,
+        padding: moderateScale(8),
     },
     clearButtonText: {
         color: '#4C9EFF',
         fontWeight: '500',
     },
     recentList: {
-        maxHeight: 150,
-        marginBottom: 8,
+        maxHeight: verticalScale(150),
+        marginBottom: verticalScale(8),
     },
     // Updated styles for recent items with delete button
     recentItemRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginVertical: 4,
+        marginVertical: verticalScale(4),
     },
     recentItem: {
         flex: 1,
         backgroundColor: 'white',
-        padding: 10,
-        borderRadius: 6,
+        padding: moderateScale(10),
+        borderRadius: moderateScale(6),
         borderLeftWidth: 4,
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -2403,52 +2404,52 @@ const styles = StyleSheet.create({
     },
     recentItemContent: {
         flex: 1,
-        paddingRight: 8,
+        paddingRight: scale(8),
     },
     recentItemScript: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: '#333',
         fontWeight: '500',
     },
     recentItemText: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: '#666',
     },
     recentItemTranslated: {
-        fontSize: 12,
+        fontSize: fontSize(12),
         color: '#666',
-        marginTop: 2,
+        marginTop: verticalScale(2),
     },
     languageIndicator: {
-        width: 24,
-        height: 24,
-        borderRadius: 12,
+        width: moderateScale(24),
+        height: moderateScale(24),
+        borderRadius: moderateScale(12),
         alignItems: 'center',
         justifyContent: 'center',
     },
     languageIndicatorText: {
         color: 'white',
-        fontSize: 10,
+        fontSize: fontSize(10),
         fontWeight: 'bold',
     },
     deleteButton: {
-        padding: 10,
+        padding: moderateScale(10),
         justifyContent: 'center',
         alignItems: 'center',
     },
     // Undo toast styles
     undoToast: {
         position: 'absolute',
-        bottom: 70,
-        left: 20,
-        right: 20,
+        bottom: verticalScale(70),
+        left: scale(20),
+        right: scale(20),
         backgroundColor: '#333333',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 8,
+        paddingVertical: verticalScale(12),
+        paddingHorizontal: scale(20),
+        borderRadius: moderateScale(8),
         elevation: 3,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -2457,12 +2458,12 @@ const styles = StyleSheet.create({
     },
     undoToastText: {
         color: 'white',
-        fontSize: 14,
+        fontSize: fontSize(14),
     },
     undoButton: {
         color: '#4C9EFF',
         fontWeight: 'bold',
-        fontSize: 14,
+        fontSize: fontSize(14),
     },
     bottomSpacer: {
         height: 80, // Increased to ensure content is above navigation bar
@@ -2470,47 +2471,47 @@ const styles = StyleSheet.create({
     // Video error styles
     videoErrorContainer: {
         width: '100%',
-        height: 250,
+        height: verticalScale(250),
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#FFEBEE',
-        borderRadius: 4,
-        padding: 16,
+        borderRadius: moderateScale(4),
+        padding: moderateScale(16),
     },
     videoErrorText: {
         color: '#D32F2F',
         textAlign: 'center',
-        marginTop: 12,
-        marginBottom: 16,
+        marginTop: verticalScale(12),
+        marginBottom: verticalScale(16),
     },
     retryButton: {
         backgroundColor: '#4C9EFF',
-        borderRadius: 8,
-        paddingVertical: 8,
-        paddingHorizontal: 16,
+        borderRadius: moderateScale(8),
+        paddingVertical: verticalScale(8),
+        paddingHorizontal: scale(16),
         alignItems: 'center',
     },
     retryButtonText: {
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 14,
+        fontSize: fontSize(14),
     },
     // Missing video banner
     missingVideoBanner: {
         backgroundColor: '#FFEBEE',
-        borderRadius: 8,
-        padding: 16,
-        marginBottom: 20,
+        borderRadius: moderateScale(8),
+        padding: moderateScale(16),
+        marginBottom: verticalScale(20),
         flexDirection: 'row',
         alignItems: 'center',
     },
     missingVideoText: {
         color: '#D32F2F',
-        marginLeft: 8,
+        marginLeft: scale(8),
         flex: 1,
     },
     // Missing video icon for chips
     missingVideoIcon: {
-        marginLeft: 4,
+        marginLeft: scale(4),
     }
 })

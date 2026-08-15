@@ -9,6 +9,14 @@ import {
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from "@expo/vector-icons";
 import { getDetailedSearchResults, highlightMatchingText } from '../../services/SearchService';
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { tabBarClearance } from "../../constants/navigation";
 
 /**
  * Component to display search results from courses, chapters, and lessons
@@ -20,6 +28,7 @@ import { getDetailedSearchResults, highlightMatchingText } from '../../services/
  * @returns {React.Component} SearchResults component
  */
 const SearchResults = ({ courses, searchQuery, onResultPress }) => {
+    const insets = useSafeAreaInsets();
     const router = useRouter();
 
     // Don't show results for empty queries
@@ -34,7 +43,7 @@ const SearchResults = ({ courses, searchQuery, onResultPress }) => {
     if (searchResults.length === 0) {
         return (
             <View style={styles.emptyContainer}>
-                <MaterialIcons name="search-off" size={48} color="#666" />
+                <MaterialIcons name="search-off" size={moderateScale(48)} color="#666" />
                 <Text style={styles.emptyText}>
                     No results found for &quot;{searchQuery}&quot;
                 </Text>
@@ -104,13 +113,13 @@ const SearchResults = ({ courses, searchQuery, onResultPress }) => {
         const getIcon = (type) => {
             switch (type) {
                 case 'course':
-                    return <MaterialIcons name="class" size={24} color="#155658" />;
+                    return <MaterialIcons name="class" size={moderateScale(24)} color="#155658" />;
                 case 'chapter':
-                    return <MaterialIcons name="bookmark" size={24} color="#F7B316" />;
+                    return <MaterialIcons name="bookmark" size={moderateScale(24)} color="#F7B316" />;
                 case 'lesson':
-                    return <MaterialIcons name="school" size={24} color="#4C9EFF" />;
+                    return <MaterialIcons name="school" size={moderateScale(24)} color="#4C9EFF" />;
                 default:
-                    return <MaterialIcons name="info" size={24} color="#666" />;
+                    return <MaterialIcons name="info" size={moderateScale(24)} color="#666" />;
             }
         };
 
@@ -168,7 +177,7 @@ const SearchResults = ({ courses, searchQuery, onResultPress }) => {
                     )}
                 </View>
 
-                <MaterialIcons name="chevron-right" size={24} color="#999" />
+                <MaterialIcons name="chevron-right" size={moderateScale(24)} color="#999" />
             </TouchableOpacity>
         );
     };
@@ -199,7 +208,7 @@ const SearchResults = ({ courses, searchQuery, onResultPress }) => {
                 data={searchResults}
                 renderItem={renderCourseGroup}
                 keyExtractor={(item) => item.courseId}
-                contentContainerStyle={styles.resultsList}
+                contentContainerStyle={[styles.resultsList, { paddingBottom: tabBarClearance(insets.bottom) }]}
             />
         </View>
     );
@@ -213,74 +222,74 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingVertical: 40,
+        paddingVertical: verticalScale(40),
     },
     emptyText: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         color: '#333',
         textAlign: 'center',
-        marginTop: 16,
+        marginTop: verticalScale(16),
     },
     emptySubtext: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: '#666',
         textAlign: 'center',
-        marginTop: 8,
+        marginTop: verticalScale(8),
     },
     resultsHeader: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: 'bold',
         color: '#333',
-        marginBottom: 16,
+        marginBottom: verticalScale(16),
     },
     resultsList: {
-        paddingBottom: 20,
+        paddingBottom: verticalScale(20),
     },
     courseGroup: {
-        marginBottom: 20,
+        marginBottom: verticalScale(20),
     },
     courseGroupTitle: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: 'bold',
         color: '#155658',
-        marginBottom: 8,
-        paddingHorizontal: 8,
+        marginBottom: verticalScale(8),
+        paddingHorizontal: scale(8),
     },
     resultItem: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#fff',
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 8,
+        padding: moderateScale(12),
+        borderRadius: moderateScale(8),
+        marginBottom: verticalScale(8),
     },
     resultIconContainer: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: moderateScale(40),
+        height: moderateScale(40),
+        borderRadius: moderateScale(20),
         backgroundColor: '#f5f5f5',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 12,
+        marginRight: scale(12),
     },
     resultContent: {
         flex: 1,
     },
     resultTitle: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: '500',
         color: '#333',
-        marginBottom: 4,
+        marginBottom: verticalScale(4),
     },
     resultSubtitle: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: '#666',
     },
     additionalInfo: {
-        fontSize: 12,
+        fontSize: fontSize(12),
         color: '#666',
         fontStyle: 'italic',
-        marginTop: 4,
+        marginTop: verticalScale(4),
     },
     highlightedText: {
         backgroundColor: '#FFF9C4',

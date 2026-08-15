@@ -1,6 +1,12 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
 
 const NewCourses = ({ courses }) => {
     const router = useRouter();
@@ -45,36 +51,36 @@ const NewCourses = ({ courses }) => {
 
 const styles = StyleSheet.create({
     subsectionTitle: {
-        fontSize: 20,
+        fontSize: fontSize(20),
         fontWeight: "800",
         color: "#000",
-        marginBottom: 10,
+        marginBottom: verticalScale(10),
     },
     horizontalList: {
-        paddingRight: 20,
-        paddingBottom: 5,
+        paddingRight: scale(20),
+        paddingBottom: verticalScale(5),
     },
     newCoursesSection: {
-        marginTop: 20,
+        marginTop: verticalScale(20),
     },
     newCourseCard: {
-        width: 140,
-        height: 140,
-        borderRadius: 16,
-        marginRight: 16,
-        padding: 16,
+        width: moderateScale(140),
+        height: moderateScale(140),
+        borderRadius: moderateScale(16),
+        marginRight: scale(16),
+        padding: moderateScale(16),
     },
     courseIconNew: {
-        fontSize: 50,
-        marginBottom: 8,
+        fontSize: fontSize(50),
+        marginBottom: verticalScale(8),
         alignSelf: 'center'
     },
     newCourseTitle: {
-        fontSize: 17,
+        fontSize: fontSize(17),
         fontWeight: "900",
         color: "#000",
-        marginBottom: 4,
-        marginTop: -5,
+        marginBottom: verticalScale(4),
+        marginTop: verticalScale(-5),
         textAlign: 'center'
     },
 });

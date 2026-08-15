@@ -19,6 +19,12 @@ import * as FileSystem from 'expo-file-system/legacy';
 // Firebase imports
 import { doc, setDoc, collection, getDocs, deleteDoc, writeBatch } from 'firebase/firestore';
 import { auth, db } from '../../config/firebaseConfig';
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
 
 export default function SavedTranslations() {
     const insets = useSafeAreaInsets();
@@ -289,7 +295,7 @@ export default function SavedTranslations() {
                 <View style={styles.searchContainer}>
                     <AntDesign
                         name="search1"
-                        size={20}
+                        size={moderateScale(20)}
                         color="#999"
                         style={styles.searchIcon}
                     />
@@ -327,7 +333,7 @@ export default function SavedTranslations() {
                                                 style={styles.deleteButton}
                                                 onPress={() => deleteTranslation(index)}
                                             >
-                                                <AntDesign name="delete" size={18} color="#999" />
+                                                <AntDesign name="delete" size={moderateScale(18)} color="#999" />
                                             </TouchableOpacity>
                                         </View>
                                         <Text style={styles.translationText}>{item.text}</Text>
@@ -353,13 +359,13 @@ export default function SavedTranslations() {
                                     style={styles.clearAllButton}
                                     onPress={clearAllTranslations}
                                 >
-                                    <AntDesign name="delete" size={16} color="#F44336" />
+                                    <AntDesign name="delete" size={moderateScale(16)} color="#F44336" />
                                     <Text style={styles.clearAllText}>Clear All</Text>
                                 </TouchableOpacity>
                             </>
                         ) : (
                             <View style={styles.emptyContainer}>
-                                <Ionicons name="document-text-outline" size={60} color="#ccc" />
+                                <Ionicons name="document-text-outline" size={moderateScale(60)} color="#ccc" />
                                 <Text style={styles.emptyText}>No saved translations</Text>
                                 <Text style={styles.emptySubtext}>
                                     Your sign language translations will appear here
@@ -393,44 +399,44 @@ const styles = StyleSheet.create({
     },
     header: {
         backgroundColor: "#fff",
-        paddingTop: 60,
-        paddingBottom: 15,
-        paddingHorizontal: 20,
+        paddingTop: verticalScale(60),
+        paddingBottom: verticalScale(15),
+        paddingHorizontal: scale(20),
         borderBottomWidth: 1,
         borderBottomColor: "#eee",
     },
     title: {
-        fontSize: 24,
+        fontSize: fontSize(24),
         fontWeight: "bold",
         color: "#155658",
-        marginBottom: 15,
+        marginBottom: verticalScale(15),
     },
     searchContainer: {
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: "#f5f5f5",
-        paddingHorizontal: 15,
-        borderRadius: 10,
-        marginBottom: 15,
+        paddingHorizontal: scale(15),
+        borderRadius: moderateScale(10),
+        marginBottom: verticalScale(15),
     },
     searchIcon: {
-        marginRight: 10,
+        marginRight: scale(10),
     },
     searchInput: {
         flex: 1,
-        height: 40,
-        fontSize: 16,
+        height: verticalScale(40),
+        fontSize: fontSize(16),
         color: "#333",
     },
     scrollContent: {
-        padding: 20,
-        paddingBottom: 100,
+        padding: moderateScale(20),
+        paddingBottom: verticalScale(100),
     },
     translationItem: {
         backgroundColor: "#fff",
-        borderRadius: 10,
-        padding: 15,
-        marginBottom: 15,
+        borderRadius: moderateScale(10),
+        padding: moderateScale(15),
+        marginBottom: verticalScale(15),
         elevation: 2,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
@@ -441,72 +447,72 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 10,
+        marginBottom: verticalScale(10),
     },
     translationDate: {
-        fontSize: 12,
+        fontSize: fontSize(12),
         color: "#666",
     },
     deleteButton: {
-        padding: 5,
+        padding: moderateScale(5),
     },
     translationText: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: "#333",
-        marginBottom: 10,
+        marginBottom: verticalScale(10),
     },
     signsContainer: {
         flexDirection: "row",
         flexWrap: "wrap",
-        marginTop: 5,
+        marginTop: verticalScale(5),
     },
     signBadge: {
         backgroundColor: "#E0F2F1",
-        borderRadius: 15,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        margin: 3,
+        borderRadius: moderateScale(15),
+        paddingHorizontal: scale(10),
+        paddingVertical: verticalScale(5),
+        margin: moderateScale(3),
     },
     signText: {
         color: "#155658",
-        fontSize: 12,
+        fontSize: fontSize(12),
         fontWeight: "500",
     },
     moreSignsText: {
         color: "#666",
-        fontSize: 12,
+        fontSize: fontSize(12),
         alignSelf: "center",
-        marginLeft: 5,
+        marginLeft: scale(5),
     },
     clearAllButton: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: "#fff",
-        borderRadius: 10,
-        padding: 15,
-        marginTop: 10,
+        borderRadius: moderateScale(10),
+        padding: moderateScale(15),
+        marginTop: verticalScale(10),
     },
     clearAllText: {
         color: "#F44336",
-        marginLeft: 10,
+        marginLeft: scale(10),
         fontWeight: "500",
     },
     emptyContainer: {
         alignItems: "center",
         justifyContent: "center",
-        paddingVertical: 50,
+        paddingVertical: verticalScale(50),
     },
     emptyText: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: "bold",
         color: "#666",
-        marginTop: 20,
+        marginTop: verticalScale(20),
     },
     emptySubtext: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: "#999",
-        marginTop: 10,
+        marginTop: verticalScale(10),
         textAlign: "center",
     },
     loadingContainer: {
@@ -515,17 +521,17 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     loadingText: {
-        marginTop: 10,
+        marginTop: verticalScale(10),
         color: "#155658",
     },
     undoToast: {
         position: "absolute",
-        bottom: 20,
-        left: 20,
-        right: 20,
+        bottom: verticalScale(20),
+        left: scale(20),
+        right: scale(20),
         backgroundColor: "rgba(0,0,0,0.8)",
-        borderRadius: 10,
-        padding: 15,
+        borderRadius: moderateScale(10),
+        padding: moderateScale(15),
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -538,6 +544,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     bottomPadding: {
-        height: 100,
+        height: verticalScale(100),
     },
 }); 

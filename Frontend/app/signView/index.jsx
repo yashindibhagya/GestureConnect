@@ -11,6 +11,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Video } from 'expo-av';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
 
 export default function SignView() {
     const router = useRouter();
@@ -113,7 +119,7 @@ export default function SignView() {
             <SafeAreaView style={styles.safeArea}>
                 <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
                 <View style={styles.errorContainer}>
-                    <MaterialIcons name="error-outline" size={48} color="#F44336" />
+                    <MaterialIcons name="error-outline" size={moderateScale(48)} color="#F44336" />
                     <Text style={styles.errorText}>{error}</Text>
                     <TouchableOpacity style={styles.backButtonLarge} onPress={() => router.back()}>
                         <Text style={styles.backButtonText}>Go Back</Text>
@@ -130,7 +136,7 @@ export default function SignView() {
             {/* Header with back button and title */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <MaterialIcons name="arrow-back" size={24} color="#000" />
+                    <MaterialIcons name="arrow-back" size={moderateScale(24)} color="#000" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>{category || "Alphabet"}</Text>
             </View>
@@ -160,7 +166,7 @@ export default function SignView() {
                     >
                         <MaterialIcons
                             name={isPlaying ? "pause" : "play-arrow"}
-                            size={36}
+                            size={moderateScale(36)}
                             color="#fff"
                         />
                     </TouchableOpacity>
@@ -184,14 +190,14 @@ export default function SignView() {
                         style={styles.navButton}
                         onPress={handlePrevious}
                     >
-                        <MaterialIcons name="chevron-left" size={30} color="black" />
+                        <MaterialIcons name="chevron-left" size={moderateScale(30)} color="black" />
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         style={styles.navButton}
                         onPress={handleNext}
                     >
-                        <MaterialIcons name="chevron-right" size={30} color="black" />
+                        <MaterialIcons name="chevron-right" size={moderateScale(30)} color="black" />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -200,21 +206,21 @@ export default function SignView() {
             <View style={styles.toolsContainer}>
                 <TouchableOpacity style={styles.toolButton} onPress={handleSpeedChange}>
                     <View style={styles.toolIconContainer}>
-                        <MaterialIcons name="speed" size={24} color="#666" />
+                        <MaterialIcons name="speed" size={moderateScale(24)} color="#666" />
                     </View>
                     <Text style={styles.toolText}>Speed</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.toolButton}>
                     <View style={styles.toolIconContainer}>
-                        <MaterialIcons name="quiz" size={24} color="#666" />
+                        <MaterialIcons name="quiz" size={moderateScale(24)} color="#666" />
                     </View>
                     <Text style={styles.toolText}>Quiz</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.toolButton}>
                     <View style={styles.toolIconContainer}>
-                        <MaterialIcons name="style" size={24} color="#666" />
+                        <MaterialIcons name="style" size={moderateScale(24)} color="#666" />
                     </View>
                     <Text style={styles.toolText}>Flashcards</Text>
                 </TouchableOpacity>
@@ -237,20 +243,20 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,
+        padding: moderateScale(20),
     },
     errorText: {
-        fontSize: 18,
-        marginVertical: 10,
+        fontSize: fontSize(18),
+        marginVertical: verticalScale(10),
         textAlign: 'center',
         color: '#666',
     },
     backButtonLarge: {
         backgroundColor: '#4C9EFF',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-        marginTop: 20,
+        paddingVertical: verticalScale(10),
+        paddingHorizontal: scale(20),
+        borderRadius: moderateScale(8),
+        marginTop: verticalScale(20),
     },
     backButtonText: {
         color: '#fff',
@@ -259,17 +265,17 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
+        paddingHorizontal: scale(16),
+        paddingVertical: verticalScale(8),
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
     },
     backButton: {
-        paddingVertical: 8,
+        paddingVertical: verticalScale(8),
         paddingRight: 16, // More touch area
     },
     headerTitle: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: 'bold',
         flex: 1,
         textAlign: 'center',
@@ -294,61 +300,61 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     playPauseButton: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
+        width: moderateScale(60),
+        height: moderateScale(60),
+        borderRadius: moderateScale(30),
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         justifyContent: 'center',
         alignItems: 'center',
     },
     signLabel: {
         position: 'absolute',
-        bottom: 20,
+        bottom: verticalScale(20),
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
+        paddingHorizontal: scale(16),
+        paddingVertical: verticalScale(8),
+        borderRadius: moderateScale(20),
     },
     signText: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: 'bold',
     },
     navigationContainer: {
-        padding: 16,
+        padding: moderateScale(16),
         borderTopWidth: 1,
         borderTopColor: '#eee',
         alignItems: 'center',
     },
     currentSignText: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: '#666',
     },
     signLetter: {
-        fontSize: 24,
+        fontSize: fontSize(24),
         fontWeight: 'bold',
-        marginVertical: 8,
+        marginVertical: verticalScale(8),
     },
     navButtonsContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         width: '100%',
-        marginTop: 8,
+        marginTop: verticalScale(8),
     },
     navButton: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+        width: moderateScale(50),
+        height: moderateScale(50),
+        borderRadius: moderateScale(25),
         borderWidth: 1,
         borderColor: '#ccc',
         justifyContent: 'center',
         alignItems: 'center',
-        marginHorizontal: 20,
+        marginHorizontal: scale(20),
     },
     toolsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        paddingVertical: 16,
-        paddingHorizontal: 8,
+        paddingVertical: verticalScale(16),
+        paddingHorizontal: scale(8),
         borderTopWidth: 1,
         borderTopColor: '#eee',
     },
@@ -356,14 +362,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     toolIconContainer: {
-        width: 40,
-        height: 40,
+        width: moderateScale(40),
+        height: moderateScale(40),
         justifyContent: 'center',
         alignItems: 'center',
     },
     toolText: {
-        fontSize: 12,
-        marginTop: 4,
+        fontSize: fontSize(12),
+        marginTop: verticalScale(4),
         color: '#666',
     },
 });

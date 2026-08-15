@@ -3,6 +3,12 @@ import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from "@expo/vector-icons";
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
 
 const InProgressCourses = ({ courses }) => {
     const router = useRouter();
@@ -47,7 +53,7 @@ const InProgressCourses = ({ courses }) => {
 
             {item.progress.percentage === 100 && (
                 <View style={styles.completedBadge}>
-                    <MaterialIcons name="check-circle" size={16} color="#FFFFFF" />
+                    <MaterialIcons name="check-circle" size={moderateScale(16)} color="#FFFFFF" />
                     <Text style={styles.completedBadgeText}>Completed</Text>
                 </View>
             )}
@@ -79,87 +85,87 @@ const InProgressCourses = ({ courses }) => {
 
 const styles = StyleSheet.create({
     subsectionTitle: {
-        fontSize: 20,
+        fontSize: fontSize(20),
         fontWeight: "800",
         color: "#000",
-        marginBottom: 10,
-        marginTop: -40
+        marginBottom: verticalScale(10),
+        marginTop: verticalScale(-40)
     },
     noProgressText: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: "#666",
         fontStyle: "italic",
-        marginBottom: 20,
+        marginBottom: verticalScale(20),
     },
     horizontalList: {
-        paddingRight: 20,
-        paddingBottom: 5,
+        paddingRight: scale(20),
+        paddingBottom: verticalScale(5),
     },
     courseCard: {
-        width: 200,
-        height: 180,
-        borderRadius: 16,
-        marginRight: 16,
-        padding: 16,
+        width: scale(200),
+        height: verticalScale(180),
+        borderRadius: moderateScale(16),
+        marginRight: scale(16),
+        padding: moderateScale(16),
         position: 'relative',
     },
     courseIcon: {
-        fontSize: 30,
-        marginBottom: 8,
+        fontSize: fontSize(30),
+        marginBottom: verticalScale(8),
     },
     courseTitle: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: "bold",
         color: "#333",
-        marginBottom: 4,
+        marginBottom: verticalScale(4),
     },
     courseDescription: {
-        fontSize: 12,
+        fontSize: fontSize(12),
         color: "#555",
-        marginBottom: 10,
+        marginBottom: verticalScale(10),
         flex: 1,
     },
     progressInfo: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginBottom: 6,
+        marginBottom: verticalScale(6),
     },
     chapterCount: {
-        fontSize: 10,
+        fontSize: fontSize(10),
         color: "#000",
     },
     completedCount: {
-        fontSize: 10,
+        fontSize: fontSize(10),
         color: "#333",
         fontWeight: "500",
     },
     progressBarContainer: {
-        height: 6,
+        height: verticalScale(6),
         backgroundColor: "#F7B316",
-        borderRadius: 3,
+        borderRadius: moderateScale(3),
         overflow: "hidden",
     },
     progressBar: {
         height: "100%",
         backgroundColor: "#155658",
-        borderRadius: 3,
+        borderRadius: moderateScale(3),
     },
     completedBadge: {
         position: 'absolute',
-        top: 10,
-        right: 10,
+        top: verticalScale(10),
+        right: scale(10),
         backgroundColor: '#4CAF50',
-        borderRadius: 12,
-        paddingHorizontal: 8,
-        paddingVertical: 4,
+        borderRadius: moderateScale(12),
+        paddingHorizontal: scale(8),
+        paddingVertical: verticalScale(4),
         flexDirection: 'row',
         alignItems: 'center',
     },
     completedBadgeText: {
         color: 'white',
-        fontSize: 10,
+        fontSize: fontSize(10),
         fontWeight: 'bold',
-        marginLeft: 4,
+        marginLeft: scale(4),
     },
 });
 

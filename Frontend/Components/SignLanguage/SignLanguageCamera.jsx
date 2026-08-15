@@ -14,6 +14,12 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 import signLanguageService, { resolveModelHost } from "../../services/signLanguageService";
 import { RECOGNITION_CONFIG } from "../../config/constants";
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
 
 /**
  * Live sign-language camera.
@@ -205,7 +211,7 @@ export default function SignLanguageCamera({
 
         return (
             <View style={styles.placeholder}>
-                <MaterialIcons name="videocam-off" size={40} color="#fff" />
+                <MaterialIcons name="videocam-off" size={moderateScale(40)} color="#fff" />
                 <Text style={styles.placeholderTitle}>Camera access needed</Text>
                 <Text style={styles.placeholderText}>
                     GestureConnect needs the camera to read your signs.
@@ -299,26 +305,26 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: "#333",
-        padding: 20,
+        padding: moderateScale(20),
     },
     placeholderTitle: {
         color: "#fff",
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: "700",
-        marginTop: 10,
+        marginTop: verticalScale(10),
     },
     placeholderText: {
         color: "#ddd",
-        fontSize: 13,
+        fontSize: fontSize(13),
         textAlign: "center",
-        marginTop: 6,
+        marginTop: verticalScale(6),
     },
     permissionButton: {
         backgroundColor: "#26A69A",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 20,
-        marginTop: 14,
+        paddingVertical: verticalScale(10),
+        paddingHorizontal: scale(20),
+        borderRadius: moderateScale(20),
+        marginTop: verticalScale(14),
     },
     permissionButtonText: {
         color: "#fff",
@@ -326,9 +332,9 @@ const styles = StyleSheet.create({
     },
     topBar: {
         position: "absolute",
-        top: 10,
-        left: 10,
-        right: 10,
+        top: verticalScale(10),
+        left: scale(10),
+        right: scale(10),
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -337,22 +343,22 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: "rgba(0,0,0,0.55)",
-        paddingVertical: 4,
-        paddingHorizontal: 10,
-        borderRadius: 12,
+        paddingVertical: verticalScale(4),
+        paddingHorizontal: scale(10),
+        borderRadius: moderateScale(12),
     },
     badgeOk: {},
     badgeWarn: {},
     badgeText: {
         color: "#fff",
-        fontSize: 11,
+        fontSize: fontSize(11),
         fontWeight: "600",
     },
     dot: {
-        width: 7,
-        height: 7,
-        borderRadius: 4,
-        marginRight: 6,
+        width: moderateScale(7),
+        height: moderateScale(7),
+        borderRadius: moderateScale(4),
+        marginRight: scale(6),
     },
     dotOk: {
         backgroundColor: "#4CAF50",
@@ -365,65 +371,65 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        height: 3,
+        height: verticalScale(3),
         backgroundColor: "rgba(255,255,255,0.25)",
     },
     bufferBarFill: {
-        height: 3,
+        height: verticalScale(3),
         backgroundColor: "#4CAF50",
     },
     bottomBar: {
         position: "absolute",
-        bottom: 12,
-        left: 10,
-        right: 10,
+        bottom: verticalScale(12),
+        left: scale(10),
+        right: scale(10),
         alignItems: "center",
     },
     recordingPill: {
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: "rgba(211,47,47,0.85)",
-        paddingVertical: 5,
-        paddingHorizontal: 12,
-        borderRadius: 14,
+        paddingVertical: verticalScale(5),
+        paddingHorizontal: scale(12),
+        borderRadius: moderateScale(14),
     },
     recordingDot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
+        width: moderateScale(8),
+        height: moderateScale(8),
+        borderRadius: moderateScale(4),
         backgroundColor: "#fff",
-        marginRight: 6,
+        marginRight: scale(6),
     },
     recordingText: {
         color: "#fff",
-        fontSize: 12,
+        fontSize: fontSize(12),
         fontWeight: "700",
     },
     hintText: {
         color: "#fff",
-        fontSize: 12,
-        marginTop: 8,
+        fontSize: fontSize(12),
+        marginTop: verticalScale(8),
         backgroundColor: "rgba(0,0,0,0.55)",
-        paddingVertical: 4,
-        paddingHorizontal: 10,
-        borderRadius: 10,
+        paddingVertical: verticalScale(4),
+        paddingHorizontal: scale(10),
+        borderRadius: moderateScale(10),
         overflow: "hidden",
     },
     offlineHint: {
         position: "absolute",
-        bottom: 12,
-        left: 10,
-        right: 10,
+        bottom: verticalScale(12),
+        left: scale(10),
+        right: scale(10),
         alignItems: "center",
     },
     offlineHintText: {
         color: "#fff",
-        fontSize: 11,
+        fontSize: fontSize(11),
         textAlign: "center",
         backgroundColor: "rgba(0,0,0,0.6)",
-        paddingVertical: 5,
-        paddingHorizontal: 10,
-        borderRadius: 10,
+        paddingVertical: verticalScale(5),
+        paddingHorizontal: scale(10),
+        borderRadius: moderateScale(10),
         overflow: "hidden",
     },
 });

@@ -16,6 +16,12 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../config/firebaseConfig';
 import SignVideoPlayer from '../../Components/Shared/SignVideoPlayer';
 import { useVideo } from '../../context/VideoContext';
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
 
 export default function ChapterView() {
     const router = useRouter();
@@ -153,11 +159,11 @@ export default function ChapterView() {
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity style={styles.backButton} onPress={returnToCourse}>
-                    <MaterialIcons name="arrow-back" size={24} color="#333" />
+                    <MaterialIcons name="arrow-back" size={moderateScale(24)} color="#333" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>{sign.word}</Text>
                 {isCompleted && (
-                    <MaterialIcons name="check-circle" size={24} color="#4CAF50" style={styles.completedIcon} />
+                    <MaterialIcons name="check-circle" size={moderateScale(24)} color="#4CAF50" style={styles.completedIcon} />
                 )}
             </View>
 
@@ -219,7 +225,7 @@ export default function ChapterView() {
                                 style={[styles.navigationButton, styles.prevButton]}
                                 onPress={handlePrevSign}
                             >
-                                <MaterialIcons name="chevron-left" size={20} color="#4C9EFF" />
+                                <MaterialIcons name="chevron-left" size={moderateScale(20)} color="#4C9EFF" />
                                 <Text style={styles.navigationButtonText}>Previous</Text>
                             </TouchableOpacity>
                         )}
@@ -230,7 +236,7 @@ export default function ChapterView() {
                                 onPress={handleNextSign}
                             >
                                 <Text style={styles.navigationButtonText}>Next</Text>
-                                <MaterialIcons name="chevron-right" size={20} color="#4C9EFF" />
+                                <MaterialIcons name="chevron-right" size={moderateScale(20)} color="#4C9EFF" />
                             </TouchableOpacity>
                         )}
                     </View>
@@ -249,7 +255,7 @@ export default function ChapterView() {
                             <ActivityIndicator size="small" color="#FFFFFF" />
                         ) : (
                             <>
-                                <MaterialIcons name="check-circle" size={20} color="#FFFFFF" />
+                                <MaterialIcons name="check-circle" size={moderateScale(20)} color="#FFFFFF" />
                                 <Text style={styles.markCompletedButtonText}>
                                     Mark as Completed
                                 </Text>
@@ -273,90 +279,90 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     loadingText: {
-        marginTop: 10,
-        fontSize: 16,
+        marginTop: verticalScale(10),
+        fontSize: fontSize(16),
         color: '#666',
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        paddingHorizontal: scale(16),
+        paddingVertical: verticalScale(12),
         borderBottomWidth: 1,
         borderBottomColor: '#EEEEEE',
-        marginTop: 50
+        marginTop: verticalScale(50)
     },
     backButton: {
-        padding: 4,
+        padding: moderateScale(4),
     },
     headerTitle: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: 'bold',
-        marginLeft: 16,
+        marginLeft: scale(16),
         flex: 1,
         color: '#333',
     },
     completedIcon: {
-        marginLeft: 8,
+        marginLeft: scale(8),
     },
     scrollView: {
         flex: 1,
     },
     scrollViewContent: {
-        padding: 16,
+        padding: moderateScale(16),
         paddingBottom: 100, // Extra space for the fixed button
     },
     signDetailsContainer: {
         backgroundColor: '#F5F5F5',
-        borderRadius: 8,
-        padding: 16,
-        marginBottom: 16,
+        borderRadius: moderateScale(8),
+        padding: moderateScale(16),
+        marginBottom: verticalScale(16),
     },
     signTitle: {
-        fontSize: 24,
+        fontSize: fontSize(24),
         fontWeight: 'bold',
-        marginBottom: 16,
+        marginBottom: verticalScale(16),
         color: '#333',
     },
     translationContainer: {
         flexDirection: 'row',
-        marginBottom: 8,
+        marginBottom: verticalScale(8),
         flexWrap: 'wrap',
     },
     translationLabel: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: 'bold',
-        marginRight: 8,
+        marginRight: scale(8),
         color: '#666',
     },
     translationText: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: '#333',
         flex: 1,
     },
     relatedSignsContainer: {
-        marginTop: 12,
-        marginBottom: 16,
+        marginTop: verticalScale(12),
+        marginBottom: verticalScale(16),
     },
     relatedSignsLabel: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: 'bold',
-        marginBottom: 4,
+        marginBottom: verticalScale(4),
         color: '#666',
     },
     relatedSignsText: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: '#333',
     },
     navigationButtonsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop: 16,
+        marginTop: verticalScale(16),
     },
     navigationButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 8,
+        padding: moderateScale(8),
     },
     prevButton: {
         alignSelf: 'flex-start',
@@ -365,7 +371,7 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
     },
     navigationButtonText: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: '#4C9EFF',
         fontWeight: '500',
     },
@@ -374,7 +380,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        padding: 16,
+        padding: moderateScale(16),
         backgroundColor: '#FFFFFF',
         borderTopWidth: 1,
         borderTopColor: '#EEEEEE',
@@ -384,13 +390,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 12,
-        borderRadius: 8,
+        paddingVertical: verticalScale(12),
+        borderRadius: moderateScale(8),
     },
     markCompletedButtonText: {
         color: '#FFFFFF',
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: 'bold',
-        marginLeft: 8,
+        marginLeft: scale(8),
     },
 });

@@ -1,6 +1,12 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
 
 /**
  * Welcome card component for the home screen that appears when no courses are in progress
@@ -29,41 +35,41 @@ const WelcomeCard = () => {
 
 const styles = StyleSheet.create({
     container: {
-        height: 240,
+        height: verticalScale(240),
         //borderRadius: 20,
-        marginBottom: -20,
+        marginBottom: verticalScale(-20),
         overflow: 'hidden',
         //width: 250
-        marginTop: -45
+        marginTop: verticalScale(-45)
     },
     contentContainer: {
         flex: 1,
-        paddingVertical: 24,
-        paddingLeft: 24,
+        paddingVertical: verticalScale(24),
+        paddingLeft: scale(24),
         paddingRight: 120, // Extra padding on right to leave space for the image
         justifyContent: 'center',
         alignItems: 'flex-start', // Align items to the left
         width: '100%',
     },
     heading: {
-        fontSize: 20,
+        fontSize: fontSize(20),
         fontWeight: 'bold',
         color: '#155658',
-        marginBottom: 5,
+        marginBottom: verticalScale(5),
         textAlign: 'left', // Ensure text is left-aligned
         alignSelf: 'flex-start', // Position at the start of the container
         width: '100%', // Full width of the contentContainer
     },
     button: {
         backgroundColor: '#FFF',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 50,
+        paddingVertical: verticalScale(10),
+        paddingHorizontal: scale(20),
+        borderRadius: moderateScale(50),
         alignSelf: 'flex-start', // Position at the start of the container
-        marginTop: 5
+        marginTop: verticalScale(5)
     },
     buttonText: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         fontWeight: 'bold',
         color: '#155658',
     }

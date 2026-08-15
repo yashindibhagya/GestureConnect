@@ -10,7 +10,7 @@ import {
     RefreshControl,
     ImageBackground,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from "expo-router";
 import { UserDetailContext } from "../../context/UserDetailContext";
 import { VideoContext } from "../../context/VideoContext";
@@ -22,8 +22,16 @@ import NewCourses from "../../Components/Home/NewCourses";
 import Header from "../../Components/Home/Header";
 import WelcomeCard from "../../Components/Home/WelcomeCard"; // Import WelcomeCard
 import { MaterialIcons } from "@expo/vector-icons";
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
+import { tabBarClearance } from "../../constants/navigation";
 
 export default function Home() {
+    const insets = useSafeAreaInsets();
     const router = useRouter();
 
     // Use direct context access with fallback for when context is missing
@@ -116,7 +124,7 @@ export default function Home() {
             <StatusBar backgroundColor="#D0F3DA" barStyle="dark-content" />
             <ScrollView
                 style={styles.container}
-                contentContainerStyle={styles.contentContainer}
+                contentContainerStyle={{ paddingBottom: tabBarClearance(insets.bottom) }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl
@@ -136,7 +144,7 @@ export default function Home() {
                     style={styles.savedButton}
                     onPress={() => router.push("/saveSign/savedTranslations")}
                 >
-                    <MaterialIcons name="history" size={20} color="#155658" />
+                    <MaterialIcons name="history" size={moderateScale(20)} color="#155658" />
                     <Text style={styles.savedButtonText}>View Saved Translations</Text>
                 </TouchableOpacity>
 
@@ -210,58 +218,55 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        padding: 25,
-    },
-    contentContainer: {
-        paddingBottom: 100, // Extra padding for tab bar
+        padding: moderateScale(25),
     },
     contentContainerCard: {
-        paddingBottom: 65, // Extra padding for tab bar
+        paddingBottom: verticalScale(65),
     },
     greetingContainer: {
-        marginTop: 10,
+        marginTop: verticalScale(10),
     },
     greeting: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: "#666",
     },
     userName: {
-        fontSize: 28,
+        fontSize: fontSize(28),
         fontWeight: "bold",
         color: "#000",
-        marginTop: 5,
+        marginTop: verticalScale(5),
     },
     startedText: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: "#333",
-        marginTop: 5,
+        marginTop: verticalScale(5),
     },
     savedButton: {
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: "#E0F2F1",
-        paddingVertical: 12,
-        paddingHorizontal: 15,
-        borderRadius: 20,
+        paddingVertical: verticalScale(12),
+        paddingHorizontal: scale(15),
+        borderRadius: moderateScale(20),
         alignSelf: "flex-start",
         //marginTop: 10,
-        marginBottom: 35,
-        marginLeft: 150,
-        marginTop: -70
+        marginBottom: verticalScale(35),
+        marginLeft: scale(150),
+        marginTop: verticalScale(-70)
     },
     savedButtonText: {
         color: "#155658",
-        marginLeft: 8,
+        marginLeft: scale(8),
         fontWeight: "500",
     },
     sectionContainer: {
-        marginTop: 10,
+        marginTop: verticalScale(10),
     },
     sectionTitle: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: "bold",
         color: "#000",
-        marginBottom: 12,
+        marginBottom: verticalScale(12),
     },
     featureCardsContainer: {
         //marginTop: 25,
@@ -277,25 +282,25 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     featureCardTitle: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: "bold",
         color: "#fff",
-        paddingRight: 10,
-        top: 45
+        paddingRight: scale(10),
+        top: verticalScale(45)
     },
     featureCardImage: {
-        width: 80,
-        height: 80,
+        width: moderateScale(80),
+        height: moderateScale(80),
         resizeMode: "contain",
     },
     conversationsContainer: {
-        marginTop: 5,
+        marginTop: verticalScale(5),
     },
     conversationCard: {
         backgroundColor: "#fff",
-        borderRadius: 10,
-        padding: 15,
-        marginBottom: 10,
+        borderRadius: moderateScale(10),
+        padding: moderateScale(15),
+        marginBottom: verticalScale(10),
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
@@ -303,10 +308,10 @@ const styles = StyleSheet.create({
         elevation: 1,
     },
     conversationText: {
-        fontSize: 14,
+        fontSize: fontSize(14),
         color: "#333",
     },
     card: {
-        marginTop: -5
+        marginTop: verticalScale(-5)
     }
 });

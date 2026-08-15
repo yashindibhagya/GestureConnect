@@ -1,6 +1,10 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useUserDetail } from "../../context/UserDetailContext";
+import {
+    fontSize,
+    verticalScale,
+} from "../../utils/responsive";
 
 /**
  * Header component for the home screen
@@ -38,18 +42,18 @@ export default function Header() {
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 10,
-        marginBottom: 20,
+        marginTop: verticalScale(10),
+        marginBottom: verticalScale(20),
     },
     greeting: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: "#666",
-        marginBottom: 4,
+        marginBottom: verticalScale(4),
     },
     heading: {
         fontWeight: "900",
-        fontSize: 28,
+        fontSize: fontSize(28),
         color: "#000",
-        marginBottom: 8,
+        marginBottom: verticalScale(8),
     },
 });

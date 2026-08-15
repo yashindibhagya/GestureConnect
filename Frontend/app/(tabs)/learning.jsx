@@ -18,6 +18,12 @@ import AllCourses from '../../Components/Learning/AllCourses';
 import CompletedCourses from '../../Components/Learning/CompletedCourses';
 import SearchResults from '../../Components/Learning/SearchResults';
 import { searchLearningContent } from '../../services/SearchService';
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
 
 export default function Learning() {
     const router = useRouter();
@@ -185,7 +191,7 @@ export default function Learning() {
                 {/* Enhanced Search Bar */}
                 <View style={styles.searchContainer}>
                     <View style={styles.searchInputContainer}>
-                        <MaterialIcons name="search" size={20} color="#999" style={styles.searchIcon} />
+                        <MaterialIcons name="search" size={moderateScale(20)} color="#999" style={styles.searchIcon} />
                         <TextInput
                             style={styles.searchInput}
                             placeholder={isSearchMode ?
@@ -201,7 +207,7 @@ export default function Learning() {
                         />
                         {isSearchMode && (
                             <TouchableOpacity onPress={handleClearSearch} style={styles.clearButton}>
-                                <MaterialIcons name="close" size={20} color="#999" />
+                                <MaterialIcons name="close" size={moderateScale(20)} color="#999" />
                             </TouchableOpacity>
                         )}
                     </View>
@@ -239,7 +245,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        padding: 25,
+        padding: moderateScale(25),
     },
     contentContainer: {
         flex: 1,
@@ -250,52 +256,52 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     pageTitle: {
-        fontSize: 28,
+        fontSize: fontSize(28),
         fontWeight: 'bold',
-        marginBottom: 16,
+        marginBottom: verticalScale(16),
         color: '#333333',
     },
     searchContainer: {
-        marginBottom: 4,
+        marginBottom: verticalScale(4),
     },
     searchInputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
         borderColor: '#DDDDDD',
-        borderRadius: 25,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
+        borderRadius: moderateScale(25),
+        paddingHorizontal: scale(12),
+        paddingVertical: verticalScale(8),
         backgroundColor: '#fff',
     },
     searchIcon: {
-        marginRight: 8,
+        marginRight: scale(8),
     },
     searchInput: {
         flex: 1,
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: '#333333',
-        padding: 3,
+        padding: moderateScale(3),
     },
     clearButton: {
-        padding: 4,
+        padding: moderateScale(4),
     },
     tabContainer: {
         flexDirection: 'row',
-        marginBottom: 8,
+        marginBottom: verticalScale(8),
         borderBottomWidth: 1,
         borderBottomColor: '#EEEEEE',
     },
     tab: {
-        paddingVertical: 12,
-        marginRight: 24,
+        paddingVertical: verticalScale(12),
+        marginRight: scale(24),
         position: 'relative',
     },
     activeTab: {
         position: 'relative',
     },
     tabText: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: '#999999',
     },
     activeTabText: {
@@ -304,26 +310,26 @@ const styles = StyleSheet.create({
     },
     activeTabIndicator: {
         position: 'absolute',
-        bottom: -1,
+        bottom: verticalScale(-1),
         left: 0,
         right: 0,
-        height: 3,
+        height: verticalScale(3),
         backgroundColor: '#155658',
-        borderRadius: 3,
+        borderRadius: moderateScale(3),
     },
     searchModeIndicator: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 8,
-        paddingHorizontal: 16,
+        paddingVertical: verticalScale(8),
+        paddingHorizontal: scale(16),
         backgroundColor: '#E3F2FD',
-        borderRadius: 20,
+        borderRadius: moderateScale(20),
         alignSelf: 'flex-start',
-        marginBottom: 16,
+        marginBottom: verticalScale(16),
     },
     searchModeText: {
         color: '#1976D2',
-        marginLeft: 8,
-        fontSize: 14,
+        marginLeft: scale(8),
+        fontSize: fontSize(14),
     }
 });

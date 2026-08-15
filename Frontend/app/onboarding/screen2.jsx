@@ -5,15 +5,22 @@ import {
     StyleSheet,
     Image,
     TouchableOpacity,
-    Dimensions,
+    ScrollView,
     Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialIcons } from "@expo/vector-icons";
-
-const { width } = Dimensions.get("window");
+import {
+    SCREEN_WIDTH,
+    scale,
+    verticalScale,
+    moderateScale,
+    fontSize,
+    hp,
+    contentContainer,
+} from "../../utils/responsive";
 
 /**
  * Second onboarding screen for new users
@@ -61,11 +68,16 @@ export default function OnboardingScreen2() {
                 onPress={handleBack}
                 activeOpacity={0.7}
             >
-                <MaterialIcons name="arrow-back" size={24} color="#155658" />
+                <MaterialIcons name="arrow-back" size={moderateScale(24)} color="#155658" />
             </TouchableOpacity>
 
-            {/* Main content */}
-            <View style={styles.contentContainer}>
+            {/* Main content. Scrolls only when it has to — the centred layout
+                is preserved on any screen tall enough to fit it. */}
+            <ScrollView
+                style={styles.scroll}
+                contentContainerStyle={styles.contentContainer}
+                showsVerticalScrollIndicator={false}
+            >
                 <View style={styles.featureImageContainer}>
                     <Image
                         source={require("../../assets/images/textsign.png")}
@@ -103,7 +115,7 @@ export default function OnboardingScreen2() {
                         <Text style={styles.stepText}>Watch the sign language videos</Text>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
 
             {/* Navigation buttons */}
             <View style={styles.navigationContainer}>
@@ -146,29 +158,29 @@ const styles = StyleSheet.create({
     },
     upperLeaves: {
         position: "absolute",
-        top: -70,
-        width: width,
-        height: 300,
+        top: verticalScale(-70),
+        width: SCREEN_WIDTH,
+        height: hp(30),
         resizeMode: "cover",
         transform: [{ rotate: "180deg" }],
         opacity: 0.4,
     },
     lowerLeaves: {
         position: "absolute",
-        bottom: -70,
-        width: width,
-        height: 250,
+        bottom: verticalScale(-70),
+        width: SCREEN_WIDTH,
+        height: hp(25),
         resizeMode: "cover",
         opacity: 0.4,
     },
     backButton: {
         position: "absolute",
-        top: 50,
-        left: 20,
+        top: verticalScale(10),
+        left: scale(20),
         zIndex: 10,
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: moderateScale(40),
+        height: moderateScale(40),
+        borderRadius: moderateScale(20),
         backgroundColor: "#fff",
         justifyContent: "center",
         alignItems: "center",
@@ -178,21 +190,26 @@ const styles = StyleSheet.create({
         shadowRadius: 3,
         elevation: 2,
     },
-    contentContainer: {
+    scroll: {
         flex: 1,
+    },
+    contentContainer: {
+        ...contentContainer,
+        flexGrow: 1,
         alignItems: "center",
         justifyContent: "center",
-        paddingHorizontal: 30,
-        paddingTop: 60,
+        paddingHorizontal: scale(30),
+        paddingTop: verticalScale(60),
+        paddingBottom: verticalScale(20),
     },
     featureImageContainer: {
-        width: 180,
-        height: 180,
-        borderRadius: 90,
+        width: moderateScale(180),
+        height: moderateScale(180),
+        borderRadius: moderateScale(90),
         backgroundColor: "white",
         justifyContent: "center",
         alignItems: "center",
-        marginBottom: 30,
+        marginBottom: verticalScale(30),
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
@@ -200,88 +217,91 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
     featureImage: {
-        width: 120,
-        height: 120,
+        width: moderateScale(120),
+        height: moderateScale(120),
         resizeMode: "contain",
     },
     title: {
-        fontSize: 28,
+        fontSize: fontSize(28),
         fontWeight: "bold",
         color: "#155658",
         textAlign: "center",
-        marginBottom: 20,
+        marginBottom: verticalScale(20),
     },
     description: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: "#444",
         textAlign: "center",
-        lineHeight: 24,
-        marginBottom: 30,
+        lineHeight: fontSize(24),
+        marginBottom: verticalScale(30),
     },
     stepsContainer: {
         width: "100%",
-        marginTop: 10,
+        marginTop: verticalScale(10),
     },
     step: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 15,
+        marginBottom: verticalScale(15),
     },
     stepNumberContainer: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
+        width: moderateScale(30),
+        height: moderateScale(30),
+        borderRadius: moderateScale(15),
         backgroundColor: "#155658",
         justifyContent: "center",
         alignItems: "center",
-        marginRight: 15,
+        marginRight: scale(15),
     },
     stepNumber: {
         color: "white",
         fontWeight: "bold",
+        fontSize: fontSize(14),
     },
     stepText: {
-        fontSize: 16,
+        flex: 1,
+        fontSize: fontSize(16),
         color: "#333",
     },
     navigationContainer: {
+        ...contentContainer,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingHorizontal: 20,
-        paddingBottom: 40,
+        paddingHorizontal: scale(20),
+        paddingBottom: verticalScale(40),
     },
     skipButton: {
-        padding: 10,
+        padding: moderateScale(10),
     },
     skipButtonText: {
         color: "#155658",
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: "500",
     },
     indicatorsContainer: {
         flexDirection: "row",
     },
     indicator: {
-        width: 10,
-        height: 10,
-        borderRadius: 5,
+        width: moderateScale(10),
+        height: moderateScale(10),
+        borderRadius: moderateScale(5),
         backgroundColor: "#BBDFC8",
-        marginHorizontal: 5,
+        marginHorizontal: scale(5),
     },
     activeIndicator: {
         backgroundColor: "#155658",
-        width: 20,
+        width: moderateScale(20),
     },
     nextButton: {
         backgroundColor: "#F5A623",
-        paddingVertical: 12,
-        paddingHorizontal: 25,
-        borderRadius: 25,
+        paddingVertical: verticalScale(12),
+        paddingHorizontal: scale(25),
+        borderRadius: moderateScale(25),
     },
     nextButtonText: {
         color: "white",
-        fontSize: 16,
+        fontSize: fontSize(16),
         fontWeight: "bold",
     },
 });

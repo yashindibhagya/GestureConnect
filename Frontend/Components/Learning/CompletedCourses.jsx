@@ -8,6 +8,14 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from "@expo/vector-icons";
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { tabBarClearance } from "../../constants/navigation";
 
 /**
  * CompletedCourses component for displaying completed courses in the learning platform
@@ -19,6 +27,7 @@ import { MaterialIcons } from "@expo/vector-icons";
  * @returns {React.Component} CompletedCourses component
  */
 const CompletedCourses = ({ courses, searchQuery, onStartLearning }) => {
+    const insets = useSafeAreaInsets();
     const router = useRouter();
 
     // Navigate to a specific course
@@ -60,7 +69,7 @@ const CompletedCourses = ({ courses, searchQuery, onStartLearning }) => {
 
             {/* Achievement Badge for Completed Courses */}
             <View style={styles.achievementBadge}>
-                <MaterialIcons name="star" size={24} color="#fff" />
+                <MaterialIcons name="star" size={moderateScale(24)} color="#fff" />
                 <Text style={styles.achievementText}>Completed!</Text>
             </View>
         </TouchableOpacity>
@@ -77,7 +86,7 @@ const CompletedCourses = ({ courses, searchQuery, onStartLearning }) => {
                 </Text>
 
                 <View style={styles.motivationContainer}>
-                    <MaterialIcons name="school" size={48} color="#155658" />
+                    <MaterialIcons name="school" size={moderateScale(48)} color="#155658" />
                     <Text style={styles.motivationText}>
                         Complete a course to earn achievement badges!
                     </Text>
@@ -98,7 +107,7 @@ const CompletedCourses = ({ courses, searchQuery, onStartLearning }) => {
             data={courses}
             renderItem={renderCourseCard}
             keyExtractor={(item) => item.docId || item.id || Math.random().toString()}
-            contentContainerStyle={styles.courseList}
+            contentContainerStyle={[styles.courseList, { paddingBottom: tabBarClearance(insets.bottom) }]}
             numColumns={2}
             columnWrapperStyle={styles.row}
         />
@@ -107,48 +116,48 @@ const CompletedCourses = ({ courses, searchQuery, onStartLearning }) => {
 
 const styles = StyleSheet.create({
     courseList: {
-        paddingBottom: 24,
+        paddingBottom: verticalScale(24),
     },
     courseCard: {
         flex: 1,
-        margin: 8,
-        borderRadius: 16,
+        margin: moderateScale(8),
+        borderRadius: moderateScale(16),
         overflow: 'hidden',
-        padding: 16,
-        height: 170,
+        padding: moderateScale(16),
+        height: verticalScale(170),
         position: 'relative',
     },
     iconContainer: {
         alignItems: 'flex-end',
     },
     courseIcon: {
-        fontSize: 50,
-        marginBottom: 10,
+        fontSize: fontSize(50),
+        marginBottom: verticalScale(10),
     },
     courseInfoContainer: {
         justifyContent: 'flex-end',
         flex: 1,
     },
     courseTitle: {
-        fontSize: 18,
+        fontSize: fontSize(18),
         fontWeight: 'bold',
         color: '#333333',
-        marginBottom: 8,
+        marginBottom: verticalScale(8),
     },
     progressContainer: {
-        height: 4,
+        height: verticalScale(4),
         backgroundColor: 'rgba(255, 255, 255, 0.5)',
-        borderRadius: 2,
+        borderRadius: moderateScale(2),
         overflow: 'hidden',
-        marginBottom: 8,
+        marginBottom: verticalScale(8),
     },
     progressBar: {
         height: '100%',
         backgroundColor: '#4CAF50',
-        borderRadius: 2,
+        borderRadius: moderateScale(2),
     },
     chapterCount: {
-        fontSize: 12,
+        fontSize: fontSize(12),
         color: '#666666',
     },
     row: {
@@ -158,23 +167,23 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 40,
+        paddingHorizontal: scale(20),
+        paddingVertical: verticalScale(40),
     },
     noCoursesText: {
-        fontSize: 16,
+        fontSize: fontSize(16),
         color: '#666666',
         textAlign: 'center',
-        marginBottom: 20,
+        marginBottom: verticalScale(20),
     },
     // Achievement Badge Styles
     achievementBadge: {
         position: 'absolute',
-        top: 10,
-        right: 10,
+        top: verticalScale(10),
+        right: scale(10),
         backgroundColor: '#F7B316',
-        borderRadius: 15,
-        padding: 5,
+        borderRadius: moderateScale(15),
+        padding: moderateScale(5),
         flexDirection: 'row',
         alignItems: 'center',
         shadowColor: '#000',
@@ -184,31 +193,31 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     achievementText: {
-        fontSize: 12,
+        fontSize: fontSize(12),
         fontWeight: 'bold',
         color: '#fff',
-        marginLeft: 4,
+        marginLeft: scale(4),
     },
     // Motivation container styles
     motivationContainer: {
         alignItems: 'center',
-        padding: 20,
+        padding: moderateScale(20),
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        borderRadius: 16,
-        maxWidth: 300,
+        borderRadius: moderateScale(16),
+        maxWidth: scale(300),
     },
     motivationText: {
         textAlign: 'center',
-        marginTop: 10,
-        marginBottom: 20,
-        fontSize: 16,
+        marginTop: verticalScale(10),
+        marginBottom: verticalScale(20),
+        fontSize: fontSize(16),
         color: '#333',
     },
     startLearningButton: {
         backgroundColor: '#F7B316',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 20,
+        paddingHorizontal: scale(20),
+        paddingVertical: verticalScale(10),
+        borderRadius: moderateScale(20),
     },
     startLearningText: {
         color: '#fff',

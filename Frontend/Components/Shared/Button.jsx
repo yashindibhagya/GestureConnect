@@ -1,5 +1,10 @@
 import { TouchableOpacity, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import React from 'react';
+import {
+    fontSize,
+    moderateScale,
+    verticalScale,
+} from "../../utils/responsive";
 
 /**
  * Reusable Button component
@@ -55,14 +60,14 @@ export default function Button({
 
 const styles = StyleSheet.create({
     button: {
-        padding: 12,
+        padding: moderateScale(12),
         width: '70%',
-        height: 45,
-        borderRadius: 30,
+        height: verticalScale(45),
+        borderRadius: moderateScale(30),
         alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'center',
-        marginVertical: 10,
+        marginVertical: verticalScale(10),
     },
     fillButton: {
         backgroundColor: '#F7B316',
@@ -79,7 +84,7 @@ const styles = StyleSheet.create({
     buttonText: {
         fontWeight: '600',
         textAlign: 'center',
-        fontSize: 16,
+        fontSize: fontSize(16),
     },
     fillButtonText: {
         color: '#fff',

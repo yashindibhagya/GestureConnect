@@ -2,6 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Video } from 'expo-av';
 import { MaterialIcons } from '@expo/vector-icons';
+import {
+    fontSize,
+    moderateScale,
+    scale,
+    verticalScale,
+} from "../../utils/responsive";
 
 /**
  * SignVideoPlayer component for playing sign language videos
@@ -139,7 +145,7 @@ const SignVideoPlayer = ({
 
                 {error ? (
                     <View style={styles.errorContainer}>
-                        <MaterialIcons name="error-outline" size={48} color="#D32F2F" />
+                        <MaterialIcons name="error-outline" size={moderateScale(48)} color="#D32F2F" />
                         <Text style={styles.errorText}>{error}</Text>
                         <TouchableOpacity
                             style={styles.retryButton}
@@ -180,7 +186,7 @@ const SignVideoPlayer = ({
                 {/* Completion Badge */}
                 {isCompleted && (
                     <View style={styles.completedBadge}>
-                        <MaterialIcons name="check-circle" size={24} color="#4CAF50" />
+                        <MaterialIcons name="check-circle" size={moderateScale(24)} color="#4CAF50" />
                         <Text style={styles.completedText}>Completed</Text>
                     </View>
                 )}
@@ -196,7 +202,7 @@ const SignVideoPlayer = ({
                     >
                         <MaterialIcons
                             name="skip-previous"
-                            size={28}
+                            size={moderateScale(28)}
                             color={onPrevious ? "#4C9EFF" : "#CCCCCC"}
                         />
                     </TouchableOpacity>
@@ -208,7 +214,7 @@ const SignVideoPlayer = ({
                     >
                         <MaterialIcons
                             name={isPlaying ? "pause" : "play-arrow"}
-                            size={32}
+                            size={moderateScale(32)}
                             color="#FFFFFF"
                         />
                     </TouchableOpacity>
@@ -218,7 +224,7 @@ const SignVideoPlayer = ({
                         onPress={replayVideo}
                         disabled={isLoading || !!error}
                     >
-                        <MaterialIcons name="replay" size={28} color="#4C9EFF" />
+                        <MaterialIcons name="replay" size={moderateScale(28)} color="#4C9EFF" />
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -228,7 +234,7 @@ const SignVideoPlayer = ({
                     >
                         <MaterialIcons
                             name="skip-next"
-                            size={28}
+                            size={moderateScale(28)}
                             color={onNext ? "#4C9EFF" : "#CCCCCC"}
                         />
                     </TouchableOpacity>
@@ -241,7 +247,7 @@ const SignVideoPlayer = ({
                 onPress={togglePlaybackSpeed}
                 disabled={isLoading || !!error}
             >
-                <MaterialIcons name="speed" size={18} color="#666" />
+                <MaterialIcons name="speed" size={moderateScale(18)} color="#666" />
                 <Text style={styles.speedText}>{playbackRate}x</Text>
             </TouchableOpacity>
 
@@ -251,7 +257,7 @@ const SignVideoPlayer = ({
                     style={styles.completeButton}
                     onPress={onComplete}
                 >
-                    <MaterialIcons name="check-circle" size={18} color="#FFFFFF" />
+                    <MaterialIcons name="check-circle" size={moderateScale(18)} color="#FFFFFF" />
                     <Text style={styles.completeButtonText}>Mark as Completed</Text>
                 </TouchableOpacity>
             )}
@@ -262,12 +268,12 @@ const SignVideoPlayer = ({
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        marginVertical: 16,
+        marginVertical: verticalScale(16),
     },
     title: {
-        fontSize: 24,
+        fontSize: fontSize(24),
         fontWeight: 'bold',
-        marginBottom: 12,
+        marginBottom: verticalScale(12),
         textAlign: 'center',
         color: '#333',
     },
@@ -275,7 +281,7 @@ const styles = StyleSheet.create({
         width: '100%',
         aspectRatio: 16 / 9,
         backgroundColor: '#000',
-        borderRadius: 12,
+        borderRadius: moderateScale(12),
         overflow: 'hidden',
         position: 'relative',
     },
@@ -291,25 +297,25 @@ const styles = StyleSheet.create({
     },
     loadingText: {
         color: '#FFFFFF',
-        marginTop: 12,
+        marginTop: verticalScale(12),
     },
     errorContainer: {
         ...StyleSheet.absoluteFillObject,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#FFEBEE',
-        padding: 16,
+        padding: moderateScale(16),
     },
     errorText: {
         color: '#D32F2F',
         textAlign: 'center',
-        marginVertical: 12,
+        marginVertical: verticalScale(12),
     },
     retryButton: {
         backgroundColor: '#4C9EFF',
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 20,
+        paddingVertical: verticalScale(8),
+        paddingHorizontal: scale(16),
+        borderRadius: moderateScale(20),
     },
     retryButtonText: {
         color: '#FFFFFF',
@@ -317,17 +323,17 @@ const styles = StyleSheet.create({
     },
     completedBadge: {
         position: 'absolute',
-        top: 12,
-        right: 12,
+        top: verticalScale(12),
+        right: scale(12),
         backgroundColor: 'rgba(255, 255, 255, 0.9)',
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 4,
-        paddingHorizontal: 8,
-        borderRadius: 16,
+        paddingVertical: verticalScale(4),
+        paddingHorizontal: scale(8),
+        borderRadius: moderateScale(16),
     },
     completedText: {
-        marginLeft: 4,
+        marginLeft: scale(4),
         color: '#4CAF50',
         fontWeight: 'bold',
     },
@@ -335,39 +341,39 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 16,
+        marginTop: verticalScale(16),
     },
     controlButton: {
-        width: 48,
-        height: 48,
+        width: moderateScale(48),
+        height: moderateScale(48),
         justifyContent: 'center',
         alignItems: 'center',
-        marginHorizontal: 8,
+        marginHorizontal: scale(8),
     },
     disabledButton: {
         opacity: 0.5,
     },
     playPauseButton: {
-        width: 64,
-        height: 64,
-        borderRadius: 32,
+        width: moderateScale(64),
+        height: moderateScale(64),
+        borderRadius: moderateScale(32),
         backgroundColor: '#4C9EFF',
         justifyContent: 'center',
         alignItems: 'center',
-        marginHorizontal: 16,
+        marginHorizontal: scale(16),
     },
     speedButton: {
         flexDirection: 'row',
         alignItems: 'center',
         alignSelf: 'center',
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 16,
+        paddingVertical: verticalScale(6),
+        paddingHorizontal: scale(12),
+        borderRadius: moderateScale(16),
         backgroundColor: '#F5F5F5',
-        marginTop: 12,
+        marginTop: verticalScale(12),
     },
     speedText: {
-        marginLeft: 4,
+        marginLeft: scale(4),
         fontWeight: 'bold',
         color: '#666',
     },
@@ -376,16 +382,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#4CAF50',
-        paddingVertical: 12,
-        paddingHorizontal: 24,
-        borderRadius: 24,
-        marginTop: 16,
+        paddingVertical: verticalScale(12),
+        paddingHorizontal: scale(24),
+        borderRadius: moderateScale(24),
+        marginTop: verticalScale(16),
         alignSelf: 'center',
     },
     completeButtonText: {
         color: '#FFFFFF',
         fontWeight: 'bold',
-        marginLeft: 8,
+        marginLeft: scale(8),
     },
 });
 
