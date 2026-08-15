@@ -1,23 +1,42 @@
 {
   "expo": {
-    "name": "Frontend",
-    "slug": "Frontend",
+    "name": "GestureConnect",
+    "slug": "gestureconnect",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "frontend",
+    "scheme": "gestureconnect",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "tech.bridgeme.gestureconnect",
+      "infoPlist": {
+        "NSCameraUsageDescription": "GestureConnect uses the camera to read your hand signs and translate them into text.",
+        "NSMicrophoneUsageDescription": "GestureConnect uses the microphone to turn spoken words into sign language.",
+        "NSPhotoLibraryUsageDescription": "GestureConnect needs photo library access so you can set a profile picture.",
+        "NSPhotoLibraryAddUsageDescription": "GestureConnect saves sign language videos you export to your photo library.",
+        "NSSpeechRecognitionUsageDescription": "GestureConnect uses speech recognition to convert what you say into sign language.",
+        "NSLocationWhenInUseUsageDescription": "GestureConnect uses your location to suggest nearby sign language resources.",
+        "NSLocalNetworkUsageDescription": "GestureConnect connects to the sign language recognition server running on your local network.",
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        }
+      }
     },
     "android": {
+      "package": "tech.bridgeme.gestureconnect",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/adaptive-icon.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.INTERNET"
+      ]
     },
     "web": {
       "output": "static",
@@ -37,9 +56,20 @@
           }
         }
       ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "GestureConnect uses the camera to read your hand signs and translate them into text.",
+          "microphonePermission": "GestureConnect uses the microphone to turn spoken words into sign language.",
+          "recordAudioAndroid": true
+        }
+      ],
       "expo-audio",
       "expo-video"
     ],
+    "extra": {
+      "modelServerHost": null
+    },
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true

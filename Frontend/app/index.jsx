@@ -33,7 +33,7 @@ export default function WelcomeScreen() {
                 {/* Get Started Button */}
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => router.push("selectOption/optionSignUp")}
+                    onPress={() => router.push("/selectOption/optionSignUp")}
                 >
                     <Text style={styles.buttonText}>Get Started</Text>
                 </TouchableOpacity>
@@ -41,7 +41,7 @@ export default function WelcomeScreen() {
                 {/* Already have an account? (Link to Sign In Page) */}
 
                 <TouchableOpacity
-                    onPress={() => router.push("selectOption/optionSignIn")}
+                    onPress={() => router.push("/selectOption/optionSignIn")}
                 >
                     <Text style={styles.linkText}>Already have an account?</Text>
                 </TouchableOpacity>

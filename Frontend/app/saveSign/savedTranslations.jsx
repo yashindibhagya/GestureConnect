@@ -11,6 +11,7 @@ import {
     TextInput
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import Common from "../../Components/Container/Common";
 import * as FileSystem from 'expo-file-system/legacy';
@@ -20,6 +21,7 @@ import { doc, setDoc, collection, getDocs, deleteDoc, writeBatch } from 'firebas
 import { auth, db } from '../../config/firebaseConfig';
 
 export default function SavedTranslations() {
+    const insets = useSafeAreaInsets();
     const [signTranslations, setSignTranslations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -276,7 +278,7 @@ export default function SavedTranslations() {
     const filteredTranslations = getFilteredTranslations();
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { paddingTop: insets.top }]}>
             <StatusBar style="dark" />
             <Common />
 

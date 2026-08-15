@@ -6,11 +6,11 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
-    SafeAreaView,
     StatusBar,
     RefreshControl,
     ImageBackground,
-} from "react-native";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from "expo-router";
 import { UserDetailContext } from "../../context/UserDetailContext";
 import { VideoContext } from "../../context/VideoContext";

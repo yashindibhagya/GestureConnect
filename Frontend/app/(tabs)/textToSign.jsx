@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     StyleSheet,
     ActivityIndicator,
-    SafeAreaView,
     ScrollView,
     KeyboardAvoidingView,
     Platform,
@@ -15,6 +14,7 @@ import {
     Alert,
     RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Video } from 'expo-av';
 import { VideoContext } from '../../context/VideoContext';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -26,11 +26,11 @@ import VoiceRecorder from '../../Components/TextToSign/VoiceRecorder';
 import {
     translateSinhalaToEnglish,
     translateTamilToEnglish,
-} from '../utils/translationApi';
+} from '../../utils/translationApi';
 
 // Import the transliteration services
-import { transliterateToSinhalaScript } from '../utils/sinhalaTransliteration';
-import { transliterateToTamilScript } from '../utils/TamilTransliteration';
+import { transliterateToSinhalaScript } from '../../utils/sinhalaTransliteration';
+import { transliterateToTamilScript } from '../../utils/TamilTransliteration';
 import Common from '../../Components/Container/Common';
 import Button from '../../Components/Shared/Button';
 import { MaterialIcons } from '@expo/vector-icons';

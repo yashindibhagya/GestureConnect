@@ -1,7 +1,7 @@
 /**
  * Service for loading and processing sign language data
  */
-import CloudinaryUtils from '../app/utils/CloudinaryUtils';
+import CloudinaryUtils from '../utils/CloudinaryUtils';
 
 // Import JSON data files
 import englishAlphabet from '../assets/Data/englishAlphabet.json';

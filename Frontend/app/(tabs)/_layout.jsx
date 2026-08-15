@@ -1,26 +1,42 @@
 import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Tabs } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
+const TAB_BAR_HEIGHT = 60;
+
 /**
  * Tab layout component that sets up the bottom tab navigation
  */
 export default function TabsLayout() {
+    const insets = useSafeAreaInsets();
+
+    // The bar floats above the screen, so it has to be lifted clear of the iOS home
+    // indicator and the Android gesture bar itself — the navigator cannot do it for
+    // an absolutely positioned bar. A small floor keeps it off the very edge on
+    // devices with no inset at all.
+    const bottomOffset = Math.max(insets.bottom, 12);
+
     return (
         <Tabs
             screenOptions={{
                 headerShown: false,
                 tabBarShowLabel: false, // Hide text labels
-                tabBarStyle: styles.tabBar,
+                tabBarStyle: [
+                    styles.tabBar,
+                    {
+                        bottom: bottomOffset,
+                        height: TAB_BAR_HEIGHT,
+                    },
+                ],
+                tabBarItemStyle: styles.tabBarItem,
                 tabBarActiveTintColor: "#074D4E", // Active icon color
                 tabBarInactiveTintColor: "#074D4E", // Inactive icon color
                 tabBarHideOnKeyboard: true,
-                detachPreviousScreen: true,
-                presentation: 'transparentModal'
             }}
         >
             <Tabs.Screen
@@ -53,6 +69,9 @@ export default function TabsLayout() {
                 options={{
                     tabBarButton: (props) => (
                         <TouchableOpacity
+                            accessibilityRole="button"
+                            accessibilityState={props.accessibilityState}
+                            accessibilityLabel="Sign to text"
                             style={[
                                 styles.middleButton,
                                 props.accessibilityState?.selected && styles.middleButtonActive,
@@ -103,25 +122,37 @@ const styles = StyleSheet.create({
         right: 20,
         elevation: 5,
         backgroundColor: "#fff",
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        height: 60,
+        // Rounded on all four corners because the bar floats clear of the bottom
+        // edge rather than sitting flush against it.
+        borderRadius: 20,
+        borderTopWidth: 0,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: -2 },
         shadowOpacity: 0.1,
         shadowRadius: 5,
+        paddingBottom: 0,
+    },
+    tabBarItem: {
+        // Without this the icons sit high on iOS, where the navigator reserves room
+        // for labels that this bar does not show.
+        height: TAB_BAR_HEIGHT,
+        paddingTop: 0,
+        paddingBottom: 0,
     },
     iconContainer: {
+        // Fills the tab item and centres the icon, instead of nudging it down by a
+        // fixed number of pixels that only lined up on one platform.
+        height: TAB_BAR_HEIGHT,
+        width: "100%",
         alignItems: "center",
         justifyContent: "center",
-        top: 9,
     },
     activeTab: {
         position: "relative",
     },
     activeLine: {
         position: "absolute",
-        top: -16, // Adjust height of the line
+        top: 6,
         width: 25,
         height: 4,
         backgroundColor: "#074D4E", // Match the active color
@@ -134,7 +165,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#074D4E", // Dark green
         justifyContent: "center",
         alignItems: "center",
-        top: -10, // Floating effect
+        marginTop: -10, // Floating effect
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 5 },
         shadowOpacity: 0.3,

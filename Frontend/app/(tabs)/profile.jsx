@@ -7,12 +7,12 @@ import {
     TouchableOpacity,
     Alert,
     Pressable,
-    SafeAreaView,
     ScrollView,
     KeyboardAvoidingView,
     Platform,
-    ActivityIndicator
-} from "react-native";
+    ActivityIndicator,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";

@@ -4,12 +4,12 @@ import {
     Text,
     TouchableOpacity,
     StyleSheet,
-    SafeAreaView,
     StatusBar,
     TextInput,
     ActivityIndicator,
-    Keyboard
+    Keyboard,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from 'expo-router';
 import { useVideo } from '../../context/VideoContext';

@@ -1,96 +1,95 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  KeyboardAvoidingView,
-  Platform,
   TouchableOpacity,
   Share,
-  TextInput,
-  Alert
+  Alert,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import * as FileSystem from "expo-file-system/legacy";
+
 import Common from "../../Components/Container/Common";
 import Button from "../../Components/Shared/Button";
-//import SignLanguageCameraWrapper from "../../Components/SignLanguageCameraWrapper";
-import * as FileSystem from 'expo-file-system/legacy';
-import { useRouter } from 'expo-router';
+import SignLanguageCamera from "../../Components/SignLanguage/SignLanguageCamera";
+import signLanguageService from "../../services/signLanguageService";
 
 // Firebase imports
-import { doc, setDoc, collection, getDocs, deleteDoc } from 'firebase/firestore';
-import { auth, db } from '../../config/firebaseConfig';
+import { doc, setDoc, collection, getDocs, deleteDoc } from "firebase/firestore";
+import { auth, db } from "../../config/firebaseConfig";
+
+const STORAGE_FILE = "savedSignTranslations.json";
+const MAX_RECENT = 10;
 
 /**
- * SignToText screen for translating sign language to text
- * Uses the SignLanguageCamera component for real-time sign language recognition
+ * Sign-to-text screen.
+ *
+ * The camera streams continuously to the model server, which appends each recognised
+ * sign to a rolling sentence. Nothing stops after a single word and there is no
+ * recording time limit — the user signs until they press stop.
  */
 export default function SignToText() {
-  // Router for navigation
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
-  // State for recognition
-  const [translatedText, setTranslatedText] = useState("");
+  const [isSigning, setIsSigning] = useState(false);
+  const [sentence, setSentence] = useState("");
   const [detectedSigns, setDetectedSigns] = useState([]);
+  const [liveWord, setLiveWord] = useState(null);
+  const [confidence, setConfidence] = useState(0);
+  const [connectionState, setConnectionState] = useState("idle");
+  const [serverError, setServerError] = useState(null);
+
   const [translationHistory, setTranslationHistory] = useState([]);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [recordingInProgress, setRecordingInProgress] = useState(false);
-  const [recordingTimer, setRecordingTimer] = useState(null);
-  const [timeRemaining, setTimeRemaining] = useState(10);
   const [isSaved, setIsSaved] = useState(false);
-  const [currentConversation, setCurrentConversation] = useState(null);
+
   const [showUndoToast, setShowUndoToast] = useState(false);
   const [deletedConversation, setDeletedConversation] = useState(null);
   const undoTimerRef = useRef(null);
 
-  // Load saved translations on component mount
   useEffect(() => {
     loadSavedTranslations();
+
+    return () => {
+      if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Handle recording timeout
-  useEffect(() => {
-    if (recordingInProgress && timeRemaining > 0) {
-      const timer = setTimeout(() => {
-        setTimeRemaining(prev => prev - 1);
-      }, 1000);
+  const storagePath = FileSystem.documentDirectory + STORAGE_FILE;
 
-      return () => clearTimeout(timer);
-    } else if (recordingInProgress && timeRemaining === 0) {
-      handleStopRecording();
-    }
-  }, [recordingInProgress, timeRemaining]);
+  // -- persistence ----------------------------------------------------------
 
-  // Load saved translations from storage
   const loadSavedTranslations = async () => {
     try {
-      // First try to load from local storage
-      const savedTranslationsPath = FileSystem.documentDirectory + 'savedSignTranslations.json';
-      const fileInfo = await FileSystem.getInfoAsync(savedTranslationsPath);
+      const fileInfo = await FileSystem.getInfoAsync(storagePath);
 
       if (fileInfo.exists) {
-        const savedData = await FileSystem.readAsStringAsync(savedTranslationsPath);
-        const parsedData = JSON.parse(savedData);
-        setTranslationHistory(parsedData);
+        const savedData = await FileSystem.readAsStringAsync(storagePath);
+        const parsed = JSON.parse(savedData);
+        if (Array.isArray(parsed)) setTranslationHistory(parsed);
       }
 
-      // If user is logged in, try to load from Firestore
       if (auth.currentUser) {
-        const conversationsRef = collection(db, "users", auth.currentUser.uid, "signConversations");
+        const conversationsRef = collection(
+          db,
+          "users",
+          auth.currentUser.uid,
+          "signConversations"
+        );
         const snapshot = await getDocs(conversationsRef);
 
         if (!snapshot.empty) {
-          const firestoreData = snapshot.docs.map(doc => doc.data());
-          // Merge with local data, prioritizing Firestore data
-          const mergedData = [...firestoreData];
-          setTranslationHistory(mergedData);
-
-          // Update local storage with merged data
+          const firestoreData = snapshot.docs.map(d => d.data());
+          setTranslationHistory(firestoreData);
           await FileSystem.writeAsStringAsync(
-            savedTranslationsPath,
-            JSON.stringify(mergedData)
+            storagePath,
+            JSON.stringify(firestoreData)
           );
         }
       }
@@ -99,167 +98,101 @@ export default function SignToText() {
     }
   };
 
-  // Navigate to saved translations screen
-  const navigateToSavedTranslations = () => {
-    router.push('/savedTranslations');
-  };
-
-  // Start recording
-  const handleStartRecording = () => {
-    setRecordingInProgress(true);
-    setTimeRemaining(10);
-    setTranslatedText("");
-    setDetectedSigns([]);
-    setIsSaved(false);
-    setCurrentConversation(null);
-    console.log("Started recording");
-  };
-
-  // Stop recording
-  const handleStopRecording = () => {
-    setRecordingInProgress(false);
-    setIsProcessing(true);
-    console.log("Stopped recording, processing...");
-
-    // Simulate processing delay
-    setTimeout(() => {
-      setIsProcessing(false);
-
-      // If we have a translation, create current conversation object
-      if (translatedText && translatedText.trim() !== "") {
-        const newConversation = {
-          text: translatedText,
-          timestamp: new Date(),
-          signs: detectedSigns
-        };
-
-        setCurrentConversation(newConversation);
-        console.log("Created conversation:", newConversation);
-      } else {
-        console.log("No translation available");
-      }
-    }, 1000);
-  };
-
-  // Handle real-time translation update
-  const handleTranslationUpdate = (text, signs) => {
-    console.log("Translation update received:", text);
-    if (text && text.trim() !== "") {
-      setTranslatedText(text);
-      setDetectedSigns(signs);
+  const persist = async history => {
+    setTranslationHistory(history);
+    try {
+      await FileSystem.writeAsStringAsync(storagePath, JSON.stringify(history));
+    } catch (error) {
+      console.error("Error writing saved translations:", error);
     }
   };
 
-  // Handle translation completion
-  const handleTranslationComplete = (text, signs) => {
-    console.log("Translation complete received:", text);
-    if (text && text.trim() !== "") {
-      setTranslatedText(text);
-      setDetectedSigns(signs);
+  // -- recognition ----------------------------------------------------------
 
-      // Create current conversation object
-      const newConversation = {
-        text: text,
-        timestamp: new Date(),
-        signs: signs
-      };
+  const handlePrediction = useCallback(data => {
+    // The server owns the sentence, so the screen just mirrors what it sends.
+    setSentence(data.sentence || "");
+    setDetectedSigns(data.words || []);
+    setLiveWord(data.word || null);
+    setConfidence(data.confidence || 0);
 
-      setCurrentConversation(newConversation);
-      console.log("Created conversation from complete translation:", newConversation);
-    } else {
-      console.log("No translation text received on completion");
-    }
+    // Any new word means the saved copy is now out of date.
+    if (data.committed) setIsSaved(false);
+  }, []);
+
+  const handleStatusChange = useCallback(state => {
+    setConnectionState(state);
+    if (state === "connected") setServerError(null);
+  }, []);
+
+  const handleError = useCallback(message => setServerError(message), []);
+
+  const toggleSigning = () => {
+    setIsSigning(prev => !prev);
   };
 
-  // Reset the translation
-  const resetTranslation = () => {
-    setTranslatedText("");
+  const clearTranslation = () => {
+    // Clear on the server too, otherwise its sentence keeps growing from where it
+    // left off and reappears on the next prediction.
+    signLanguageService.reset();
+    setSentence("");
     setDetectedSigns([]);
+    setLiveWord(null);
+    setConfidence(0);
     setIsSaved(false);
-    setCurrentConversation(null);
-    console.log("Translation reset");
   };
 
-  // Save the current translation
+  const removeLastWord = () => {
+    signLanguageService.backspace();
+    setIsSaved(false);
+  };
+
+  // -- save / share ---------------------------------------------------------
+
   const saveTranslation = async () => {
-    if (!currentConversation) {
-      // If there's no current conversation but there is translated text,
-      // create a conversation object from the current state
-      if (translatedText && translatedText.trim() !== "") {
-        const newConversation = {
-          text: translatedText,
-          timestamp: new Date(),
-          signs: detectedSigns
-        };
-        setCurrentConversation(newConversation);
+    const text = sentence.trim();
 
-        // Continue with saving this new conversation
-        await saveConversationToStorage(newConversation);
-      } else {
-        Alert.alert("Error", "No translation to save.");
-      }
+    if (!text) {
+      Alert.alert("Nothing to save", "Sign something first, then save it.");
       return;
     }
 
-    await saveConversationToStorage(currentConversation);
-  };
+    const conversation = {
+      text,
+      timestamp: new Date().toISOString(),
+      signs: detectedSigns,
+    };
 
-  // Helper function to save conversation to storage
-  const saveConversationToStorage = async (conversation) => {
     try {
       if (auth.currentUser) {
-        // Firebase is available and user is logged in
-        const conversationsRef = collection(db, "users", auth.currentUser.uid, "signConversations");
-        const newConversationRef = doc(conversationsRef);
+        const conversationsRef = collection(
+          db,
+          "users",
+          auth.currentUser.uid,
+          "signConversations"
+        );
+        const newRef = doc(conversationsRef);
 
-        // Prepare the data to save
         const conversationData = {
           ...conversation,
-          id: newConversationRef.id,
-          userId: auth.currentUser.uid
+          id: newRef.id,
+          userId: auth.currentUser.uid,
         };
 
-        // Save to Firestore
-        await setDoc(newConversationRef, conversationData);
-
-        // Update local state
-        const newHistory = [
-          conversationData,
-          ...translationHistory.filter(item =>
-            item.text !== conversation.text ||
-            item.timestamp !== conversation.timestamp
-          )
-        ].slice(0, 10);
-
-        setTranslationHistory(newHistory);
+        await setDoc(newRef, conversationData);
+        await persist([conversationData, ...translationHistory].slice(0, MAX_RECENT));
         setIsSaved(true);
-
-        // Also save to local storage as backup
-        await FileSystem.writeAsStringAsync(
-          FileSystem.documentDirectory + 'savedSignTranslations.json',
-          JSON.stringify(newHistory)
-        );
-
-        Alert.alert("Success", "Translation saved successfully!");
+        Alert.alert("Saved", "Translation saved to your account.");
       } else {
-        // Fall back to local storage if no user is logged in
-        const newHistory = [
-          conversation,
-          ...translationHistory.filter(item =>
-            item.text !== conversation.text ||
-            item.timestamp !== conversation.timestamp
-          )
-        ].slice(0, 10);
+        // Auth is currently bypassed, so a local id keeps delete/undo working.
+        const conversationData = {
+          ...conversation,
+          id: `local-${Date.now()}`,
+        };
 
-        setTranslationHistory(newHistory);
+        await persist([conversationData, ...translationHistory].slice(0, MAX_RECENT));
         setIsSaved(true);
-
-        await FileSystem.writeAsStringAsync(
-          FileSystem.documentDirectory + 'savedSignTranslations.json',
-          JSON.stringify(newHistory)
-        );
-
-        Alert.alert("Success", "Translation saved to device!");
+        Alert.alert("Saved", "Translation saved to this device.");
       }
     } catch (error) {
       console.error("Error saving translation:", error);
@@ -267,269 +200,272 @@ export default function SignToText() {
     }
   };
 
-  // Delete a saved translation
-  const deleteTranslation = async (index) => {
+  const deleteTranslation = async index => {
     try {
       const itemToDelete = translationHistory[index];
+      setDeletedConversation({ item: itemToDelete, index });
 
-      // Store the deleted item and its index for potential undo
-      setDeletedConversation({
-        item: itemToDelete,
-        index: index
-      });
+      const updated = translationHistory.filter((_, i) => i !== index);
+      await persist(updated);
 
-      // Create a new array without the item to delete
-      const updatedHistory = [
-        ...translationHistory.slice(0, index),
-        ...translationHistory.slice(index + 1)
-      ];
-
-      // Update state
-      setTranslationHistory(updatedHistory);
-
-      if (auth.currentUser && itemToDelete.id) {
-        // Delete from Firestore if user is logged in and the item has an ID
-        const conversationRef = doc(db, "users", auth.currentUser.uid, "signConversations", itemToDelete.id);
-        await deleteDoc(conversationRef);
+      if (auth.currentUser && itemToDelete.id && !itemToDelete.id.startsWith("local-")) {
+        await deleteDoc(
+          doc(db, "users", auth.currentUser.uid, "signConversations", itemToDelete.id)
+        );
       }
 
-      // Also update local storage
-      await FileSystem.writeAsStringAsync(
-        FileSystem.documentDirectory + 'savedSignTranslations.json',
-        JSON.stringify(updatedHistory)
-      );
-
-      // Show undo toast
       setShowUndoToast(true);
-
-      // Clear any existing timer
-      if (undoTimerRef.current) {
-        clearTimeout(undoTimerRef.current);
-      }
-
-      // Set timer to hide toast after 3 seconds
+      if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
       undoTimerRef.current = setTimeout(() => {
         setShowUndoToast(false);
         setDeletedConversation(null);
       }, 3000);
-
     } catch (error) {
       console.error("Error deleting translation:", error);
       Alert.alert("Error", "Failed to delete translation. Please try again.");
     }
   };
 
-  // Undo delete
   const undoDelete = async () => {
     if (!deletedConversation) return;
 
     try {
-      // Create a new array with the deleted item restored
-      const restoredHistory = [...translationHistory];
-      restoredHistory.splice(
-        deletedConversation.index,
-        0,
-        deletedConversation.item
-      );
+      const restored = [...translationHistory];
+      restored.splice(deletedConversation.index, 0, deletedConversation.item);
+      await persist(restored);
 
-      // Update state
-      setTranslationHistory(restoredHistory);
-
-      // Restore to Firestore if user is logged in and the item has an ID
-      if (auth.currentUser && deletedConversation.item.id) {
-        const conversationRef = doc(
-          db,
-          "users",
-          auth.currentUser.uid,
-          "signConversations",
-          deletedConversation.item.id
+      const { item } = deletedConversation;
+      if (auth.currentUser && item.id && !item.id.startsWith("local-")) {
+        await setDoc(
+          doc(db, "users", auth.currentUser.uid, "signConversations", item.id),
+          item
         );
-        await setDoc(conversationRef, deletedConversation.item);
       }
-
-      // Also update local storage
-      await FileSystem.writeAsStringAsync(
-        FileSystem.documentDirectory + 'savedSignTranslations.json',
-        JSON.stringify(restoredHistory)
-      );
-
-      // Clear undo state
+    } catch (error) {
+      console.error("Error restoring translation:", error);
+    } finally {
       setShowUndoToast(false);
       setDeletedConversation(null);
-
-      // Clear timer
       if (undoTimerRef.current) {
         clearTimeout(undoTimerRef.current);
         undoTimerRef.current = null;
       }
-
-    } catch (error) {
-      console.error("Error restoring translation:", error);
     }
   };
 
-  // Share the translation
   const shareTranslation = async () => {
-    if (!translatedText) return;
+    if (!sentence) return;
 
     try {
-      await Share.share({
-        message: `Sign Language Translation: ${translatedText}`,
-      });
+      await Share.share({ message: `Sign Language Translation: ${sentence}` });
     } catch (error) {
       console.error("Error sharing translation:", error);
     }
   };
 
-  // Format timestamp for history
-  const formatTime = (date) => {
-    if (!date) return "";
-    const dateObj = date instanceof Date ? date : new Date(date);
-    return dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const formatStamp = value => {
+    if (!value) return "";
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+
+    return `${date.toLocaleDateString([], {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })} at ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
   };
 
-  // Format date for history
-  const formatDate = (date) => {
-    if (!date) return "";
-    const dateObj = date instanceof Date ? date : new Date(date);
-    return dateObj.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
-  };
+  const hasText = sentence.trim().length > 0;
+  const canSign = isSigning || connectionState === "connected";
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
-      <Common />
 
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          // Clear the floating tab bar and the home indicator.
+          { paddingBottom: 100 + insets.bottom },
+        ]}
         showsVerticalScrollIndicator={false}
       >
+        <Common />
+
         <View style={styles.headerContainer}>
           <Text style={styles.title}>Sign Language to Text</Text>
           <Text style={styles.subtitle}>
-            Record yourself signing and get a text translation
+            Keep signing — words are added to the sentence as they are recognised.
           </Text>
 
-          {/* Saved translations button */}
           <TouchableOpacity
             style={styles.savedButton}
-            onPress={navigateToSavedTranslations}
+            onPress={() => router.push("/saveSign/savedTranslations")}
           >
             <MaterialIcons name="history" size={20} color="#155658" />
             <Text style={styles.savedButtonText}>View Saved Translations</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Camera always visible at the top 
         <View style={styles.cameraContainer}>
-          <SignLanguageCameraWrapper
-            onTranslationUpdate={handleTranslationUpdate}
-            onTranslationComplete={handleTranslationComplete}
-            isRecording={recordingInProgress}
-            onStartRecording={handleStartRecording}
-            onStopRecording={handleStopRecording}
+          <SignLanguageCamera
+            isRecording={isSigning}
+            onPrediction={handlePrediction}
+            onStatusChange={handleStatusChange}
+            onError={handleError}
           />
+        </View>
 
-          {/* Recording timer overlay
-          {recordingInProgress && (
-            <View style={styles.timerOverlay}>
-              <Text style={styles.timerText}>Recording: {timeRemaining}s</Text>
-            </View>
-          )}
-        </View> */}
+        <TouchableOpacity
+          style={[
+            styles.primaryButton,
+            isSigning && styles.primaryButtonActive,
+            !canSign && styles.primaryButtonDisabled,
+          ]}
+          onPress={toggleSigning}
+          // Starting before the socket is up would capture frames with nowhere to
+          // send them; stopping stays available either way.
+          disabled={!canSign}
+        >
+          <MaterialIcons
+            name={isSigning ? "stop" : "videocam"}
+            size={22}
+            color="#fff"
+          />
+          <Text style={styles.primaryButtonText}>
+            {isSigning
+              ? "Stop signing"
+              : canSign
+                ? "Start signing"
+                : "Connecting to model…"}
+          </Text>
+        </TouchableOpacity>
 
-        {/* Translation textbox below camera */}
+        {serverError && (
+          <View style={styles.errorBanner}>
+            <MaterialIcons name="error-outline" size={18} color="#8a1c1c" />
+            <Text style={styles.errorBannerText}>{serverError}</Text>
+          </View>
+        )}
+
         <View style={styles.translationBoxContainer}>
-          <Text style={styles.translationLabel}>Translation:</Text>
+          <View style={styles.translationHeader}>
+            <Text style={styles.translationLabel}>Translation</Text>
 
-          {isProcessing ? (
-            <View style={styles.processingContainer}>
-              <AntDesign name="loading1" size={24} color="#155658" style={styles.loadingIcon} />
-              <Text style={styles.processingText}>Processing sign language...</Text>
-            </View>
-          ) : (
-            <View style={styles.textBoxContainer}>
-              <TextInput
-                style={styles.translationTextBox}
-                value={translatedText}
-                multiline
-                editable={false}
-                placeholder="Translations will appear here after recording..."
-                placeholderTextColor="#999"
-              />
-            </View>
-          )}
+            {isSigning && liveWord && (
+              <View style={styles.livePill}>
+                <Text style={styles.livePillText}>
+                  {liveWord} {Math.round(confidence * 100)}%
+                </Text>
+              </View>
+            )}
+          </View>
+
+          <View style={styles.textBoxContainer}>
+            {hasText ? (
+              <Text style={styles.translationText} selectable>
+                {sentence}
+              </Text>
+            ) : (
+              <Text style={styles.placeholderText}>
+                {isSigning
+                  ? "Watching for signs…"
+                  : "Press Start signing and your words will appear here."}
+              </Text>
+            )}
+          </View>
 
           <View style={styles.actionButtons}>
             <Button
               text="Clear"
-              onPress={resetTranslation}
+              onPress={clearTranslation}
               type="outline"
               style={styles.actionButton}
-              disabled={isProcessing || recordingInProgress}
+              disabled={!hasText}
             />
 
             <TouchableOpacity
-              style={[styles.actionIconButton, (!translatedText || isSaved) && styles.disabledButton]}
+              style={[styles.actionIconButton, !hasText && styles.disabledButton]}
+              onPress={removeLastWord}
+              disabled={!hasText}
+            >
+              <MaterialIcons
+                name="backspace"
+                size={18}
+                color={!hasText ? "#aaa" : "#155658"}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.actionIconButton,
+                (!hasText || isSaved) && styles.disabledButton,
+              ]}
               onPress={saveTranslation}
-              disabled={!translatedText || isSaved || isProcessing || recordingInProgress}
+              disabled={!hasText || isSaved}
             >
               <MaterialIcons
                 name={isSaved ? "check" : "save"}
-                size={20}
-                color={(!translatedText || isSaved) ? "#aaa" : "#155658"}
+                size={18}
+                color={!hasText || isSaved ? "#aaa" : "#155658"}
               />
-              <Text style={[styles.actionButtonText, (!translatedText || isSaved) && styles.disabledText]}>
+              <Text
+                style={[
+                  styles.actionButtonText,
+                  (!hasText || isSaved) && styles.disabledText,
+                ]}
+              >
                 {isSaved ? "Saved" : "Save"}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.actionIconButton, !translatedText && styles.disabledButton]}
+              style={[styles.actionIconButton, !hasText && styles.disabledButton]}
               onPress={shareTranslation}
-              disabled={!translatedText || isProcessing || recordingInProgress}
+              disabled={!hasText}
             >
               <MaterialIcons
                 name="share"
-                size={20}
-                color={!translatedText ? "#aaa" : "#155658"}
+                size={18}
+                color={!hasText ? "#aaa" : "#155658"}
               />
-              <Text style={[styles.actionButtonText, !translatedText && styles.disabledText]}>Share</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Recent signs detected */}
         {detectedSigns.length > 0 && (
           <View style={styles.recentSignsContainer}>
-            <Text style={styles.recentSignsLabel}>Detected Signs:</Text>
+            <Text style={styles.recentSignsLabel}>Detected Signs</Text>
             <View style={styles.signBadgesContainer}>
-              {detectedSigns.slice(-8).map((sign, index) => (
+              {detectedSigns.slice(-12).map((sign, index, visible) => (
                 <View
-                  key={index}
+                  key={`${sign}-${index}`}
                   style={[
                     styles.signBadge,
-                    index === detectedSigns.length - 1 && styles.lastSignBadge
+                    index === visible.length - 1 && styles.lastSignBadge,
                   ]}
                 >
-                  <Text style={styles.signBadgeText}>{sign}</Text>
+                  <Text
+                    style={[
+                      styles.signBadgeText,
+                      index === visible.length - 1 && styles.lastSignBadgeText,
+                    ]}
+                  >
+                    {sign}
+                  </Text>
                 </View>
               ))}
             </View>
           </View>
         )}
 
-        {/* Recent translations section */}
         {translationHistory.length > 0 && (
           <View style={styles.historyContainer}>
             <View style={styles.historyHeader}>
               <Text style={styles.historyTitle}>Recent Translations</Text>
               <TouchableOpacity
                 style={styles.viewAllButton}
-                onPress={navigateToSavedTranslations}
+                onPress={() => router.push("/saveSign/savedTranslations")}
               >
                 <Text style={styles.viewAllText}>View All</Text>
                 <AntDesign name="right" size={14} color="#155658" />
@@ -537,11 +473,9 @@ export default function SignToText() {
             </View>
 
             {translationHistory.slice(0, 3).map((item, index) => (
-              <View key={index} style={styles.historyItem}>
+              <View key={item.id || index} style={styles.historyItem}>
                 <View style={styles.historyItemHeader}>
-                  <Text style={styles.historyTime}>
-                    {formatDate(item.timestamp)} at {formatTime(item.timestamp)}
-                  </Text>
+                  <Text style={styles.historyTime}>{formatStamp(item.timestamp)}</Text>
                   <TouchableOpacity
                     style={styles.deleteButton}
                     onPress={() => deleteTranslation(index)}
@@ -554,21 +488,17 @@ export default function SignToText() {
             ))}
           </View>
         )}
-
-        {/* Undo delete toast */}
-        {showUndoToast && (
-          <View style={styles.undoToast}>
-            <Text style={styles.undoToastText}>Translation deleted</Text>
-            <TouchableOpacity onPress={undoDelete}>
-              <Text style={styles.undoButton}>UNDO</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {/* Add bottom padding for scrolling */}
-        <View style={styles.bottomPadding} />
       </ScrollView>
-    </KeyboardAvoidingView>
+
+      {showUndoToast && (
+        <View style={[styles.undoToast, { bottom: 90 + insets.bottom }]}>
+          <Text style={styles.undoToastText}>Translation deleted</Text>
+          <TouchableOpacity onPress={undoDelete}>
+            <Text style={styles.undoButton}>UNDO</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
   );
 }
 
@@ -580,11 +510,10 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 25,
-    paddingBottom: 40,
   },
   headerContainer: {
-    paddingTop: 20,
-    marginBottom: 20,
+    paddingTop: 10,
+    marginBottom: 16,
   },
   title: {
     fontSize: 24,
@@ -593,7 +522,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     color: "#666",
     marginBottom: 10,
   },
@@ -605,7 +534,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 20,
     alignSelf: "flex-start",
-    marginTop: 10,
+    marginTop: 6,
   },
   savedButtonText: {
     color: "#155658",
@@ -614,25 +543,46 @@ const styles = StyleSheet.create({
   },
   cameraContainer: {
     width: "100%",
-    aspectRatio: 4 / 3,
+    aspectRatio: 3 / 4,
     borderRadius: 20,
     overflow: "hidden",
-    backgroundColor: "#333",
-    marginBottom: 20,
-    position: "relative",
+    backgroundColor: "#222",
+    marginBottom: 14,
   },
-  timerOverlay: {
-    position: "absolute",
-    top: 15,
-    right: 15,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 15,
+  primaryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#155658",
+    paddingVertical: 14,
+    borderRadius: 30,
+    marginBottom: 16,
   },
-  timerText: {
+  primaryButtonActive: {
+    backgroundColor: "#B3261E",
+  },
+  primaryButtonDisabled: {
+    backgroundColor: "#9BB5B5",
+  },
+  primaryButtonText: {
     color: "#fff",
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "700",
+    marginLeft: 8,
+  },
+  errorBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FDECEA",
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 16,
+  },
+  errorBannerText: {
+    color: "#8a1c1c",
+    fontSize: 12,
+    marginLeft: 8,
+    flex: 1,
   },
   translationBoxContainer: {
     backgroundColor: "#fff",
@@ -640,39 +590,46 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 20,
   },
+  translationHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
   translationLabel: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#155658",
-    marginBottom: 10,
   },
-  processingContainer: {
-    minHeight: 100,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 20,
+  livePill: {
+    backgroundColor: "#E0F2F1",
+    borderRadius: 12,
+    paddingVertical: 3,
+    paddingHorizontal: 10,
   },
-  loadingIcon: {
-    marginBottom: 10,
-  },
-  processingText: {
+  livePillText: {
     color: "#155658",
-    fontSize: 16,
+    fontSize: 11,
+    fontWeight: "700",
   },
   textBoxContainer: {
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 8,
     backgroundColor: "#f9f9f9",
-    padding: 10,
+    padding: 12,
     marginBottom: 15,
     minHeight: 100,
+    justifyContent: "flex-start",
   },
-  translationTextBox: {
+  translationText: {
     fontSize: 18,
     color: "#333",
-    lineHeight: 24,
-    textAlignVertical: 'top',
+    lineHeight: 26,
+  },
+  placeholderText: {
+    fontSize: 15,
+    color: "#999",
   },
   actionButtons: {
     flexDirection: "row",
@@ -681,21 +638,22 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-    marginRight: 10,
+    marginRight: 8,
   },
   actionIconButton: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#E0F2F1",
     paddingVertical: 8,
-    paddingHorizontal: 15,
+    paddingHorizontal: 12,
     borderRadius: 20,
-    marginLeft: 5,
+    marginLeft: 6,
   },
   actionButtonText: {
     color: "#155658",
     marginLeft: 5,
     fontWeight: "500",
+    fontSize: 13,
   },
   disabledButton: {
     backgroundColor: "#f0f0f0",
@@ -734,11 +692,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
   },
+  lastSignBadgeText: {
+    color: "#fff",
+  },
   historyContainer: {
     backgroundColor: "#fff",
     borderRadius: 10,
     padding: 15,
-    marginTop: 5,
   },
   historyHeader: {
     flexDirection: "row",
@@ -784,11 +744,10 @@ const styles = StyleSheet.create({
   },
   undoToast: {
     position: "absolute",
-    bottom: 20,
     left: 25,
     right: 25,
-    backgroundColor: "rgba(0,0,0,0.8)",
-    borderRadius: 5,
+    backgroundColor: "rgba(0,0,0,0.85)",
+    borderRadius: 8,
     padding: 15,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -803,7 +762,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
   },
-  bottomPadding: {
-    height: 60,
-  }
 });

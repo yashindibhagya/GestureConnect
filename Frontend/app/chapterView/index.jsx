@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, useWindowDimensions, SafeAreaView, StatusBar, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions, StatusBar, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useEffect } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Progress from 'react-native-progress';
@@ -33,7 +34,12 @@ export default function ChapterView() {
             await updateDoc(doc(db, 'Courses', docId), {
                 completedChapter: arrayUnion(chapterIndex),
             });
-            router.replace('/courseView/' + docId);
+            // There is no /courseView/[id] route — the course screen is
+            // /courseView/courseDetails and takes the id as a param.
+            router.replace({
+                pathname: '/courseView/courseDetails',
+                params: { id: docId },
+            });
         } catch (error) {
             console.error("Error updating course progress:", error);
         } finally {

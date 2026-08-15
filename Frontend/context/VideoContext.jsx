@@ -5,7 +5,7 @@ import { auth, db } from '../config/firebaseConfig';
 
 // Service for loading sign data
 import { loadAllSignData } from '../services/signDataService';
-import CloudinaryUtils from '../app/utils/CloudinaryUtils';
+import CloudinaryUtils from '../utils/CloudinaryUtils';
 
 export const VideoContext = createContext();
 

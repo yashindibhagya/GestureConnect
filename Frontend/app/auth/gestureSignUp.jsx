@@ -5,13 +5,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import Common from "../../Components/Container/Common";
 
 /**
- * Placeholder for gesture-based sign in.
+ * Placeholder for gesture-based sign up.
  *
- * The gesture authentication flow is not implemented yet. This replaces the earlier
- * bare stub, which rendered nothing but the word "gestureSignIn" and left the user
- * with no way forward.
+ * The gesture authentication flow is not implemented yet. This screen exists so the
+ * "Non-typing individuals" option on the sign-up chooser resolves to a real route
+ * instead of a dead link, and so the state is visible rather than a blank screen.
  */
-export default function GestureSignIn() {
+export default function GestureSignUp() {
     const router = useRouter();
 
     return (
@@ -20,15 +20,15 @@ export default function GestureSignIn() {
 
             <View style={styles.content}>
                 <MaterialIcons name="gesture" size={54} color="#155658" />
-                <Text style={styles.title}>Gesture sign in</Text>
+                <Text style={styles.title}>Gesture sign up</Text>
                 <Text style={styles.body}>
-                    Signing in with hand gestures is still being built. For now you can
-                    sign in with the typing option.
+                    Signing up with hand gestures is still being built. For now you can
+                    create your account with the typing option.
                 </Text>
 
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => router.replace("/auth/signIn")}
+                    onPress={() => router.replace("/auth/signUp")}
                 >
                     <Text style={styles.buttonText}>Use typing instead</Text>
                 </TouchableOpacity>

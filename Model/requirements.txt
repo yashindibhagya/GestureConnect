@@ -11,6 +11,9 @@ matplotlib
 seaborn
 fastapi
 uvicorn
+# uvicorn only serves the /ws streaming endpoint if a WebSocket implementation is
+# installed; without this the app falls back to nothing and the camera cannot stream.
+websockets>=12,<15
 python-multipart
 pydantic
 pillow

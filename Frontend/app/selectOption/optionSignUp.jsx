@@ -6,8 +6,8 @@ import {
     TouchableOpacity,
     StyleSheet,
     StatusBar,
-    SafeAreaView,
-} from "react-native";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
