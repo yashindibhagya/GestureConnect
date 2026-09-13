@@ -19,6 +19,7 @@ import CompletedCourses from '../../Components/Learning/CompletedCourses';
 import SearchResults from '../../Components/Learning/SearchResults';
 import { searchLearningContent } from '../../services/SearchService';
 import {
+    GUTTER,
     fontSize,
     moderateScale,
     scale,
@@ -245,7 +246,9 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        padding: moderateScale(25),
+        // Same constant the full-bleed card rows cancel and re-apply, so the
+        // two cannot drift out of alignment.
+        padding: GUTTER,
     },
     contentContainer: {
         flex: 1,

@@ -77,6 +77,16 @@ export const wp = (percent) => round((SCREEN_WIDTH * percent) / 100);
 export const hp = (percent) => round((SCREEN_HEIGHT * percent) / 100);
 
 /**
+ * The horizontal gutter screen content is inset by.
+ *
+ * Exported rather than written out per screen because full-bleed rows (a
+ * horizontal card carousel, say) have to cancel it with a negative margin and
+ * then re-apply it to their own content. If the two ever disagree, the row
+ * stops lining up with the headings above it.
+ */
+export const GUTTER = moderateScale(25);
+
+/**
  * Max content width for centered column layouts. On a phone this is simply the
  * full width; on a tablet it stops a form or a button stack from stretching
  * into an unreadable full-bleed row.

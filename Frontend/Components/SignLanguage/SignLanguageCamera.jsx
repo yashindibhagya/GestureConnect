@@ -21,6 +21,11 @@ import {
     verticalScale,
 } from "../../utils/responsive";
 
+// How long the capture loop pauses after a lens switch. expo-camera tears the
+// old preview session down and starts a new one; capturing during that window
+// fails. Roughly the worst case on a mid-range Android device.
+const FLIP_SETTLE_MS = 700;
+
 /**
  * Live sign-language camera.
  *
@@ -38,18 +43,29 @@ export default function SignLanguageCamera({
     onPrediction,
     onStatusChange,
     onError,
-    facing = "front",
+    facing: initialFacing = "front",
 }) {
     const [permission, requestPermission] = useCameraPermissions();
     const [isCameraReady, setIsCameraReady] = useState(false);
     const [connectionState, setConnectionState] = useState("idle");
     const [stats, setStats] = useState({ fps: 0, bufferProgress: 0, handsVisible: false });
 
+    // Which lens is live. Seeded from the prop, then owned here so the flip
+    // button can drive it: signing yourself wants the front camera, filming
+    // someone else signing wants the back one.
+    const [facing, setFacing] = useState(initialFacing);
+
     const cameraRef = useRef(null);
     const captureLoopRef = useRef(null);
     const isCapturingRef = useRef(false);
     const isMountedRef = useRef(true);
     const frameTimesRef = useRef([]);
+
+    // Set while the preview is switching lenses. Capturing across that gap
+    // either throws (the old session is already torn down) or returns a frame
+    // from the wrong camera, so the loop skips instead.
+    const isFlippingRef = useRef(false);
+    const flipTimerRef = useRef(null);
 
     // Kept in a ref so the capture loop always sees the current value without being
     // torn down and restarted on every render.
@@ -60,6 +76,7 @@ export default function SignLanguageCamera({
         isMountedRef.current = true;
         return () => {
             isMountedRef.current = false;
+            if (flipTimerRef.current) clearTimeout(flipTimerRef.current);
         };
     }, []);
 
@@ -104,6 +121,7 @@ export default function SignLanguageCamera({
 
     const captureFrame = useCallback(async () => {
         if (isCapturingRef.current) return;
+        if (isFlippingRef.current) return;
         if (!cameraRef.current || !isCameraReady) return;
         if (!signLanguageService.readyForFrame) return;
 
@@ -166,6 +184,26 @@ export default function SignLanguageCamera({
         }
         frameTimesRef.current = [];
         setStats(prev => ({ ...prev, fps: 0 }));
+    }, []);
+
+    const toggleFacing = useCallback(() => {
+        // Hold the loop off while the preview swaps lenses, and drop the frames
+        // already queued on the server: the model reads a rolling 30-frame
+        // window, so a window straddling the flip would be half one viewpoint
+        // and half the other — and mirrored between the two. Clearing it costs
+        // the user one window and avoids a garbage word.
+        isFlippingRef.current = true;
+        frameTimesRef.current = [];
+        signLanguageService.clearBuffer();
+        setStats(prev => ({ ...prev, fps: 0, bufferProgress: 0 }));
+
+        setFacing(prev => (prev === "front" ? "back" : "front"));
+
+        if (flipTimerRef.current) clearTimeout(flipTimerRef.current);
+        flipTimerRef.current = setTimeout(() => {
+            isFlippingRef.current = false;
+            flipTimerRef.current = null;
+        }, FLIP_SETTLE_MS);
     }, []);
 
     useEffect(() => {
@@ -254,11 +292,33 @@ export default function SignLanguageCamera({
                     </Text>
                 </View>
 
-                {isRecording && isConnected && (
-                    <View style={styles.badge}>
-                        <Text style={styles.badgeText}>{stats.fps.toFixed(1)} fps</Text>
-                    </View>
-                )}
+                <View style={styles.topRight}>
+                    {isRecording && isConnected && (
+                        <View style={styles.badge}>
+                            <Text style={styles.badgeText}>{stats.fps.toFixed(1)} fps</Text>
+                        </View>
+                    )}
+
+                    <TouchableOpacity
+                        style={styles.flipButton}
+                        onPress={toggleFacing}
+                        accessibilityRole="button"
+                        accessibilityLabel={
+                            facing === "front"
+                                ? "Switch to the back camera"
+                                : "Switch to the selfie camera"
+                        }
+                        // Generous tap target: the button sits over the preview,
+                        // where the visible circle has to stay small.
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                        <MaterialIcons
+                            name="flip-camera-ios"
+                            size={moderateScale(20)}
+                            color="#fff"
+                        />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             {/* Buffer fill indicator: the model needs 30 frames before its first word */}
@@ -338,6 +398,19 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
+    },
+    topRight: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: scale(8),
+    },
+    flipButton: {
+        width: moderateScale(32),
+        height: moderateScale(32),
+        borderRadius: moderateScale(16),
+        backgroundColor: "rgba(0,0,0,0.55)",
+        alignItems: "center",
+        justifyContent: "center",
     },
     badge: {
         flexDirection: "row",

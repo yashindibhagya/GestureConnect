@@ -3,7 +3,7 @@ import {
     StyleSheet,
     Text,
     View,
-    ImageBackground,
+    Image,
     TouchableOpacity,
     StatusBar,
 } from "react-native";
@@ -15,23 +15,42 @@ import {
     moderateScale,
     fontSize,
     contentContainer,
+    SCREEN_WIDTH,
 } from "../utils/responsive";
 
 // Import the background illustration
 import frontImage from "../assets/images/Untitled.png";
+
+// Intrinsic size of the illustration. The artwork is a full bleed scene: a
+// white sky at the top and a flat #155658 ground filling the bottom third,
+// which is what the welcome copy sits on.
+const ILLUSTRATION_ASPECT = 788 / 1704;
 
 export default function WelcomeScreen() {
     const router = useRouter(); // Use Expo Router's navigation
 
     return (
         <View style={styles.container}>
-            <StatusBar backgroundColor="#155658" barStyle="light-content" />
+            {/* Translucent so the illustration runs under the status bar too;
+                dark icons because the top of the artwork is the white sky. */}
+            <StatusBar
+                translucent
+                backgroundColor="transparent"
+                barStyle="dark-content"
+            />
 
-            {/* Background illustration, filling the screen behind the content */}
-            <ImageBackground
+            {/* Full-bleed illustration.
+                It is pinned to the bottom at its natural aspect ratio rather
+                than stretched: the width always matches the screen, so the
+                scene never letterboxes sideways, and anchoring the bottom
+                keeps the ground — and the figures standing on it — in a fixed
+                relationship to the copy below on every screen height. Taller
+                screens simply reveal more sky, which the white container
+                background continues seamlessly; shorter ones crop it. */}
+            <Image
                 source={frontImage}
-                style={styles.imageBackground}
-                resizeMode="contain"
+                style={styles.illustration}
+                resizeMode="cover"
             />
 
             {/* Overlay content, anchored to the bottom of the safe area so it
@@ -65,13 +84,20 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#155658", // Dark green background
+        // Matches the sky at the top of the illustration, so a screen taller
+        // than the artwork extends it instead of showing a seam.
+        backgroundColor: "#FEFEFE",
     },
-    imageBackground: {
-        ...StyleSheet.absoluteFillObject,
-        // The illustration is top-weighted; bias it upward so the lower third
-        // stays clear for the text block.
-        bottom: "25%",
+    illustration: {
+        position: "absolute",
+        left: 0,
+        bottom: 0,
+        // Height follows from the full-screen width via the artwork's own
+        // aspect ratio. On a screen taller than that it leaves sky-coloured
+        // space at the top; on a shorter one it simply overflows and the sky
+        // is cropped, which costs nothing.
+        width: SCREEN_WIDTH,
+        height: SCREEN_WIDTH / ILLUSTRATION_ASPECT,
     },
     safeArea: {
         flex: 1,

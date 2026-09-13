@@ -57,7 +57,9 @@ const styles = StyleSheet.create({
         alignItems: "flex-start",
         marginBottom: verticalScale(5),
         width: "100%",
-        marginTop: verticalScale(10),
+        // No top margin: the screen's SafeAreaView already clears the status
+        // bar and its own padding supplies the inset, so anything added here
+        // stacks on top of both and reads as dead space.
     },
     contentContainer: {
         flexDirection: "row",
@@ -72,7 +74,6 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flexDirection: "row",
-        marginTop: verticalScale(20),
         alignItems: "center",
     },
     logo: {
@@ -81,7 +82,6 @@ const styles = StyleSheet.create({
     },
     backButton: {
         marginRight: scale(10),
-        marginTop: verticalScale(20),
         width: moderateScale(30),
         height: moderateScale(30),
         justifyContent: "center",

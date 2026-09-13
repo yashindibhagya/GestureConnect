@@ -22,8 +22,12 @@ const MODEL_PORT = 8000;
  * server runs somewhere else.
  */
 export const resolveModelHost = () => {
+    // Type-checked rather than merely truthy: Expo's config resolution turns a
+    // null `extra` value into `{}`, which is truthy and would be returned as the
+    // host — and an object rendered into the "waiting for the server" message
+    // crashes the screen instead of showing an address. Only a real string wins.
     const configured = Constants.expoConfig?.extra?.modelServerHost;
-    if (configured) return configured;
+    if (typeof configured === 'string' && configured.trim()) return configured.trim();
 
     // hostUri looks like "192.168.1.14:8081" (or "localhost:8081" on a simulator).
     const hostUri =

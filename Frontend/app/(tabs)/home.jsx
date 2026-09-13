@@ -23,6 +23,7 @@ import Header from "../../Components/Home/Header";
 import WelcomeCard from "../../Components/Home/WelcomeCard"; // Import WelcomeCard
 import { MaterialIcons } from "@expo/vector-icons";
 import {
+    GUTTER,
     fontSize,
     moderateScale,
     scale,
@@ -218,7 +219,9 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        padding: moderateScale(25),
+        // Same constant the full-bleed card rows cancel and re-apply, so the
+        // two cannot drift out of alignment.
+        padding: GUTTER,
     },
     contentContainerCard: {
         paddingBottom: verticalScale(65),

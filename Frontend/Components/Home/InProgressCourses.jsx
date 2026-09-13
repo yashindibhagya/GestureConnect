@@ -4,6 +4,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from "@expo/vector-icons";
 import {
+    GUTTER,
     fontSize,
     moderateScale,
     scale,
@@ -69,7 +70,7 @@ const InProgressCourses = ({ courses }) => {
     }
 
     return (
-        <View>
+        <View style={styles.section}>
             <Text style={styles.subsectionTitle}>Progress</Text>
             <FlatList
                 data={courses}
@@ -84,12 +85,22 @@ const InProgressCourses = ({ courses }) => {
 };
 
 const styles = StyleSheet.create({
+    section: {
+        // Cancel the parent screen's gutter so the row is full-bleed. Without
+        // this the cards overflowed it anyway — React Native does not clip
+        // children — so the row ran to the screen edges while every other
+        // element respected the inset.
+        marginHorizontal: -GUTTER,
+    },
     subsectionTitle: {
         fontSize: fontSize(20),
         fontWeight: "800",
         color: "#000",
         marginBottom: verticalScale(10),
-        marginTop: verticalScale(-40)
+        marginTop: verticalScale(-40),
+        // The row below is full-bleed, so the heading re-applies the gutter to
+        // stay aligned with the rest of the screen.
+        marginHorizontal: GUTTER,
     },
     noProgressText: {
         fontSize: fontSize(14),
@@ -98,7 +109,9 @@ const styles = StyleSheet.create({
         marginBottom: verticalScale(20),
     },
     horizontalList: {
-        paddingRight: scale(20),
+        // Cards start and end on the gutter, so the first one lines up with the
+        // heading and the row still scrolls cleanly off both edges.
+        paddingHorizontal: GUTTER,
         paddingBottom: verticalScale(5),
     },
     courseCard: {

@@ -67,9 +67,6 @@
       "expo-audio",
       "expo-video"
     ],
-    "extra": {
-      "modelServerHost": null
-    },
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true

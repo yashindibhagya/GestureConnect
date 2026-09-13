@@ -44,6 +44,21 @@ def save_video(frames, action, sequence):
     out.release()
     print(f"Saved video to {video_path}")
 
+def sequence_is_complete(action, sequence):
+    """True when every frame of this sequence is already on disk.
+
+    Collection is a long session and is easy to interrupt, so a sequence that
+    already has all SEQUENCE_LENGTH keypoint files is treated as done and gets
+    skipped. A sequence cut off midway is re-recorded, since a partial window
+    would train on truncated motion.
+    """
+    sequence_dir = os.path.join(DATA_PATH, action, str(sequence))
+    return all(
+        os.path.exists(os.path.join(sequence_dir, f"{frame_num}.npy"))
+        for frame_num in range(SEQUENCE_LENGTH)
+    )
+
+
 def collect_data():
     """Collect sign language data using webcam"""
     setup_directories()
@@ -66,6 +81,10 @@ def collect_data():
             
             # Loop through each video sequence
             for sequence in range(NUM_SEQUENCES):
+                if sequence_is_complete(action, sequence):
+                    print(f"Sequence {sequence+1}/{NUM_SEQUENCES} already collected - skipping")
+                    continue
+
                 print(f"Sequence {sequence+1}/{NUM_SEQUENCES}")
                 
                 # Countdown before starting

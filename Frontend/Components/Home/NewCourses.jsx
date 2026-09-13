@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
+    GUTTER,
     fontSize,
     moderateScale,
     scale,
@@ -55,13 +56,22 @@ const styles = StyleSheet.create({
         fontWeight: "800",
         color: "#000",
         marginBottom: verticalScale(10),
+        // The row below is full-bleed, so the heading re-applies the gutter to
+        // stay aligned with the rest of the screen.
+        marginHorizontal: GUTTER,
     },
     horizontalList: {
-        paddingRight: scale(20),
+        // Cards start and end on the gutter, so the first one lines up with the
+        // heading and the row still scrolls cleanly off both edges.
+        paddingHorizontal: GUTTER,
         paddingBottom: verticalScale(5),
     },
     newCoursesSection: {
         marginTop: verticalScale(20),
+        // Cancel the parent screen's gutter. Without this the cards overflowed
+        // it anyway — React Native does not clip children — so the row ran to
+        // the screen edges while every other element respected the inset.
+        marginHorizontal: -GUTTER,
     },
     newCourseCard: {
         width: moderateScale(140),

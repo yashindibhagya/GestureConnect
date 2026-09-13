@@ -7,19 +7,31 @@
  * that grew on a large phone and shrank on a small one would read as unstable
  * and would drift away from the ~44pt minimum touch target on the small end.
  *
- * The only things that vary per device are what genuinely differs: the width
- * (the bar spans the screen minus a fixed inset) and the bottom offset (the
- * real safe-area inset).
+ * The only per-device measurement is the safe-area bottom inset, which the bar
+ * absorbs as padding so its icons clear the home indicator while the bar itself
+ * stays flush with the bottom edge.
  */
 
-/** Height of the floating bar itself. */
+/** Height of the row the icons sit in, above any safe-area padding. */
 export const TAB_BAR_HEIGHT = 60;
 
-/** Gap between the bar and the screen edges, left and right. */
-export const TAB_BAR_MARGIN = 20;
+/**
+ * Cap on how much of the safe-area bottom inset the bar absorbs as padding.
+ *
+ * Devices with a home indicator report ~34pt. Absorbing all of it makes a
+ * 94pt-tall bar whose bottom third is empty — which reads as a white slab under
+ * the icons rather than as navigation. The indicator only needs the icons kept
+ * out of its way, not the full inset reserved, so this caps the padding and
+ * lets the indicator draw over the remainder.
+ */
+export const TAB_BAR_MAX_INSET = 16;
 
-/** Minimum gap below the bar on devices that report no bottom inset. */
-export const TAB_BAR_MIN_BOTTOM = 12;
+/** The bottom padding the bar actually applies on this device. */
+export const tabBarInset = (insetBottom = 0) =>
+    Math.min(insetBottom, TAB_BAR_MAX_INSET);
+
+/** Corner rounding on the bar's top edge (the bottom edge is flush). */
+export const TAB_BAR_RADIUS = 20;
 
 /** Standard icon size for the four side tabs. */
 export const TAB_ICON_SIZE = 24;
@@ -33,11 +45,11 @@ const TAB_BAR_GAP = 12;
 
 /**
  * Space a tab screen must leave at the bottom of its scrollable content so the
- * floating bar never covers the last row. Mirrors the bar's own placement, so
- * the two cannot drift apart:
+ * bar never covers the last row. Mirrors the bar's own height, so the two
+ * cannot drift apart:
  *
  *   const insets = useSafeAreaInsets();
  *   contentContainerStyle={{ paddingBottom: tabBarClearance(insets.bottom) }}
  */
 export const tabBarClearance = (insetBottom = 0) =>
-    Math.max(insetBottom, TAB_BAR_MIN_BOTTOM) + TAB_BAR_HEIGHT + TAB_BAR_GAP;
+    TAB_BAR_HEIGHT + tabBarInset(insetBottom) + TAB_BAR_GAP;

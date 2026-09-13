@@ -8,8 +8,8 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {
     TAB_BAR_HEIGHT,
-    TAB_BAR_MARGIN,
-    TAB_BAR_MIN_BOTTOM,
+    TAB_BAR_RADIUS,
+    tabBarInset,
     TAB_ICON_SIZE,
     TAB_CENTER_BUTTON_SIZE,
     TAB_CENTER_ICON_SIZE,
@@ -19,24 +19,28 @@ import {
  * Tab layout component that sets up the bottom tab navigation
  *
  * Every measurement here is a fixed point value from constants/navigation.js
- * rather than a screen-scaled one — see the note there. The bar's width and
- * its distance from the bottom edge are the only device-dependent parts.
+ * rather than a screen-scaled one — see the note there. The safe-area inset is
+ * the only device-dependent part.
  */
 export default function TabsLayout() {
+    // The bar sits flush with the bottom edge and absorbs a capped share of the
+    // safe-area inset as padding — enough to lift the icons clear of the iOS
+    // home indicator and the Android gesture bar, without reserving the whole
+    // inset and leaving an empty band under them. See tabBarInset.
     const insets = useSafeAreaInsets();
-
-    // The bar floats above the screen, so it has to be lifted clear of the iOS home
-    // indicator and the Android gesture bar itself — the navigator cannot do it for
-    // an absolutely positioned bar. A small floor keeps it off the very edge on
-    // devices with no inset at all.
-    const bottomOffset = Math.max(insets.bottom, TAB_BAR_MIN_BOTTOM);
 
     return (
         <Tabs
             screenOptions={{
                 headerShown: false,
                 tabBarShowLabel: false, // Hide text labels
-                tabBarStyle: [styles.tabBar, { bottom: bottomOffset }],
+                tabBarStyle: [
+                    styles.tabBar,
+                    {
+                        height: TAB_BAR_HEIGHT + tabBarInset(insets.bottom),
+                        paddingBottom: tabBarInset(insets.bottom),
+                    },
+                ],
                 tabBarItemStyle: styles.tabBarItem,
                 tabBarActiveTintColor: "#074D4E", // Active icon color
                 tabBarInactiveTintColor: "#074D4E", // Inactive icon color
@@ -122,20 +126,20 @@ export default function TabsLayout() {
 const styles = StyleSheet.create({
     tabBar: {
         position: "absolute",
-        left: TAB_BAR_MARGIN,
-        right: TAB_BAR_MARGIN,
-        height: TAB_BAR_HEIGHT,
+        left: 0,
+        right: 0,
+        bottom: 0,
         elevation: 5,
         backgroundColor: "#fff",
-        // Rounded on all four corners because the bar floats clear of the bottom
-        // edge rather than sitting flush against it.
-        borderRadius: 20,
+        // Only the top corners are rounded — the bar is flush with the bottom
+        // edge, so rounding the bottom two would expose the screen behind them.
+        borderTopLeftRadius: TAB_BAR_RADIUS,
+        borderTopRightRadius: TAB_BAR_RADIUS,
         borderTopWidth: 0,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: -2 },
         shadowOpacity: 0.1,
         shadowRadius: 5,
-        paddingBottom: 0,
     },
     tabBarItem: {
         // Without this the icons sit high on iOS, where the navigator reserves room

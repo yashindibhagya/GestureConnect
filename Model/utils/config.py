@@ -23,7 +23,15 @@ ACTIONS = ["A", "B", "C", "what", "name", "how", "you", "thankyou", "ayanna","aa
 #"U","V","W","X","Y","Z"
 
 # Data Collection Parameters
-NUM_SEQUENCES = 100  # Number of videos collected per action
+# Signs performed with movement rather than a held handshape. Only affects the
+# prompt shown during collection, so that dynamic signs are demonstrated as a
+# motion across the whole 30-frame window instead of a single held pose.
+DYNAMIC_SIGNS = ["how", "what", "thankyou"]
+
+VIDEO_FPS = 30  # Capture rate for the saved reference videos
+VIDEO_EXTENSION = ".mp4"  # Container for the saved reference videos
+
+NUM_SEQUENCES = 40  # Number of videos collected per action
 SEQUENCE_LENGTH = 30  # Number of frames per video
 
 # Data Augmentation Parameters
